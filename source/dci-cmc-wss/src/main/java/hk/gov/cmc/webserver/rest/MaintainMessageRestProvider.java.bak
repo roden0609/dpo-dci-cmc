@@ -1,0 +1,225 @@
+package hk.gov.cmc.webserver.rest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Properties;
+import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
+import javax.naming.InitialContext;
+import javax.xml.soap.SOAPMessage;
+import org.apache.axis.Message;
+import org.apache.axis.MessageContext;
+import org.apache.axis.message.SOAPBodyElement;
+import org.apache.axis.message.SOAPEnvelope;
+import org.apache.axis.utils.XMLUtils;
+import org.apache.xml.security.utils.EncryptionConstants;
+import org.exolab.castor.xml.Unmarshaller;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import javax.ejb.EJB;
+import hk.gov.spica_scopes.common.utils.CastorUtils;
+import hk.gov.ogcio.egis.rm.common.utils.ServiceLocator;
+import hk.gov.spica_scopes.common.utils.SoapUtils;
+import hk.gov.spica_scopes.common.utils.StringUtils;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.annotation.security.RunAs;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import hk.gov.spica_scopes.common.utils.DatetimeUtils;
+import hk.gov.ogcio.egis.rm.keyservice.PKIUtil;
+import hk.gov.ogcio.mars_cmc.framework.common.webserver.axis.AxisBase;
+import hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.MaintainMessageRequest;
+import hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.MaintainMessageResponse;
+import hk.gov.ogcio.mars_cmc.cmc.datatype.message.Constants;
+import hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBM;
+import javax.naming.InitialContext;
+import hk.gov.ogcio.mars_cmc.framework.common.CommonConstants;
+import static hk.gov.ogcio.egis.rm.keyservice.appserver.AppPropertyNames.PROPERTY_NAME_PKI_UTIL_EJB_REMOTE_JNDI_NAME;
+import static hk.gov.ogcio.egis.rm.keyservice.common.Constants.EGIS_RM_KEYSERVICE_MODULE_NAME;
+import hk.gov.ogcio.egis.rm.keyservice.exception.KeyServiceException;
+import hk.gov.ogcio.egis.rm.keyservice.exception.KeyNotFoundException;
+import hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IPKIUtil;
+import hk.gov.ogcio.mars_cmc.framework.common.sql.HPFW_Connection;
+import hk.gov.ogcio.mars_cmc.cmc.utils.EncUtils;
+
+@Path("/maintain-message")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+@RunAs("keyservice_readonly")
+@RolesAllowed({ "pradmin" })
+public class MaintainMessageRestProvider {
+
+    public static final String APPID_TAG_NAME = "SenderAppId";
+
+    public MaintainMessageRestProvider() throws Exception {
+        init();
+    }
+
+    private void init() throws Exception {
+    }
+
+    public void processMessage(SOAPEnvelope request, SOAPEnvelope response) {
+        logInfo("processMessage -- BEGIN");
+
+        try {
+            MessageContext mc = MessageContext.getCurrentContext();
+            Message requestMsg = mc.getRequestMessage();
+            Message responseMsg = mc.getResponseMessage();
+            processMaintainMessage(requestMsg, responseMsg);
+            mc.setResponseMessage(responseMsg);
+
+        } catch (Exception e) {
+            logError("General exception caught in processMessage", e);
+        }
+
+        logInfo("processMessage -- END");
+    }
+
+    private static String soapMessageToString(SOAPMessage message) throws Exception {
+
+        String result = "";
+
+        if (message == null)
+            return null;
+        ByteArrayOutputStream bas = new ByteArrayOutputStream(4096);
+        message.writeTo(bas);
+        result = bas.toString("UTF-8");
+
+        return result;
+    }
+
+    private SOAPMessage processMaintainMessage(SOAPMessage requestMsg, SOAPMessage responseMsg) throws Exception {
+        logInfo("processMaintainMessage -- BEGIN");
+
+        try {
+
+            logInfo("processMaintainMessage requestMsg=\n" + soapMessageToString(requestMsg));
+
+            String appId = null;
+            SOAPEnvelope envelope = (SOAPEnvelope) requestMsg.getSOAPPart().getEnvelope();
+            Document envDoc = envelope.getAsDocument();
+            NodeList nodeList = envDoc.getElementsByTagName(APPID_TAG_NAME);
+            if (nodeList != null && nodeList.getLength() > 0)
+                appId = nodeList.item(0).getFirstChild().getNodeValue();
+            if (appId == null || appId.length() == 0) {
+                return generateResponse(responseMsg, Constants.RESULT_CD_SENDER_APPID_NOT_FOUND, Constants.RESULT_MSG_SENDER_APPID_NOT_FOUND);
+            }
+
+            logInfo("processMaintainMessage -- appId="+appId);
+
+            SOAPBodyElement body = (SOAPBodyElement) SoapUtils.getFirstBodyElement(requestMsg);
+            Document bodyDoc = body.getAsDocument();
+            logDebug("Request body: " + XMLUtils.DocumentToString(bodyDoc));
+
+            Properties properties = ServiceLocator.getInstance().getProperties();
+
+            String cmcToDciCmcAppIdMap = properties.getProperty(AppPropertyName.CMC_TO_DCI_CMC_APP_ID_MAP_PROPERTY_NAME);
+            Map<String, String> cmcToDciMap = parseCmcToDciCmcAppIdMap(cmcToDciCmcAppIdMap);
+
+            if (cmcToDciMap.containsKey(appId)) {
+                logInfo("processMaintainMessage -- appId " + appId + " found in CMC_TO_DCI_CMC_APP_ID_MAP");
+                appId = cmcToDciMap.get(appId);
+                logInfo("processMaintainMessage -- map appId from CMC " + appId + " to DCI-CMC " + appId);
+            }
+
+            NodeList encryptedDataList = bodyDoc.getDocumentElement().getElementsByTagNameNS(EncryptionConstants.EncryptionSpecNS, EncryptionConstants._TAG_ENCRYPTEDDATA);
+
+            MaintainMessageRequest maintainMessageRequest = null;
+
+            if (encryptedDataList.getLength() > 0) {
+
+                logInfo("This message is encrypted in-transit. encryptedDataList: " + encryptedDataList.getLength() + ", appId: " + appId);
+
+                HPFW_Connection conn = HPFW_Connection.getHPFW_Connection(false);
+
+                EncUtils encUtils = new EncUtils();
+
+                if (!encUtils.keyExistInKMU(conn, bodyDoc)) {
+                    logWarn("Key not found in processMaintainMessage.");
+                    return generateResponse(responseMsg, Constants.RESULT_CD_GENERAL_ERROR, Constants.RESULT_MSG_GENERAL_ERROR);
+                }
+                else {
+
+                    String pkiUtilJNDIName = properties.getProperty(PROPERTY_NAME_PKI_UTIL_EJB_REMOTE_JNDI_NAME,
+                            CommonConstants.GLOBAL_CONTEXT_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
+                            + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX + CommonConstants.CONTEXT_NAME_SEPARATOR
+                            + "PKIUtil!hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IPKIUtil");
+
+                    InitialContext context = new InitialContext(properties);
+                    IPKIUtil pkiUtil = (IPKIUtil) context.lookup(pkiUtilJNDIName);
+
+                    Document decDoc = pkiUtil.decryptXML(null, bodyDoc, null);
+
+                    maintainMessageRequest = (MaintainMessageRequest) Unmarshaller.unmarshal(MaintainMessageRequest.class, decDoc);
+                }
+            }
+            else {
+                logInfo("This message is not encrypted in-transit. encryptedDataList: " + encryptedDataList.getLength() + ", appId: " + appId);
+                maintainMessageRequest = (MaintainMessageRequest) Unmarshaller.unmarshal(MaintainMessageRequest.class, bodyDoc);
+            }
+
+            InitialContext ctx = new InitialContext();
+            IMaintainMessageSessionBM maintainMessageEJB = (IMaintainMessageSessionBM) ctx.lookup("java:global/cmc/cmc_app/MaintainMessageSessionEJB!hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMLocal");
+
+            MaintainMessageResponse maintainMessageResponse  = maintainMessageEJB.processMessage(appId, maintainMessageRequest);
+
+            logInfo("processMaintainMessage -- END");
+
+            return generateResponse(responseMsg, maintainMessageResponse);
+
+        } catch (Exception ex) {
+            logError("General exception caught in processMaintainMessage", ex);
+                return generateResponse(responseMsg, Constants.RESULT_CD_GENERAL_ERROR, Constants.RESULT_MSG_GENERAL_ERROR);
+            }
+
+        }
+
+        // CMC-2025-034: CMC send RVD VIP request to DCI-CMC in RPC mode - BEGIN
+        private Map<String, String> parseCmcToDciCmcAppIdMap(String cmcToDciCmcAppIdMap) {
+            Map<String, String> result = new HashMap<String, String>();
+            if (StringUtils.isEmpty(cmcToDciCmcAppIdMap)) {
+                return result;
+            }
+
+            String[] mappingPairs = cmcToDciCmcAppIdMap.split(",");
+            for (String mappingPair : mappingPairs) {
+                String trimmedMappingPair = mappingPair.trim();
+                if (trimmedMappingPair.length() == 0) {
+                    continue;
+                }
+                String[] mapping = trimmedMappingPair.split("\\|");
+                if (mapping.length != 2) {
+                    logWarn("parseCmcToDciCmcAppIdMap -- invalid mapping format: " + trimmedMappingPair);
+                    continue;
+                }
+                String cmcAppId = mapping[0].trim();
+                String dciCmcAppId = mapping[1].trim();
+                if (cmcAppId.length() == 0 || dciCmcAppId.length() == 0) {
+                    logWarn("parseCmcToDciCmcAppIdMap -- empty appId found in mapping: " + trimmedMappingPair);
+                    continue;
+                }
+                result.put(cmcAppId, dciCmcAppId);
+            }
+            return result;
+        }
+
+    private SOAPMessage generateResponse(SOAPMessage responseMsg, String resultCd, String resultMsg) throws Exception {
+
+        MaintainMessageResponse maintainMessageResponse = new MaintainMessageResponse();
+        maintainMessageResponse.setResultCode(resultCd);
+        maintainMessageResponse.setResultMessage(resultMsg);
+        return generateResponse(responseMsg, maintainMessageResponse);
+    }
+
+    private SOAPMessage generateResponse(SOAPMessage responseMsg, MaintainMessageResponse maintainMessageResponse) throws Exception {
+        return CastorUtils.marshal(responseMsg, maintainMessageResponse);
+    }
+
+}

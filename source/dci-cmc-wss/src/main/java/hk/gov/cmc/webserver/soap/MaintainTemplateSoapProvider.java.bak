@@ -1,16 +1,4 @@
-/**
- *
- * Design, Implementation and Support of Common Middleware Components and Reference Applications
- *
- * Web Service Provider
- *
- * Developed by: Gilbert Liao
- * Reviewed by: Kai So
- * Tester: Shaohui Wang
- *
- *
- */
-package hk.gov.ogcio.mars_cmc.cmc.webserver.axis.maintaintemplate;
+package hk.gov.cmc.webserver.soap;
 
 import javax.naming.InitialContext;
 import javax.xml.soap.SOAPMessage;
@@ -40,7 +28,7 @@ import hk.gov.ogcio.mars_cmc.cmc.datatype.message.Constants;
 /**
  * Web Services provider for Maintain template
  */
-public class MaintainTemplateProvider extends AxisBase {
+public class MaintainTemplateSoapProvider extends AxisBase {
 
 	public static final String APPID_TAG_NAME = "SenderAppId";
 

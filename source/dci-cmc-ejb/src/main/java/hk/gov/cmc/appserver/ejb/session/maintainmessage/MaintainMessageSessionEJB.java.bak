@@ -1,0 +1,765 @@
+/**
+ * Design, Implementation and Support of Common Middleware Components and Reference Applications
+ *
+ * EJB
+ *
+ * Developed by: Gilbert Liao
+ * Reviewed by: Kai So
+ * Tester: Shaohui Wang
+ *
+ */
+package hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.maintainmessage;
+
+//import Java standard package(s) -- BEGIN
+import javax.xml.soap.SOAPMessage;
+import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Vector;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Properties;
+import java.util.Arrays;
+import javax.ejb.EJBException;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+//import Java standard package(s) -- END
+
+// import third-party package(s) -- BEGIN
+import org.apache.axis.Message;
+
+// MyGov5-03-111 - Adopt RM2 in EAP7 - BEGIN
+//import org.apache.axis.message.SOAPBodyElement;
+//import org.apache.axis.message.SOAPEnvelope;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPBodyElement;
+import javax.xml.soap.Name;
+import javax.xml.soap.SOAPEnvelope;
+// MyGov5-03-111 - Adopt RM2 in EAP7 - END
+
+import org.apache.axis.utils.XMLUtils;
+import org.exolab.castor.xml.Unmarshaller;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+// import third-party package(s) -- END
+
+// import internal library package(s) -- BEGIN
+import hk.gov.spica_scopes.common.utils.SoapUtils;
+import hk.gov.spica_scopes.common.utils.PropertiesUtils;
+import hk.gov.ogcio.egis.rm.common.utils.ServiceLocator;
+import hk.gov.spica_scopes.scopes.messaging.client.MessagingClient;
+import hk.gov.spica_scopes.common.utils.CastorUtils;
+import hk.gov.spica_scopes.scopes.messaging.types.IMessagingConstants;
+import hk.gov.spica_scopes.scopes.messaging.types.IMessageType;
+import hk.gov.ogcio.mars_cmc.framework.common.utils.WebServiceUtils;
+import hk.gov.spica_scopes.common.webserver.elements.FaultEntry;
+import hk.gov.spica_scopes.scopes.messaging.fault.IErrorCodes;
+import hk.gov.spica_scopes.scopes.messaging.webserver.elements.asyncmessaging.AsyncRequest;
+import hk.gov.ogcio.mars_cmc.framework.common.dao.asynmessage.AsynMessageDAO;
+import hk.gov.ogcio.mars_cmc.framework.common.appserver.ejb.session.SessionBeanBase;
+import hk.gov.ogcio.mars_cmc.framework.common.sql.CommonDBUtils;
+import hk.gov.ogcio.mars_cmc.framework.common.sql.HPFW_Connection;
+import hk.gov.ogcio.mars_cmc.framework.common.CommonConstants;
+import hk.gov.ogcio.mars_cmc.framework.common.CommonPropertyName;
+// import internal library package(s) -- END
+
+// import module package(s) -- BEGIN
+import hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.MaintainMessageRequest;
+import hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.MaintainMessageResponse;
+import hk.gov.ogcio.mars_cmc.cmc.service.dao.maintainmessage.MaintainMessageDAO;
+import hk.gov.ogcio.mars_cmc.cmc.utils.CmcSystemParam;
+import hk.gov.ogcio.mars_cmc.cmc.datatype.message.Constants;
+import hk.gov.ogcio.mars_cmc.cmc.appserver.AppConstants;
+import hk.gov.ogcio.mars_cmc.cmc.appserver.AppPropertyName;
+import hk.gov.ogcio.mars_cmc.cmc.utils.JobControlUtils;
+import hk.gov.ogcio.mars_cmc.cmc.utils.EncUtils;
+
+import javax.naming.InitialContext;
+import static hk.gov.ogcio.egis.rm.keyservice.appserver.AppPropertyNames.PROPERTY_NAME_PKI_UTIL_EJB_REMOTE_JNDI_NAME;
+import static hk.gov.ogcio.egis.rm.keyservice.common.Constants.EGIS_RM_KEYSERVICE_MODULE_NAME;
+import hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IPKIUtil;
+import org.apache.xml.security.utils.EncryptionConstants;
+// import module package(s) -- END
+
+
+/**
+ * Session EJB for MaintainMessage
+ *
+ */
+@Stateless
+@TransactionManagement(TransactionManagementType.BEAN)
+public class MaintainMessageSessionEJB extends SessionBeanBase implements IMaintainMessageSessionBMRemote, IMaintainMessageSessionBMLocal
+{
+	/**
+	 * Maintain E-message & To-do-item to database tables
+	 *	@param MaintainMessageRequest Maintain Message Request object
+	 *	@return MaintainMessageResponse soap response message
+	 */
+	public MaintainMessageResponse processMessage(String sendAppId, MaintainMessageRequest maintMsgReq) throws EJBException
+	{
+		logInfo("[MaintMsg]processMessage - START");
+
+		MaintainMessageResponse retrieveEventDetailResponse = null;
+
+		HPFW_Connection conn = null;
+
+		try {
+
+			// CMC-GEN-23 - BEGIN - Go ShareDB
+			// Retrieve the site checking parameter (PARA_NAME.NAME = 'BILL_CENTRE_SITE_CHECKING') from CMC_SYSTEM_PARAM
+			//String siteChecking = CmcSystemParam.getPara("BILL_CENTRE_SITE_CHECKING");
+			//String serverSequencePrefix1 = CommonDBUtils.getSERVER_SEQUENCE_PREFIX();
+			//logDebug("siteChecking : "+siteChecking);
+			//logDebug("serverSequencePrefix1 : "+serverSequencePrefix1);
+			// Checking [BILL_CENTRE_SITE_CHECKING] value
+			//if (siteChecking == null || (!siteChecking.toUpperCase().equals("D") && !siteChecking.toUpperCase().equals("W") && !siteChecking.toUpperCase().equals("T"))){
+			//	String errMsg = "siteChecking not correct ["+siteChecking+"]";
+			//	throw new NullPointerException(errMsg);
+			//}
+
+			// Checking [SERVER_SEQUENCE_PREFIX] value
+			//if (serverSequencePrefix1 == null || (!serverSequencePrefix1.toUpperCase().equals("W") && !serverSequencePrefix1.toUpperCase().equals("T"))){
+			//	String errMsg = "serverSequencePrefix1 not correct ["+serverSequencePrefix1+"]";
+			//	throw new NullPointerException(errMsg);
+			//}
+
+			conn = HPFW_Connection.getHPFW_Connection(false);
+
+			//conn.begin(sendAppId, null, HPFW_Connection.HISTORY_ONLY);
+			conn.begin(sendAppId, null, HPFW_Connection.DIRECT_WITH_HISTORY);
+			// CMC-GEN-23 - END
+
+			// CMC-2025-034: CMC send RVD VIP request to DCI-CMC in RPC mode - BEGIN
+			logInfo("[MaintMsg]processMessage sendAppId=" + sendAppId + ", maintMsgReq=" + maintMsgReq.toString());
+			// CMC-2025-034: CMC send RVD VIP request to DCI-CMC in RPC mode - END
+
+			retrieveEventDetailResponse = new MaintainMessageDAO().processMessage(conn, sendAppId, maintMsgReq);
+
+			conn.commit();
+
+		} catch (RuntimeException e) {
+			logError("[MaintMsg]Runtime exception raised in processMessage", e);
+			throw e;
+		} catch (Exception e) {
+			logError("[MaintMsg]General exception raised in processMessage", e);
+			throw new EJBException(e);
+		} finally {
+			try {
+				if (conn!=null)
+					HPFW_Connection.close(conn);
+			} catch (Exception ex) {
+				logError("[MaintMsg]General exception caught in processMessage - conn.close();", ex);
+			}
+		}
+
+		logInfo("[MaintMsg]processMessage - END");
+
+		return retrieveEventDetailResponse;
+	}
+
+
+	/**
+	 * Process Maintain message by store & forward - batch pull mode
+	 *	@param MaintainMessageRequest Maintain Message Request objectuk
+	 *	@return MaintainMessageResponse soap response message
+	 */
+// CMC-BAT-34 - Revise to allow the schedule job to process different batch size of e-Message request for each RS -- BEGIN
+//	public void processMessageByBatchPull() throws EJBException
+	public void processMessageByBatchPull(String getAsynAppIdStr, String singlePullCallLimitStr) throws EJBException
+// CMC-BAT-34 - Revise to allow the schedule job to process different batch size of e-Message request for each RS -- END
+	{
+		logInfo("[BATCH_JOB][MaintMsg]processMessageByBatchPull - START");
+
+		HPFW_Connection conn = null;
+		JobControlUtils jobControlUtils = null;
+		String jobControlName = "";
+		boolean releaseLock = true;
+
+		try {
+
+		// CMC-GEN-23 - BEGIN - Go ShareDB
+			// Retrieve the site checking parameter (PARA_NAME.NAME = 'BILL_CENTRE_SITE_CHECKING') from CMC_SYSTEM_PARAM
+			//String siteChecking = CmcSystemParam.getPara("BILL_CENTRE_SITE_CHECKING");
+			//String serverSequencePrefix1 = CommonDBUtils.getSERVER_SEQUENCE_PREFIX();
+			//logDebug("siteChecking : "+siteChecking);
+			//logDebug("serverSequencePrefix1 : "+serverSequencePrefix1);
+			// Checking [BILL_CENTRE_SITE_CHECKING] value
+			//if (siteChecking == null || (!siteChecking.toUpperCase().equals("D") && !siteChecking.toUpperCase().equals("W") && !siteChecking.toUpperCase().equals("T"))){
+			//	String errMsg = "siteChecking not correct ["+siteChecking+"]";
+			//	throw new NullPointerException(errMsg);
+			//}
+			// Checking [SERVER_SEQUENCE_PREFIX] value
+			//if (serverSequencePrefix1 == null || (!serverSequencePrefix1.toUpperCase().equals("W") && !serverSequencePrefix1.toUpperCase().equals("T"))){
+			//	String errMsg = "serverSequencePrefix1 not correct ["+serverSequencePrefix1+"]";
+			//	throw new NullPointerException(errMsg);
+			//}
+		// CMC-GEN-23 - END
+
+			Properties properties = ServiceLocator.getInstance().getProperties();
+			// parameters for using asyn message to return the response
+			String maintMsgReqRecptAppId = PropertiesUtils.getMandatoryProperty(properties, AppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_ID_PROPERTY_NAME);
+			//maintMsgJobControlName = PropertiesUtils.getMandatoryProperty(properties, AppPropertyName.JOB_CONTROL_MAINT_MSG_PROPERTY_NAME);
+			String maintMsgReqSenderAppType = PropertiesUtils.getMandatoryProperty(properties, AppPropertyName.MAINT_MSG_REQ_SENDER_APP_TYPE_PROPERTY_NAME);
+			String maintMsgReqRecptAppType = PropertiesUtils.getMandatoryProperty(properties, AppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_TYPE_PROPERTY_NAME);
+			int singlePullCallLimit = Integer.parseInt(PropertiesUtils.getMandatoryProperty(properties, AppPropertyName.MAINT_MSG_SINGLE_PULL_CALL_LIMIT_PROPERTY));
+// CMC-BAT-34 - Revise to allow the schedule job to process different batch size of e-Message request for each RS -- BEGIN
+			if (singlePullCallLimitStr != null && !singlePullCallLimitStr.trim().equals("")){
+				singlePullCallLimit = Integer.parseInt(singlePullCallLimitStr);
+			}
+// CMC-BAT-34 - Revise to allow the schedule job to process different batch size of e-Message request for each RS -- END
+
+			MessagingClient msgClient = new MessagingClient(properties);
+
+			jobControlUtils = new JobControlUtils();
+
+			conn = HPFW_Connection.getHPFW_Connection(false);
+
+
+			// CMC-BAT-29 -- BEGIN
+			List<String> sendAsynAppIdList = new ArrayList();
+			List<String> noConcurrentAppIdList = new ArrayList();
+			// Get app_id list from DB sys_param table. It is to control which sender app's asyn message request will be handled by this app server.
+			String serverId = PropertiesUtils.getMandatoryProperty(properties, AppPropertyName.SERVER_ID_PROPERTY_NAME);
+// CMC-BAT-34 - Revise to allow the schedule job to process different batch size of e-Message request for each RS -- BEGIN
+//			String getAsynAppIdStr = CmcSystemParam.getPara(AppConstants.MAINT_MSG_GET_ASYN_APP_ID_LIST_PREFIX+serverId);
+			if (getAsynAppIdStr == null || getAsynAppIdStr.trim().equals(""))
+				getAsynAppIdStr = CmcSystemParam.getPara(AppConstants.MAINT_MSG_GET_ASYN_APP_ID_LIST_PREFIX+serverId);
+// CMC-BAT-34 - Revise to allow the schedule job to process different batch size of e-Message request for each RS -- END
+			String noConcurrentAppIdStr = CmcSystemParam.getPara(AppConstants.MAINT_MSG_NO_CONCURRENT_APP_ID_LIST);
+
+			// Get asyn app id list assigned to this server id
+			if (getAsynAppIdStr!=null && getAsynAppIdStr.length()>0) {
+				String[] getAsynAppIdArray = getAsynAppIdStr.split(",");
+				sendAsynAppIdList = Arrays.asList(getAsynAppIdArray);
+			}
+
+			// No concurrent app id list
+			if (noConcurrentAppIdStr!=null && noConcurrentAppIdStr.length()>0) {
+				String[] noConcurrentAppIdArray = noConcurrentAppIdStr.split(",");
+				noConcurrentAppIdList = Arrays.asList(noConcurrentAppIdArray);
+			}
+
+			MaintainMessageDAO maintainMessageDAO = new MaintainMessageDAO();
+			AsynMessageDAO asynMessageDAO = new AsynMessageDAO();
+
+			for (int a=0;  a<sendAsynAppIdList.size(); a++) {
+
+				String getAsynSenderAppId = sendAsynAppIdList.get(a).trim();
+				jobControlName = AppConstants.MAINT_MSG_GET_ASYN_BY_APP_PREFIX+getAsynSenderAppId;
+
+				// retrieve MaintainMessageRequest array by batch pull
+				boolean callSinglePull = true;
+
+				int singlePullCnt = 0;
+
+				while (callSinglePull && singlePullCnt < singlePullCallLimit) {
+
+					singlePullCnt++;
+
+					// Concurrent control
+					if (jobControlUtils.lockJobControl(jobControlName)) {
+						releaseLock = false;
+
+						String scopesMsgId = "";
+						String scopesCorrelationId = "";
+
+						try {
+
+							// call single pull to get asyn message requests by sender app id
+							SOAPMessage requestSoapMsg = getMessageBySinglePull(getAsynSenderAppId);
+
+							// 2010-09-15: will throw "javax.xml.soap.SOAPException: java.io.IOException: Resource has been deleted." if the message is large. Seems related to iostream problem
+							// if (isDebugEnabled()) { logDebug("requestSoapMsgArray["+i+"] requestSoapMsg="+WebServiceUtils.soapMessageToString(requestSoapMsg)); }
+
+							AsyncRequest asyncRequest = msgClient.getAsyncRequest(requestSoapMsg);
+
+							if (asyncRequest==null) {
+								logWarn("[MaintMsg]processMessageByBatchPull asyncRequest is NULL");
+							}
+							else {
+								scopesMsgId = asyncRequest.getMessageId();
+								scopesCorrelationId = asyncRequest.getCorrelationId();
+							}
+
+							logInfo("[MaintMsg]processMessageByBatchPull singlePullCnt="+singlePullCnt+", scopesMsgId="+scopesMsgId+", scopesCorrelationId="+scopesCorrelationId);
+
+							if (scopesMsgId==null || scopesMsgId.length() == 0) {
+								//No message in queue
+								if (asyncRequest!=null) { logInfo("No message in queue"); }
+								callSinglePull = false;
+							}
+							else {
+
+								//Send pull ack before process the asyn message
+								ArrayList msgIdList = new ArrayList();
+								msgIdList.add(scopesMsgId);
+
+								boolean sendPullAckSuccess = sendPullAck(msgClient, scopesMsgId, maintMsgReqRecptAppId, maintMsgReqRecptAppType, msgIdList);
+
+								if (sendPullAckSuccess) {
+
+									MaintainMessageResponse maintMsgResponse = null;
+									SOAPMessage responseSoapMsg = SoapUtils.emptyMessage();
+									String sendAppId = null;
+									boolean createAsynSuccess = false;
+
+									try {
+
+										if (asynMessageDAO.isAsynMessageRetrievedBefore(conn, scopesMsgId)) {
+											logWarn("[MaintMsg]processMessageByBatchPull asyn msg already retrieved: "+scopesMsgId);
+										}
+										else {
+
+											// insert CORR_ID to DB
+											conn.begin(null, null, HPFW_Connection.DIRECT_WITH_HISTORY); // DIRECT_WITH_HISTORY because we need to update this cmc_asyn_mesasge record after sent response.
+
+											// add CMC_ASYN_MESSAGE record, set status = A, and but NOT save the MaintainMessageResponse inside the record
+											asynMessageDAO.createAsynMessageRecord(conn, scopesMsgId, maintMsgReqRecptAppId, maintMsgReqRecptAppType, null, CommonConstants.ASYN_MSG_STATUS_ACKNOWLEDGED);
+
+											// commit before send response
+											try {
+												conn.commit();
+												createAsynSuccess = true;
+											} catch (java.sql.SQLException sqlEx) {
+												String errMessage = sqlEx.getMessage();
+												if (errMessage.indexOf("ORA-00001") == -1) {
+													logError("[MaintMsg]processMessageByBatchPull Error message: " + errMessage);
+												} else {
+													logWarn("[MaintMsg]processMessageByBatchPull corr_id exists in DB");
+												}
+											}
+
+											if (!noConcurrentAppIdList.contains(getAsynSenderAppId)) {
+												// release lock for getting Aysn by App
+												if(!releaseLock)
+												{
+													if(jobControlUtils!=null)
+													{
+														jobControlUtils.releaseJobControl(jobControlName);
+														releaseLock=true;
+													}
+												}
+											}
+										}
+
+										if (createAsynSuccess) {
+
+											// Start process message
+											// check sender app id from scopes messaging
+
+											/* MyGov5-03-111 - Adopt RM2 in EAP7 - BEGIN
+											SOAPEnvelope envelope = (SOAPEnvelope) requestSoapMsg.getSOAPPart().getEnvelope();
+											Document envDoc = envelope.getAsDocument();
+											NodeList nodeList = envDoc.getElementsByTagName(AppConstants.APPID_TAG_NAME);
+											*/
+											Name scopesName = SoapUtils.createName(IMessagingConstants.MESSAGING_HEADER, null, IMessagingConstants.MESSAGING_NS);
+        									SOAPElement soapElement = SoapUtils.getFirstHeaderElement(requestSoapMsg, scopesName);
+											NodeList nodeList = soapElement.getElementsByTagName(AppConstants.APPID_TAG_NAME);
+											// MyGov5-03-111 - Adopt RM2 in EAP7 - END
+
+											if (nodeList != null && nodeList.getLength() > 0)
+												sendAppId = nodeList.item(0).getFirstChild().getNodeValue();
+											if (sendAppId == null || sendAppId.length() == 0) {
+												logError("[MaintMsg]SenderAppId is null in asyn request.");
+												//maintMsgResponse = generateResponse(responseSoapMsg, AppConstants.RESULT_CD_SENDER_APPID_NOT_FOUND, AppConstants.RESULT_MSG_SENDER_APPID_NOT_FOUND);
+											} else {
+
+												// Unmarsh the soap message to maintain message request
+											// MyGov5-03-111 - Adopt RM2 in EAP7 - BEGIN
+												//SOAPBodyElement body = (SOAPBodyElement) SoapUtils.getFirstBodyElement(requestSoapMsg);
+												SOAPElement body = SoapUtils.getFirstBodyElement(requestSoapMsg);
+
+									// MyGov6-C2-003: Enable at-transit encryption when B/Ds send messages to CMC - BEGIN
+												SOAPBody bod = (SOAPBody)requestSoapMsg.getSOAPBody();
+												Document bodyDoc = bod.extractContentAsDocument();
+
+												NodeList encryptedDataList = bodyDoc.getDocumentElement().getElementsByTagNameNS(EncryptionConstants.EncryptionSpecNS, EncryptionConstants._TAG_ENCRYPTEDDATA);
+
+												MaintainMessageRequest maintMsgReq = null;
+
+												if (encryptedDataList.getLength() > 0) {
+
+													// CMC-2021-005 - Add log message to determine is the MaintainMessage encrypted in-transit - BEGIN
+													logInfo("This message is encrypted in-transit. encryptedDataList: " + encryptedDataList.getLength() + ", sendAppId: " + sendAppId);
+													// CMC-2021-005 - Add log message to determine is the MaintainMessage encrypted in-transit - END
+													EncUtils encUtils = new EncUtils();
+
+													if (!encUtils.keyExistInKMU(conn, bodyDoc)) {
+														logWarn("Key not found in processMessageByBatchPull.");
+														maintMsgResponse = generateResponse(responseSoapMsg, Constants.RESULT_CD_GENERAL_ERROR, Constants.RESULT_MSG_GENERAL_ERROR);
+													}
+													else {
+
+														String pkiUtilJNDIName = properties.getProperty(PROPERTY_NAME_PKI_UTIL_EJB_REMOTE_JNDI_NAME,
+																CommonConstants.GLOBAL_CONTEXT_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
+																+ EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX + CommonConstants.CONTEXT_NAME_SEPARATOR
+																+ "PKIUtil!hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IPKIUtil");
+
+														InitialContext context = new InitialContext(properties);
+														IPKIUtil pkiUtil = (IPKIUtil) context.lookup(pkiUtilJNDIName);
+
+														Document decDoc = pkiUtil.decryptXML(null, bodyDoc, null);
+
+														maintMsgReq = (MaintainMessageRequest) Unmarshaller.unmarshal(MaintainMessageRequest.class, decDoc);
+													}
+												}
+												else {
+													// CMC-2021-005 - Add log message to determine is the MaintainMessage encrypted in-transit - BEGIN
+													logInfo("This message is not encrypted in-transit. encryptedDataList: " + encryptedDataList.getLength() + ", sendAppId: " + sendAppId);
+													// CMC-2021-005 - Add log message to determine is the MaintainMessage encrypted in-transit - END
+												//Document bodyDoc = body.getAsDocument();
+												//MaintainMessageRequest maintMsgReq = (MaintainMessageRequest) Unmarshaller.unmarshal(MaintainMessageRequest.class, bodyDoc);
+													maintMsgReq = (MaintainMessageRequest) Unmarshaller.unmarshal(MaintainMessageRequest.class, body);
+												// MyGov5-03-111 - Adopt RM2 in EAP7 - END
+												}
+									// MyGov6-C2-003: Enable at-transit encryption when B/Ds send messages to CMC - END
+
+											// CMC-GEN-23 - BEGIN - Go ShareDB
+												conn.begin(null, null, HPFW_Connection.DIRECT_WITH_HISTORY);
+											// CMC-GEN-23 - END
+
+												if (maintMsgReq!=null) {
+													maintMsgResponse = maintainMessageDAO.processMessage(conn, sendAppId, maintMsgReq);
+												}
+/*
+												conn.begin(null, null, HPFW_Connection.DIRECT_WITH_HISTORY); // DIRECT_WITH_HISTORY because we need to update this cmc_asyn_mesasge record after sent response.
+
+												// add CMC_ASYN_MESSAGE record, set status = A, and but NOT save the MaintainMessageResponse inside the record
+												asynMessageDAO.createAsynMessageRecord(conn, scopesMsgId, maintMsgReqRecptAppId, maintMsgReqRecptAppType, null, CommonConstants.ASYN_MSG_STATUS_ACKNOWLEDGED);
+
+												// commit before send response
+*/
+												conn.commit();
+
+											}
+										}
+
+									} catch (Exception pEx) {
+										logError("[MaintMsg]General exception caught in maintainMessageDAO.processMessage", pEx);
+										maintMsgResponse = generateResponse(responseSoapMsg, Constants.RESULT_CD_GENERAL_ERROR, Constants.RESULT_MSG_GENERAL_ERROR);
+
+										// Clear the history insert sqlList
+										conn.clear();
+									}
+
+									if (sendAppId!=null && sendAppId.length() > 0) { // send response only when senderAppId exists in the request
+										// send response
+										responseSoapMsg = CastorUtils.marshal(responseSoapMsg, maintMsgResponse);
+
+										// Send the response immediately
+										String soapaction = properties.getProperty(CommonPropertyName.ASYN_MSG_SOAP_ACTION_PROPERTY_NAME);
+										responseSoapMsg.getMimeHeaders().setHeader(SoapUtils.SOAP_ACTION, soapaction);
+
+										responseSoapMsg = createAsyncResponseMsg(msgClient, maintMsgResponse, sendAppId, maintMsgReqSenderAppType, maintMsgReqRecptAppId, maintMsgReqRecptAppType, scopesCorrelationId);
+
+										// send AsynMessageResponse by store&forward
+										// CMC-BAT-58: Add retry handling for fail sending maintain message response - BEGIN
+										boolean returnResponseSuccess = true;
+
+										SOAPMessage rspAsynMsgResponse = null;
+										try {
+											rspAsynMsgResponse = msgClient.sendAsyncRequest(responseSoapMsg);
+
+										} catch (Exception ex) {
+											// log ERROR and continue to next asyn message
+											logError("[MaintMsg]General exception raised in send ResponseMsg by Async, scopesMsgId="+scopesMsgId+"scopesCorrelationId="+scopesCorrelationId+": ", ex);
+											returnResponseSuccess = false;
+										}
+
+										if (rspAsynMsgResponse!=null && rspAsynMsgResponse.getSOAPPart().getEnvelope().getBody().hasFault()) {
+											returnResponseSuccess = false;
+
+											// check fault code 01016 - Duplicated response message
+											FaultEntry soapFaultEntry = SoapUtils.getFaultEntry(rspAsynMsgResponse);
+											if (soapFaultEntry!=null) {
+												String detailCode = soapFaultEntry.getDetailCode();
+
+												// CMC-BAT-70 - Send critical Alert when SoapFault is returned - START
+												logWarn("[MaintMsg] [SOAP_FAULT] sendAsyncRequest: DetailCode="+soapFaultEntry.getDetailCode() + ", DetailDescription="+soapFaultEntry.getDetailDescription() + ", FaultCode="+soapFaultEntry.getFaultCode() + ", FaultString="+soapFaultEntry.getFaultString());
+												// CMC-BAT-70 - Send critical Alert when SoapFault is returned - END
+
+												//logWarn("[MaintMsg] sendAsyncRequest SoapFault FaultCode="+soapFaultEntry.getFaultCode());
+												//logWarn("[MaintMsg] sendAsyncRequest SoapFault FaultString="+soapFaultEntry.getFaultString());
+												//logWarn("[MaintMsg] sendAsyncRequest SoapFault DetailCode="+soapFaultEntry.getDetailCode());
+												//logWarn("[MaintMsg] sendAsyncRequest SoapFault DetailDescription="+soapFaultEntry.getDetailDescription());
+												// CMC-BAT-70 - Send critical Alert when SoapFault is returned - END
+
+												// CMC-BAT-58: Add retry handling for fail sending maintain message response - BEGIN
+												if (IErrorCodes.WS_WARN_ASYNC_DUPLICATE_RESPONSE.equals(detailCode)) {
+													// rsp already returned before
+													logWarn("[MaintMsg]sendMsgResponseByAsyn response msg already sent before: scopesMsgId="+scopesMsgId+"scopesCorrelationId="+scopesCorrelationId);
+													returnResponseSuccess = true;
+												}
+
+												// CMC-BAT-58: Add retry handling for fail sending maintain message response - END
+											}
+										}
+
+										if (returnResponseSuccess) {
+											try {
+
+												logInfo("[MaintMsg]Send response success. scopesMsgId="+scopesMsgId);
+
+												conn.begin(null, null, HPFW_Connection.DIRECT_WITH_HISTORY);
+
+												if (createAsynSuccess) {
+													// update CMC_ASYN_MESSAGE table to mark the status to SENT
+													asynMessageDAO.updateAsynMessageStatus(conn, scopesMsgId, CommonConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
+												}
+												else {
+													asynMessageDAO.createAsynMessageRecord(conn, scopesMsgId, maintMsgReqRecptAppId, maintMsgReqRecptAppType, null, CommonConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
+												}
+
+												conn.commit();
+
+											} catch (Exception e1) {
+												logError("[MaintMsg]updateAsynMessageStatus failed. scopesMsgId="+scopesMsgId);
+											}
+										}
+										else {
+											logWarn("[MaintMsg]sendMsgResponseByAsyn send response msg failed. scopesMsgId="+scopesMsgId);
+
+											// CMC-BAT-58: Add retry handling for fail sending maintain message response - BEGIN
+											asynMessageDAO.updateAsynMessage(conn, scopesMsgId, responseSoapMsg, CommonConstants.ASYN_MSG_STATUS_ACKNOWLEDGED);
+											conn.commit();
+											// CMC-BAT-58: Add retry handling for fail sending maintain message response - END
+
+										}
+									}
+								}
+							}
+						}
+						catch (Exception ex) {
+							// log ERROR and continue to next asyn message
+							logError("[MaintMsg]General exception raised in processMessageByBatchPull scopesMsgId="+scopesMsgId+", scopesCorrelationId="+scopesCorrelationId+": ", ex);
+						}
+
+						// release lock for concurrent control
+						if(!releaseLock)
+						{
+							if(jobControlUtils!=null)
+							{
+								jobControlUtils.releaseJobControl(jobControlName);
+								releaseLock=true;
+							}
+						}
+
+					}
+					else {
+						logInfo("[MaintMsg]Another job is running for getting asyn by sender app id="+getAsynSenderAppId);
+						Thread.sleep(500);
+					}
+				} // end loop for getting asyn
+
+			} // end loop for app_id list
+			// CMC-BAT-29 -- END
+
+		} catch (RuntimeException e) {
+			logError("[MaintMsg]Runtime exception raised in processMessageByBatchPull", e);
+			throw e;
+		} catch (Exception e) {
+			logError("[MaintMsg]General exception raised in processMessageByBatchPull", e);
+			throw new EJBException(e);
+		} finally {
+			try {
+				if (conn!=null)
+					HPFW_Connection.close(conn);
+			} catch (Exception ex) {
+				logError("[MaintMsg]General exception caught in processMessageByBatchPull - conn.close();", ex);
+			}
+
+			if(!releaseLock)
+			{
+				if(jobControlUtils!=null)
+				{
+					jobControlUtils.releaseJobControl(jobControlName);
+					releaseLock=true;
+				}
+			}
+
+		}
+
+
+		logInfo("[BATCH_JOB][MaintMsg]processMessageByBatchPull - END");
+	}
+
+
+	/**
+	 * Call XmlFw single pull to retrieve MaintainMessageRequest
+	 *	@param MaintainMessageRequest Maintain Message Request object
+	 *	@return MaintainMessageResponse soap response message
+	 */
+	private SOAPMessage[] getMessageByBatchPull() throws EJBException
+	{
+		logInfo("[MaintMsg]getMessageByBatchPull - START");
+
+		SOAPMessage[] responseMsgArray = null;
+
+		try {
+
+			Properties properties = ServiceLocator.getInstance().getProperties();
+
+			MessagingClient msgClient = new MessagingClient(properties);
+
+			// define parameters for calling batch pull
+			Map inMap = new TreeMap();
+			inMap.put(IMessagingConstants.RECIPIENT_APP_ID, properties.getProperty(AppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_ID_PROPERTY_NAME));
+
+			// create batch pull request by MessagingClient
+			SOAPMessage requestMsg = SoapUtils.emptyMessage();
+			msgClient.addBatchPullRequest(requestMsg, inMap, properties.getProperty(AppPropertyName.MAINT_MSG_REQ_SENDER_APP_TYPE_PROPERTY_NAME), properties.getProperty(AppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_TYPE_PROPERTY_NAME));
+
+			// if (isDebugEnabled())	{ logDebug("getMessageByBatchPull requestMsg="+WebServiceUtils.soapMessageToString(requestMsg)); }
+
+			// call batch pull request to xmlfw
+			SOAPMessage responseMsg = msgClient.sendBatchPullRequest(requestMsg);
+
+			if (!responseMsg.getSOAPPart().getEnvelope().getBody().hasFault()) {
+				// extract MaintainMessageRequest array from batch pull response
+				responseMsgArray = msgClient.getMsgsFromResponse(responseMsg);
+			}
+
+		} catch (RuntimeException e) {
+			logError("[MaintMsg]Runtime exception raised in getMessageByBatchPull", e);
+			throw e;
+		} catch (Exception e) {
+			logError("[MaintMsg]General exception raised in getMessageByBatchPull", e);
+			throw new EJBException(e);
+		}
+
+
+		return responseMsgArray;
+	}
+
+	/**
+	 * Call XmlFw single pull to retrieve MaintainMessageRequest
+	 *	@param MaintainMessageRequest Maintain Message Request object
+	 *	@return MaintainMessageResponse soap response message
+	 */
+	private SOAPMessage getMessageBySinglePull(String senderAppId) throws EJBException
+	{
+		logInfo("[MaintMsg]getMessageBySinglePull senderAppId["+senderAppId+"] - START");
+
+		SOAPMessage responseMsg = null;
+
+		try {
+
+			Properties properties = ServiceLocator.getInstance().getProperties();
+
+			MessagingClient msgClient = new MessagingClient(properties);
+
+			// define parameters for calling batch pull
+			Map inMap = new TreeMap();
+			inMap.put(IMessagingConstants.RECIPIENT_APP_ID, properties.getProperty(AppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_ID_PROPERTY_NAME));
+			inMap.put(IMessagingConstants.SENDER_APP_ID, senderAppId);
+
+			// create batch pull request by MessagingClient
+			SOAPMessage requestMsg = SoapUtils.emptyMessage();
+			msgClient.addSinglePullRequest(requestMsg, inMap, properties.getProperty(AppPropertyName.MAINT_MSG_REQ_SENDER_APP_TYPE_PROPERTY_NAME), properties.getProperty(AppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_TYPE_PROPERTY_NAME));
+
+			// if (isDebugEnabled())	{ logDebug("getMessageByBatchPull requestMsg="+WebServiceUtils.soapMessageToString(requestMsg)); }
+
+			// call batch pull request to xmlfw
+			responseMsg = msgClient.sendSinglePullRequest(requestMsg);
+
+			// CMC-BAT-29 -- BEGIN
+			// logWarn to show the soap fault detail
+			if (responseMsg.getSOAPPart().getEnvelope().getBody().hasFault()) {
+				FaultEntry soapFaultEntry = SoapUtils.getFaultEntry(responseMsg);
+				if (soapFaultEntry!=null) {
+
+					// CMC-BAT-70 - Send critical Alert when SoapFault is returned - START
+					logWarn("[MaintMsg] [SOAP_FAULT] sendSinglePullRequest: DetailCode="+soapFaultEntry.getDetailCode() + ", DetailDescription="+soapFaultEntry.getDetailDescription() + ", FaultCode="+soapFaultEntry.getFaultCode() + ", FaultString="+soapFaultEntry.getFaultString());
+
+					//logWarn("[MaintMsg] sendSinglePullRequest SoapFault FaultCode="+soapFaultEntry.getFaultCode());
+					//logWarn("[MaintMsg] sendSinglePullRequest SoapFault FaultString="+soapFaultEntry.getFaultString());
+					//logWarn("[MaintMsg] sendSinglePullRequest SoapFault DetailCode="+soapFaultEntry.getDetailCode());
+					//logWarn("[MaintMsg] sendSinglePullRequest SoapFault DetailDescription="+soapFaultEntry.getDetailDescription());
+					// CMC-BAT-70 - Send critical Alert when SoapFault is returned - END
+
+				}
+			}
+			// CMC-BAT-29 -- BEGIN
+
+		} catch (RuntimeException e) {
+			logError("[MaintMsg]Runtime exception raised in getMessageBySinglePull", e);
+			throw e;
+		} catch (Exception e) {
+			logError("[MaintMsg]General exception raised in getMessageBySinglePull", e);
+			throw new EJBException(e);
+		}
+
+		logInfo("[MaintMsg]getMessageBySinglePull senderAppId["+senderAppId+"] - END");
+
+		return responseMsg;
+	}
+
+	/**
+	 *	Generate the result response message
+	 *	@param responseMsg SOAP response
+	 *	@param resultCd result code
+	 *	@param resultMsg result message
+	 *	@return response message of the result
+	 */
+	private MaintainMessageResponse generateResponse(SOAPMessage responseMsg, String resultCd, String resultMsg) throws Exception {
+
+		MaintainMessageResponse maintainMessageResponse = new MaintainMessageResponse();
+		maintainMessageResponse.setResultCode(resultCd);
+		maintainMessageResponse.setResultMessage(resultMsg);
+		return maintainMessageResponse;
+	}
+
+	private static SOAPMessage createAsyncResponseMsg(MessagingClient msgClient, Object messageCastorObject, String clientAppId, String clientAppType, String serverAppId, String serverAppType, String scopesCorrelationId) throws Exception {
+		SOAPMessage responseSoapMsg = SoapUtils.emptyMessage();
+		responseSoapMsg = CastorUtils.marshal(responseSoapMsg, messageCastorObject);
+
+		// parameters for using asyn message to return the response
+		List rcptList = new Vector();
+		List rcptAppTypeList = new Vector();
+		rcptList.add(clientAppId);
+		rcptAppTypeList.add(clientAppType);
+
+		// Construct the Store-and-Forward Messaging Request
+		Map inMap = new TreeMap();
+
+		inMap.put(IMessagingConstants.RECIPIENT_APP_ID_LIST, rcptList);
+		inMap.put(IMessagingConstants.MESSAGE_TYPE, IMessageType.RESPONSE);
+		// inMap.put(IMessagingConstants.EXPIRATION, new Integer(2000));
+		inMap.put(IMessagingConstants.SENDER_APP_ID, serverAppId);
+		inMap.put(IMessagingConstants.CORRELATION_ID, scopesCorrelationId);
+
+		//msgClient.addAsyncRequest(responseSoapMsg, inMap);
+		msgClient.addAsyncRequest(responseSoapMsg, inMap, serverAppType, rcptAppTypeList, null);
+		return responseSoapMsg;
+	}
+
+	private boolean sendPullAck(MessagingClient msgClient, String scopesMsgId, String maintMsgReqRecptAppId, String maintMsgReqRecptAppType, List msgIdList) {
+		boolean result = false;
+
+		try {
+			// send PullAckRequest to XmlFw
+			SOAPMessage pullAckRequest = msgClient.createPullAckRequest(maintMsgReqRecptAppId, maintMsgReqRecptAppType, msgIdList);
+			SOAPMessage pullAckResponse = msgClient.sendPullAckRequest(pullAckRequest);
+
+			if (pullAckResponse.getSOAPPart().getEnvelope().getBody().hasFault()) {
+				logWarn("[MaintMsg]sendMsgResponseByAsyn send pull ack failed: "+scopesMsgId);
+				result = false;
+			}
+			else {
+				logInfo("[MaintMsg]sendPullAck success scopesMsgId="+scopesMsgId);
+				result = true;
+			}
+
+	 	} catch (Exception ex) {
+			result = false;
+		}
+
+		return result;
+	}
+
+
+
+
+}

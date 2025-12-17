@@ -1,16 +1,4 @@
-/**
- *
- * Design, Implementation and Support of Common Middleware Components and Reference Applications
- *
- * Web Service Provider
- *
- * Developed by: Gilbert Liao
- * Reviewed by: Kai So
- * Tester: Shaohui Wang
- *
- *
- */
-package hk.gov.ogcio.mars_cmc.cmc.webserver.axis.retrievecmctemplate;
+package hk.gov.cmc.webserver.soap;
 
 //import Java standard package(s) -- BEGIN
 import javax.naming.InitialContext;
@@ -49,7 +37,7 @@ import hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.retrievecmctemplate.IRetr
 /**
  * Web Services provider for Retrieve CMC template
  */
-public class RetrieveCmcTemplateProvider extends AxisBase {
+public class RetrieveCmcTemplateSoapProvider extends AxisBase {
 
 	public static final String APPID_TAG_NAME = "SenderAppId";
 
