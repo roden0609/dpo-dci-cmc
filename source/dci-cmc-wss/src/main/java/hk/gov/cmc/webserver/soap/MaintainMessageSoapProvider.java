@@ -40,7 +40,8 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBM;
-import hk.gov.cmc.common.Constants;
+import hk.gov.cmc.common.ResultCodes;
+import hk.gov.cmc.common.ResultMessages;
 import hk.gov.cmc.domain.common.ServiceLocator;
 import hk.gov.cmc.jaxb.maintainmessage.MaintainMessageRequest;
 import hk.gov.cmc.jaxb.maintainmessage.MaintainMessageResponse;
@@ -103,8 +104,8 @@ public class MaintainMessageSoapProvider {
             if (nodeList != null && nodeList.getLength() > 0)
                 appId = nodeList.item(0).getFirstChild().getNodeValue();
             if (appId == null || appId.length() == 0) {
-                return generateResponse(responseMsg, Constants.RESULT_CD_SENDER_APPID_NOT_FOUND,
-                        Constants.RESULT_MSG_SENDER_APPID_NOT_FOUND);
+                return generateResponse(responseMsg, ResultCodes.RESULT_CD_SENDER_APPID_NOT_FOUND,
+                        ResultMessages.RESULT_MSG_SENDER_APPID_NOT_FOUND);
             }
 
             logger.info("processMaintainMessage - appId=" + appId);
@@ -141,8 +142,8 @@ public class MaintainMessageSoapProvider {
 
                 if (!encUtils.keyExistInKMU(conn, bodyDoc)) {
                     logger.warn("Key not found in processMaintainMessage.");
-                    return generateResponse(responseMsg, Constants.RESULT_CD_GENERAL_ERROR,
-                            Constants.RESULT_MSG_GENERAL_ERROR);
+                    return generateResponse(responseMsg, ResultCodes.RESULT_CD_GENERAL_ERROR,
+                            ResultMessages.RESULT_MSG_GENERAL_ERROR);
                 } else {
 
                     String pkiUtilJNDIName = properties.getProperty(PROPERTY_NAME_PKI_UTIL_EJB_REMOTE_JNDI_NAME,
@@ -181,7 +182,8 @@ public class MaintainMessageSoapProvider {
 
         } catch (Exception ex) {
             logger.error("General exception caught in processMaintainMessage", ex);
-            return generateResponse(responseMsg, Constants.RESULT_CD_GENERAL_ERROR, Constants.RESULT_MSG_GENERAL_ERROR);
+            return generateResponse(responseMsg, ResultCodes.RESULT_CD_GENERAL_ERROR,
+                    ResultMessages.RESULT_MSG_GENERAL_ERROR);
         }
 
     }
