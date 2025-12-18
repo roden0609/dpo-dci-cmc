@@ -1,4 +1,4 @@
-package hk.gov.cmc.persistence.connection;
+package hk.gov.cmc.persistence.connection.hpfw;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -25,7 +25,6 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 public class HPFW_Connection implements Serializable {
     private static final long serialVersionUID = 2756605212161446967L;
 
@@ -48,21 +47,17 @@ public class HPFW_Connection implements Serializable {
     static public final String PRI = "PRI";
     static public final String SEC = "SEC";
 
-
     static public final String DIRECT = "DIRECT";
     static public final String HISTORY_ONLY = "HISTORY_ONLY";
     static public final String DIRECT_WITH_HISTORY = "DIRECT_WITH_HISTORY";
-
 
     static public final String LOCAL = "L";
     static public final String DUAL = "D";
     static public final String REMOTE = "R";
 
-
     static public final String INSERT = "I";
     static public final String UPDATE = "U";
     static public final String DELETE = "D";
-
 
     static public final String PENDING = "P";
 
@@ -70,16 +65,12 @@ public class HPFW_Connection implements Serializable {
 
     static private String dbName = null;
 
-
     static private DataSource ds1 = null;
     static private DataSource ds2 = null;
     static private DataSource pri_ds = null;
     static private DataSource sec_ds = null;
 
     static private DataSource simple_ds1 = null;
-
-
-
 
     static private ConcurrentHashMap<Connection, HPFW_Connection> globalMapping = new ConcurrentHashMap<Connection, HPFW_Connection>();
     static private ConcurrentHashMap<Long, HPFW_Connection> threadConnectioMap = new ConcurrentHashMap<Long, HPFW_Connection>();
@@ -111,7 +102,6 @@ public class HPFW_Connection implements Serializable {
         networkErrorHash.put(01033, 01033);
         networkErrorHash.put(12514, 12514);
     }
-
 
     private void switchDS() {
         currentDS = currentDS.equals(PRI) ? SEC : PRI;
@@ -188,12 +178,6 @@ public class HPFW_Connection implements Serializable {
     public static String getMysqlSelfGenSeqPrefix() {
         return mysqlSelfGenSeqPrefix;
     }
-
-
-
-
-
-
 
     static public boolean isNetworkError(int code) {
         return networkErrorHash.containsKey(code);
@@ -297,7 +281,6 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-    
     private void commit(Connection conn, List<Sql> theSqlList, List<ArrayList<Parameter>> theParamList)
             throws ConnectionFailException, Exception {
         isAutoCommit = true;
@@ -393,7 +376,6 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-    
     public void rollback() throws ConnectionFailException, SQLException {
         try {
             this.getConnectionPtr().rollback();
@@ -404,7 +386,6 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-    
     public void commit(String mode) throws ConnectionFailException, Exception {
         if ((mode.equals(PRI) && this.isPrimaryDataSource())
                 || (mode.equals(SEC) && !this.isPrimaryDataSource())) {
@@ -418,7 +399,6 @@ public class HPFW_Connection implements Serializable {
         commit(this.getConnectionPtr(), this.sqlList, this.paramList);
     }
 
-    
     public String commit() throws ConnectionFailException, Exception {
         if (sqlList == null) {
             sqlList = new ArrayList<Sql>();
@@ -436,7 +416,6 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-    
     private ResultSet getResultSet(Connection conn, String sql, ArrayList<Parameter> paraL, int timeoutSeconds)
             throws SQLException {
         PreparedStatement statement = null;
@@ -471,7 +450,6 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-    
     public static void close(ResultSet rs) {
         try {
             if (rs != null) {
@@ -486,18 +464,15 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-    
     public ResultSet getResultSet(String sql, ArrayList<Parameter> paraL, int timeoutSeconds)
             throws SQLException, ConnectionFailException {
         return getResultSet(sql, paraL, true, timeoutSeconds);
     }
 
-    
     public ResultSet getResultSet(String sql, ArrayList<Parameter> paraL) throws SQLException, ConnectionFailException {
         return getResultSet(sql, paraL, true, -1);
     }
 
-    
     public ResultSet getResultSet(String sql, ArrayList<Parameter> paraL, boolean needFailOver, int timeoutSeconds)
             throws SQLException, ConnectionFailException {
         ResultSet r = null;
@@ -529,19 +504,15 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-    
     public ResultSet getResultSet(String sql, ArrayList<Parameter> paraL, boolean needFailOver)
             throws SQLException, ConnectionFailException {
         return getResultSet(sql, paraL, needFailOver, -1);
     }
 
-    
     private static boolean openNew(Connection c, boolean isSimple, boolean isContainManaged) {
         try {
             if (c == null || c.isClosed())
                 return false;
-
-
 
             c.setAutoCommit(false);
 
@@ -555,30 +526,24 @@ public class HPFW_Connection implements Serializable {
         hc.setConnectionPtr(c);
         hc.setThreadID(Thread.currentThread().getId());
 
-
         hc.setAutoCommit(false);
-
 
         globalMapping.put(c, hc);
         return true;
     }
 
-    
     private static boolean openNew(Connection c, boolean isConnectionManaged) {
         return openNew(c, false, isConnectionManaged);
     }
 
-    
     public void close() {
         close(this);
     }
 
-    
     public void clear() {
         clear(false);
     }
 
-    
     public void clear(boolean setNull) {
         if (sqlList != null)
             sqlList.clear();
@@ -596,7 +561,6 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-    
     public void setAutoCommit(boolean auto) {
         try {
             if (!isContainserManaged)
@@ -606,7 +570,6 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-    
     public static void close(HPFW_Connection c) {
         if (c == null)
             return;
@@ -614,7 +577,6 @@ public class HPFW_Connection implements Serializable {
         close(c.getConnectionPtr(), !c.isContainserManaged && !c.isAutoCommit);
     }
 
-    
     private static void close(Connection c, boolean needRollback) {
         if (c == null)
             return;
@@ -645,12 +607,10 @@ public class HPFW_Connection implements Serializable {
         c = null;
     }
 
-    
     public static void close(Connection c) {
         close(c, false);
     }
 
-    
     public static void initPool(Properties properties) throws Exception {
         String dsname1 = properties.getProperty(DB_CONNECTION_DS_NAME_1_PROPERTY_NAME);
         String dsname2 = properties.getProperty(DB_CONNECTION_DS_NAME_2_PROPERTY_NAME);
@@ -739,7 +699,6 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-    
     public static Connection getConnection(String connURL, String user, String pwd, Driver driver)
             throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
         DriverManager.registerDriver(driver);
@@ -752,21 +711,17 @@ public class HPFW_Connection implements Serializable {
         return conn;
     }
 
-    
     private static Connection getConnection(DataSource ds, boolean isConnectionManaged) throws SQLException {
 
-        
         Connection con = ds.getConnection();
         openNew(con, isConnectionManaged);
         return con;
     }
 
-    
     private static Connection getConnection(final String mode) {
         return getConnection(mode, false);
     }
 
-    
     private static Connection getConnection(final String mode, boolean isConnectionManaged) {
         try {
             return getConnection(
@@ -777,25 +732,20 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-
     public static HPFW_Connection getSimpleHPFW_Connection(boolean isConnectionManaged) {
         Connection conn = getSimpleConnection(isConnectionManaged);
         return globalMapping.get(conn);
     }
 
-
     public static HPFW_Connection getSimpleHPFW_Connection() {
         return getSimpleHPFW_Connection(false);
     }
 
-    
     public static Connection getSimpleConnection(boolean isConnectionManaged) {
         try {
             long starttime = System.currentTimeMillis();
             long tid = Thread.currentThread().getId();
             Connection con = simple_ds1.getConnection();
-
-
 
             openNew(con, true, isConnectionManaged);
             long endtime = System.currentTimeMillis();
@@ -807,12 +757,10 @@ public class HPFW_Connection implements Serializable {
         }
     }
 
-
     public static Connection getConnection() {
         return getConnection(false);
     }
 
-    
     public static Connection getConnection(boolean sameConPerThread, boolean isContainManaged) {
         long starttime = System.currentTimeMillis();
         long tid = Thread.currentThread().getId();
@@ -839,7 +787,6 @@ public class HPFW_Connection implements Serializable {
         return getConnection(sameConPerThread, false);
     }
 
-
     public static HPFW_Connection getHPFW_Connection(final String mode) {
         Connection conn = getConnection(PRI.equals(mode) ? PRI : SEC);
         HPFW_Connection hpc = globalMapping.get(conn);
@@ -856,7 +803,6 @@ public class HPFW_Connection implements Serializable {
         Connection conn = getConnection(sameConPerThread, isContainerManaged);
         return globalMapping.get(conn);
     }
-
 
     public static HPFW_Connection getHPFW_Connection() {
         return getHPFW_Connection(false, false);
@@ -875,7 +821,6 @@ public class HPFW_Connection implements Serializable {
             boolean testresult = false;
             if (dbType == DB_ORACLE || dbType == DB_MYSQL)
                 statement = con.prepareStatement("select 'A' as output from dual");
-
 
             else
                 return false;
@@ -916,17 +861,14 @@ public class HPFW_Connection implements Serializable {
 
     public static void main(String[] args) {
         try {
-            
 
             long starttime = System.currentTimeMillis();
 
             logger.debug("Start time:" + starttime);
 
-            
             HPFW_Connection conn = HPFW_Connection.getHPFW_Connection(false);
             conn.begin("STEVE", null);
 
-            
             ArrayList<Parameter> paraList = new ArrayList<Parameter>();
             for (int i = 0; i < 4678; i++) {
                 paraList.add(new Parameter(Parameter.BigDecimal, new BigDecimal(i)));

@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.config.CmcSystemParam;
-import hk.gov.cmc.utils.EIDUtils;
+import hk.gov.cmc.eid.client.EIDClient;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -22,6 +22,8 @@ public class CmcSysParamServlet extends HttpServlet {
     private static Log logger = LogFactory.getLog(CmcSysParamServlet.class);
     private static Timer cmcSysParamTimer = null;
     private final static long SYS_PARAM_DEFAULT_RELOAD_PERIOD = 60 * 60 * 1000; // 1 hr in milli-second
+
+    private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -35,7 +37,6 @@ public class CmcSysParamServlet extends HttpServlet {
 
             logger.info("CmcSysParamServlet.doPost - Start");
 
-            CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
             Properties props = cmcEnvProperties.getProperties();
 
             String ipList = ",127.0.0.1," + props.getProperty("CONFIG_RELOAD_VALID_IP") + ",";
@@ -51,11 +52,11 @@ public class CmcSysParamServlet extends HttpServlet {
 
                     if ("REVOKECEK".equals(reloadRequest.toUpperCase())) {
                         logger.info("REVOKECEK Check EIDUtils.initialize");
-                        if (!EIDUtils.initialize(props)) {
+                        if (!EIDClient.initialize(props)) {
                             throw new Exception("Servlet init EIDUtils.initialize failed in CmcSysParamServlet.doPost");
                         }
                         logger.info("EIDUtils.revokeSymmetricEncryptionKey() - Start");
-                        EIDUtils.revokeSymmetricEncryptionKey();
+                        EIDClient.revokeSymmetricEncryptionKey();
                         logger.info("EIDUtils.revokeSymmetricEncryptionKey() - End");
                     }
 
@@ -75,7 +76,6 @@ public class CmcSysParamServlet extends HttpServlet {
         try {
             logger.info("init CmcSysParamServlet");
 
-            CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
             Properties props = cmcEnvProperties.getProperties();
 
             long reloadPeriod = SYS_PARAM_DEFAULT_RELOAD_PERIOD;

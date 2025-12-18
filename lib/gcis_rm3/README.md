@@ -1,1 +1,0 @@
-mvn install:install-file -DgroupId=hk.gov.gcis  -DartifactId=gcis_rm_common -Dversion=1.1.0 -Dpackaging=jar -Dfile=gcis_rm3/gcis_rm_common-1.1.0.jar

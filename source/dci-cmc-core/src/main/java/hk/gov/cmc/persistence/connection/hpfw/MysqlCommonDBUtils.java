@@ -1,4 +1,4 @@
-package hk.gov.cmc.persistence.connection;
+package hk.gov.cmc.persistence.connection.hpfw;
 
 import java.io.Serializable;
 import java.sql.Connection;

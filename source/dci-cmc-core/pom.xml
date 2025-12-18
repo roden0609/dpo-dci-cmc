@@ -19,7 +19,7 @@
     </properties>
 
     <dependencies>
-        <!-- GCIS RM3 Third-Party Library BEGIN -->
+        <!-- GCIS RM3 Common & SOAP Messaging Third-Party Library BEGIN -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
@@ -51,11 +51,44 @@
             <artifactId>wss4j-ws-security-dom</artifactId>
             <version>3.0.3</version>
         </dependency>
-        <!-- GCIS RM3 Third-Party Library END -->
+        <!-- GCIS RM3 Common & SOAP Messaging Third-Party Library END -->
+
+        <!-- GCIS RM3 KMU Third-Party Library BEGIN -->
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.santuario</groupId>
+            <artifactId>xmlsec</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.78.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>1.78.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>2.1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.uuid</groupId>
+            <artifactId>java-uuid-generator</artifactId>
+            <version>4.3.0</version>
+        </dependency>
+        <!-- GCIS RM3 KMU Third-Party Library END -->
 
         <!-- GCIS RM3 Library BEGIN -->
         <dependency>
-            <groupId>hk.gov.gcis</groupId>
+            <groupId>hk.gov.gcis.rm</groupId>
             <artifactId>gcis_rm_common</artifactId>
             <version>1.1.0</version>
         </dependency>

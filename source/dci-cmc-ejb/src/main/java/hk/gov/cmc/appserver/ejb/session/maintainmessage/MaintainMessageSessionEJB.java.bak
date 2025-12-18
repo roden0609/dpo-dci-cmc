@@ -8,7 +8,7 @@
  * Tester: Shaohui Wang
  *
  */
-package hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.maintainmessage;
+package hk.gov.cmc.appserver.ejb.session.maintainmessage;
 
 //import Java standard package(s) -- BEGIN
 import javax.xml.soap.SOAPMessage;

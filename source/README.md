@@ -1,0 +1,9 @@
+mvn install:install-file -DgroupId=hk.gov.gcis.rm -DartifactId=gcis_rm_parent -Dversion=1.1.0 -Dpackaging=pom -Dfile=lib/gcis_rm3/gcis_rm_parent-1.1.0-pom.xml
+mvn install:install-file -DgroupId=hk.gov.gcis.rm -DartifactId=gcis_rm_common -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_rm_common-1.1.0.jar
+mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_common -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_common-1.1.0.jar
+mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_msg_soap_client -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_msg_soap_client-1.1.0.jar
+mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_msg_rest_client -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_msg_rest_client-1.1.0.jar
+mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_noti_soap_client -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_noti_soap_client-1.1.0.jar
+mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_noti_rest_client -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_noti_rest_client-1.1.0.jar
+mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_pki_soap_client -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_pki_soap_client-1.1.0.jar
+mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_pki_rest_client -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_pki_rest_client-1.1.0.jar

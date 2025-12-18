@@ -23,23 +23,20 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.GCMParameterSpec;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import hk.gov.ogcio.mars_cmc.framework.common.CommonConstants;
+import hk.gov.ogcio.mars_cmc.framework.common.Constants;
 import hk.gov.cmc.eid.bean.EIDEncryptionContentBean;
 import hk.gov.cmc.eid.bean.EServiceOpenIdsBean;
 import hk.gov.cmc.eid.bean.EIDResponseBean;
 import hk.gov.cmc.eid.bean.TxIdBean;
 import hk.gov.cmc.eid.bean.pushNotification.request.PushNotificationBean;
 import hk.gov.cmc.eid.bean.switchNotificationID.request.EServiceHkidsBean;
+import hk.gov.cmc.eid.common.Constants;
 import hk.gov.cmc.eid.bean.NotificationBean;
 import hk.gov.ogcio.mars_cmc.framework.common.sql.HPFW_Connection;
+import jakarta.json.JsonObject;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
@@ -75,9 +72,12 @@ import org.apache.http.HttpStatus;
 
 import java.io.File;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class EIDClient {
 
-    private static Gson gson = null;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     public static final Log log = LogFactory.getLog(EIDClient.class);
     public static String clientID = "";
     public static String clientSecret = null;
@@ -285,8 +285,8 @@ public class EIDClient {
         String base64HashString = null;
         if (clientSecret == null) {
             clientSecret = KMUUtils.getPasswordFromKMU(runtimeProperty,
-                    CommonConstants.EID_CLIENT_SECRET_ID_PROPERTY_NAME,
-                    CommonConstants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME);
+                    Constants.EID_CLIENT_SECRET_ID_PROPERTY_NAME,
+                    Constants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME);
         }
 
         log.debug("genSignatureHmacSHA256: clientSecret=" + clientSecret);
@@ -309,7 +309,7 @@ public class EIDClient {
         // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - BEGIN
         // if(privateKey == null) {
         PrivateKey privateKey = KMUUtils.getPrivateKeyByFriendlyAlias(runtimeProperty,
-                runtimeProperty.getProperty(CommonConstants.EID_ENC_DEC_PRIVATE_KEY_FRIENDLY_ALIAS_PROPERTY_NAME));
+                runtimeProperty.getProperty(Constants.EID_ENC_DEC_PRIVATE_KEY_FRIENDLY_ALIAS_PROPERTY_NAME));
         // }
         if (privateKey instanceof RSAPrivateKey) {
             log.info("decryptSymmetricContentKeyFromBase64Encode - private key getModulus:"
@@ -485,8 +485,7 @@ public class EIDClient {
         renewSymmetricEncryptionKey(false);
 
         EIDResponseBean responseBean = null;
-        gson = new Gson();
-        String reqBodyStr = gson.toJson(eSerivceOpenIdsBean);
+        String reqBodyStr = objectMapper.writeValueAsString(eSerivceOpenIdsBean);
 
         log.debug("doRequestGetNotificationIDs reqBodyStr=" + reqBodyStr);
 
@@ -504,7 +503,7 @@ public class EIDClient {
             if (encryptedRequestBody != null && encryptedRequestBody.length() > 0) {
                 EIDEncryptionContentBean EIDEncryptContentBean = new EIDEncryptionContentBean();
                 EIDEncryptContentBean.setContent(encryptedRequestBody);
-                reqBodyStr = gson.toJson(EIDEncryptContentBean);
+                reqBodyStr = reqBodyStr = objectMapper.writeValueAsString(EIDEncryptContentBean);
                 log.debug("doRequestGetNotificationIDs encrypted reqBodyStr=" + reqBodyStr);
             }
 
@@ -514,10 +513,10 @@ public class EIDClient {
             String returnResult = issuePostCallToEID(targetURL, headerParms, reqBodyStr, postCallTimeout);
 
             if (returnResult != null) {
-                JsonObject jsonObject = new JsonParser().parse(returnResult).getAsJsonObject();
-                String txnID = jsonObject.get("txID").getAsString();
-                String responseCode = jsonObject.get("code").getAsString();
-                String message = jsonObject.get("message").getAsString();
+                JsonNode jsonObject = objectMapper.readTree(returnResult);
+                String txnID = jsonObject.get("txID").asText();
+                String responseCode = jsonObject.get("code").asText();
+                String message = jsonObject.get("message").asText();
 
                 responseBean = new EIDResponseBean();
 
@@ -525,7 +524,8 @@ public class EIDClient {
                     log.info("doRequestGetNotificationIDs content is null");
                 } else {
 
-                    String content = jsonObject.get("content").toString();
+                    JsonNode contentNode = jsonObject.get("content");
+                    String content = (contentNode != null) ? contentNode.toString() : null;
 
                     if (content != null && content.length() > 0) {
                         content = decryptFromBase64(content, (symmetricEncryptionKey.getBytes("UTF-8")));
@@ -560,8 +560,7 @@ public class EIDClient {
         renewSymmetricEncryptionKey(false);
 
         EIDResponseBean responseBean = null;
-        gson = new Gson();
-        String reqBodyStr = gson.toJson(eServiceHkidsBean);
+        String reqBodyStr = objectMapper.writeValueAsString(eServiceHkidsBean);
 
         log.debug("doRequestSwitchNotificationIDsByHKIDs reqBodyStr=" + reqBodyStr);
 
@@ -579,7 +578,7 @@ public class EIDClient {
             if (encryptedRequestBody != null && encryptedRequestBody.length() > 0) {
                 EIDEncryptionContentBean EIDEncryptContentBean = new EIDEncryptionContentBean();
                 EIDEncryptContentBean.setContent(encryptedRequestBody);
-                reqBodyStr = gson.toJson(EIDEncryptContentBean);
+                reqBodyStr = objectMapper.writeValueAsString(EIDEncryptContentBean);
                 log.debug("doRequestSwitchNotificationIDsByHKIDs encrypted reqBodyStr=" + reqBodyStr);
             }
 
@@ -590,17 +589,18 @@ public class EIDClient {
 
             log.info("doRequestSwitchNotificationIDsByHKIDs returnResult=" + returnResult);
             if (returnResult != null) {
-                JsonObject jsonObject = new JsonParser().parse(returnResult).getAsJsonObject();
-                String txnID = jsonObject.get("txID").getAsString();
-                String responseCode = jsonObject.get("code").getAsString();
-                String message = jsonObject.get("message").getAsString();
+                JsonNode jsonObject = objectMapper.readTree(returnResult);
+                String txnID = jsonObject.get("txID").asText();
+                String responseCode = jsonObject.get("code").asText();
+                String message = jsonObject.get("message").asText();
 
                 responseBean = new EIDResponseBean();
 
                 if (jsonObject.get("content") == null) {
                     log.info("doRequestSwitchNotificationIDsByHKIDs content is null");
                 } else {
-                    String content = jsonObject.get("content").toString();
+                    JsonNode contentNode = jsonObject.get("content");
+                    String content = (contentNode != null) ? contentNode.toString() : null;
 
                     if (content != null && content.length() > 0) {
                         content = decryptFromBase64(content, (symmetricEncryptionKey.getBytes("UTF-8")));
@@ -662,8 +662,7 @@ public class EIDClient {
         renewSymmetricEncryptionKey(false);
 
         EIDResponseBean responseBean = null;
-        gson = new Gson();
-        String reqBodyStr = gson.toJson(txIdBean);
+        String reqBodyStr = objectMapper.writeValueAsString(txIdBean);
 
         log.debug("doRequestQueryNotificationDeliveryStatus reqBodyStr=" + reqBodyStr);
 
@@ -681,7 +680,7 @@ public class EIDClient {
             if (encryptedRequestBody != null && encryptedRequestBody.length() > 0) {
                 EIDEncryptionContentBean EIDEncryptContentBean = new EIDEncryptionContentBean();
                 EIDEncryptContentBean.setContent(encryptedRequestBody);
-                reqBodyStr = gson.toJson(EIDEncryptContentBean);
+                reqBodyStr = objectMapper.writeValueAsString(EIDEncryptContentBean);
                 log.debug("doRequestQueryNotificationDeliveryStatus encrypted reqBodyStr=" + reqBodyStr);
             }
 
@@ -691,10 +690,10 @@ public class EIDClient {
             String returnResult = issuePostCallToEID(targetURL, headerParms, reqBodyStr, postCallTimeout);
 
             if (returnResult != null) {
-                JsonObject jsonObject = new JsonParser().parse(returnResult).getAsJsonObject();
-                String txnID = jsonObject.get("txID").getAsString();
-                String responseCode = jsonObject.get("code").getAsString();
-                String message = jsonObject.get("message").getAsString();
+                JsonNode jsonObject = objectMapper.readTree(returnResult);
+                String txnID = jsonObject.get("txID").asText();
+                String responseCode = jsonObject.get("code").asText();
+                String message = jsonObject.get("message").asText();
 
                 responseBean = new EIDResponseBean();
 
@@ -702,7 +701,8 @@ public class EIDClient {
                     log.info("doRequestQueryNotificationDeliveryStatus content is null");
                 } else {
 
-                    String content = jsonObject.get("content").toString();
+                    JsonNode contentNode = jsonObject.get("content");
+                    String content = (contentNode != null) ? contentNode.toString() : null;
 
                     if (content != null && content.length() > 0) {
                         content = decryptFromBase64(content, (symmetricEncryptionKey.getBytes("UTF-8")));
@@ -766,8 +766,7 @@ public class EIDClient {
         renewSymmetricEncryptionKey(false);
 
         EIDResponseBean responseBean = null;
-        gson = new Gson();
-        String reqBodyStr = gson.toJson(notificationBean);
+        String reqBodyStr = objectMapper.writeValueAsString(notificationBean);
 
         log.debug("doRequestSendNotificationMessages raw reqBodyStr=" + reqBodyStr);
 
@@ -785,7 +784,7 @@ public class EIDClient {
             if (encryptedRequestBody != null && encryptedRequestBody.length() > 0) {
                 EIDEncryptionContentBean EIDEncryptContentBean = new EIDEncryptionContentBean();
                 EIDEncryptContentBean.setContent(encryptedRequestBody);
-                reqBodyStr = gson.toJson(EIDEncryptContentBean);
+                reqBodyStr = objectMapper.writeValueAsString(EIDEncryptContentBean);
                 log.debug("doRequestSendNotificationMessages encrypted reqBodyStr=" + reqBodyStr);
             }
 
@@ -795,10 +794,10 @@ public class EIDClient {
             String returnResult = issuePostCallToEID(targetURL, headerParms, reqBodyStr, postCallTimeout);
 
             if (returnResult != null) {
-                JsonObject jsonObject = new JsonParser().parse(returnResult).getAsJsonObject();
-                String txnID = jsonObject.get("txID").getAsString();
-                String responseCode = jsonObject.get("code").getAsString();
-                String message = jsonObject.get("message").getAsString();
+                JsonNode jsonObject = objectMapper.readTree(returnResult);
+                String txnID = jsonObject.get("txID").asText();
+                String responseCode = jsonObject.get("code").asText();
+                String message = jsonObject.get("message").asText();
 
                 responseBean = new EIDResponseBean();
 
@@ -806,7 +805,8 @@ public class EIDClient {
                     log.info("doRequestSendNotificationMessages content is null");
                 } else {
 
-                    String content = jsonObject.get("content").toString();
+                    JsonNode contentNode = jsonObject.get("content");
+                    String content = (contentNode != null) ? contentNode.toString() : null;
 
                     if (content != null && content.length() > 0) {
                         content = decryptFromBase64(content, (symmetricEncryptionKey.getBytes("UTF-8")));
@@ -869,8 +869,8 @@ public class EIDClient {
         renewSymmetricEncryptionKey(false);
 
         EIDResponseBean responseBean = null;
-        gson = new Gson();
-        String reqBodyStr = gson.toJson(pushNotificationBean);
+        String reqBodyStr = objectMapper.writeValueAsString(pushNotificationBean);
+        
 
         log.debug("doRequestPushNotificationMessages raw reqBodyStr=" + reqBodyStr);
 
@@ -888,7 +888,7 @@ public class EIDClient {
             if (encryptedRequestBody != null && encryptedRequestBody.length() > 0) {
                 EIDEncryptionContentBean eIDEncryptContentBean = new EIDEncryptionContentBean();
                 eIDEncryptContentBean.setContent(encryptedRequestBody);
-                reqBodyStr = gson.toJson(eIDEncryptContentBean);
+                reqBodyStr = objectMapper.writeValueAsString(eIDEncryptContentBean);
                 log.debug("doRequestPushNotificationMessages encrypted reqBodyStr=" + reqBodyStr);
             }
 
@@ -899,17 +899,19 @@ public class EIDClient {
             log.info("doRequestPushNotificationMessages returnResult=" + returnResult);
 
             if (returnResult != null) {
-                JsonObject jsonObject = new JsonParser().parse(returnResult).getAsJsonObject();
-                String txnID = jsonObject.get("txID").getAsString();
-                String responseCode = jsonObject.get("code").getAsString();
-                String message = jsonObject.get("message").getAsString();
+                JsonNode jsonObject = objectMapper.readTree(returnResult);
+                String txnID = jsonObject.get("txID").asText();
+                String responseCode = jsonObject.get("code").asText();
+                String message = jsonObject.get("message").asText();
 
                 responseBean = new EIDResponseBean();
 
                 if (jsonObject.get("content") == null) {
                     log.info("doRequestPushNotificationMessages content is null");
                 } else {
-                    String content = jsonObject.get("content").toString();
+                    JsonNode contentNode = jsonObject.get("content");
+                    String content = (contentNode != null) ? contentNode.toString() : null;
+
                     if (content != null && content.length() > 0) {
                         content = decryptFromBase64(content, (symmetricEncryptionKey.getBytes("UTF-8")));
                         log.info("doRequestPushNotificationMessages decrypted content=" + content);
@@ -939,7 +941,7 @@ public class EIDClient {
                 runtimeProperty = inRuntimeProperty;
                 if (symmetricEncryptionKeyAPIURL == null || symmetricEncryptionKeyAPIURL.length() <= 0) {
                     symmetricEncryptionKeyAPIURL = runtimeProperty
-                            .getProperty(CommonConstants.EID_SYM_ENC_KEY_REQUEST_URL_PROPERTY_NAME);
+                            .getProperty(Constants.EID_SYM_ENC_KEY_REQUEST_URL_PROPERTY_NAME);
 
                     if (symmetricEncryptionKeyAPIURL == null || symmetricEncryptionKeyAPIURL.length() <= 0) {
                         throw new Exception("Please setup eID symmetric content key API URL.");
@@ -947,8 +949,8 @@ public class EIDClient {
                 }
 
                 if (clientID == null || clientID.length() <= 0) {
-                    clientID = runtimeProperty.getProperty(CommonConstants.EID_CLIENT_ID_PROPERTY_NAME,
-                            CommonConstants.EID_CLIENT_ID_DEFAULT_VALUE).trim();
+                    clientID = runtimeProperty.getProperty(Constants.EID_CLIENT_ID_PROPERTY_NAME,
+                            Constants.EID_CLIENT_ID_DEFAULT_VALUE).trim();
                     if (clientID == null || clientID.length() <= 0) {
                         throw new Exception("invalid eID client ID.");
                     }
@@ -956,8 +958,8 @@ public class EIDClient {
 
                 if (clientSecret == null) {
                     clientSecret = KMUUtils.getPasswordFromKMU(runtimeProperty,
-                            runtimeProperty.getProperty(CommonConstants.EID_CLIENT_SECRET_ID_PROPERTY_NAME),
-                            runtimeProperty.getProperty(CommonConstants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME));
+                            runtimeProperty.getProperty(Constants.EID_CLIENT_SECRET_ID_PROPERTY_NAME),
+                            runtimeProperty.getProperty(Constants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME));
                     if (clientSecret == null || clientSecret.length() <= 0) {
                         throw new Exception("Fail to retrieve eID onboard clientSecret from kmu");
                     }
@@ -966,7 +968,7 @@ public class EIDClient {
                 // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - BEGIN
                 if (revokeSymmetricEncryptionKeyAPIURL == null || revokeSymmetricEncryptionKeyAPIURL.length() <= 0) {
                     revokeSymmetricEncryptionKeyAPIURL = runtimeProperty
-                            .getProperty(CommonConstants.EID_REVOKE_SYM_ENC_KEY_REQUEST_URL_PROPERTY_NAME);
+                            .getProperty(Constants.EID_REVOKE_SYM_ENC_KEY_REQUEST_URL_PROPERTY_NAME);
                     if (revokeSymmetricEncryptionKeyAPIURL == null
                             || revokeSymmetricEncryptionKeyAPIURL.length() <= 0) {
                         throw new Exception("Please setup eID revoke symmetric content key API URL.");
@@ -975,7 +977,7 @@ public class EIDClient {
 
                 // if(privateKey == null)
                 // {
-                // privateKey = KMUUtils.getPrivateKeyByFriendlyAlias(runtimeProperty, runtimeProperty.getProperty(CommonConstants.EID_ENC_DEC_PRIVATE_KEY_FRIENDLY_ALIAS_PROPERTY_NAME));
+                // privateKey = KMUUtils.getPrivateKeyByFriendlyAlias(runtimeProperty, runtimeProperty.getProperty(Constants.EID_ENC_DEC_PRIVATE_KEY_FRIENDLY_ALIAS_PROPERTY_NAME));
                 //
                 // if(privateKey == null)
                 // {
@@ -985,7 +987,7 @@ public class EIDClient {
                 // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - END
 
                 if (eIDProxyURL == null) {
-                    eIDProxyURL = runtimeProperty.getProperty(CommonConstants.EID_PROXY_SERVER_PROPERTY_NAME);
+                    eIDProxyURL = runtimeProperty.getProperty(Constants.EID_PROXY_SERVER_PROPERTY_NAME);
                     if (eIDProxyURL == null || eIDProxyURL.length() <= 0) {
                         throw new Exception("Fail to retrieve eID onboard eIDProxyURL");
                     }
@@ -993,7 +995,7 @@ public class EIDClient {
 
                 if (eIDProxyPort == null) {
                     String eIDProxyPortString = runtimeProperty
-                            .getProperty(CommonConstants.EID_PROXY_PORT_PROPERTY_NAME);
+                            .getProperty(Constants.EID_PROXY_PORT_PROPERTY_NAME);
 
                     if (eIDProxyPortString == null || eIDProxyPortString.length() <= 0) {
                         throw new Exception("Fail to retrieve eID onboard eIDProxyPort");
@@ -1004,13 +1006,13 @@ public class EIDClient {
 
                 if (mobileAppContextURL == null) {
                     mobileAppContextURL = runtimeProperty
-                            .getProperty(CommonConstants.EID_MOBILEAPP_CONTEXT_URL_PROPERTY_NAME);
+                            .getProperty(Constants.EID_MOBILEAPP_CONTEXT_URL_PROPERTY_NAME);
                 }
 
-                enableEID = runtimeProperty.getProperty(CommonConstants.ENABLE_EID_PROPERTY_NAME);
+                enableEID = runtimeProperty.getProperty(Constants.ENABLE_EID_PROPERTY_NAME);
 
                 if (sslsf == null) {
-                    String keystoreFilePath = runtimeProperty.getProperty(CommonConstants.EID_SSL_TRUST_STORE_PATH);
+                    String keystoreFilePath = runtimeProperty.getProperty(Constants.EID_SSL_TRUST_STORE_PATH);
                     getSSLContext(keystoreFilePath);
                 }
                 if (("true".equalsIgnoreCase(enableEID)) || ("super".equalsIgnoreCase(enableEID))) {
@@ -1056,7 +1058,7 @@ public class EIDClient {
 
     public static void renewEnableIEID() throws Exception {
 
-        enableEID = runtimeProperty.getProperty(CommonConstants.ENABLE_EID_PROPERTY_NAME);
+        enableEID = runtimeProperty.getProperty(Constants.ENABLE_EID_PROPERTY_NAME);
     }
 
     private static void getSSLContext(String keystoreFilePath) throws Exception {
