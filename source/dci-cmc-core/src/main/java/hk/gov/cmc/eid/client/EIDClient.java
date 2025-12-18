@@ -52,7 +52,7 @@ import hk.gov.cmc.eid.bean.NotificationBean;
 import hk.gov.cmc.eid.bean.TxIdBean;
 import hk.gov.cmc.eid.bean.pushNotification.request.PushNotificationBean;
 import hk.gov.cmc.eid.bean.switchNotificationID.request.EServiceHkidsBean;
-import hk.gov.cmc.eid.common.Constants;
+import hk.gov.cmc.eid.common.EIDConstants;
 import hk.gov.cmc.kmu.utils.KMUUtils;
 import hk.gov.gcis.rm.common.utils.encoder.EncoderUtils;
 
@@ -259,8 +259,8 @@ public class EIDClient {
         String base64HashString = null;
         if (clientSecret == null) {
             clientSecret = KMUUtils.getPasswordFromKMU(runtimeProperty,
-                    Constants.EID_CLIENT_SECRET_ID_PROPERTY_NAME,
-                    Constants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME);
+                    EIDConstants.EID_CLIENT_SECRET_ID_PROPERTY_NAME,
+                    EIDConstants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME);
         }
 
         log.debug("genSignatureHmacSHA256: clientSecret=" + clientSecret);
@@ -282,7 +282,7 @@ public class EIDClient {
         log.debug("decryptSymmetricContentKeyFromBase64Encode" + ":" + encryptedBase64RawData);
 
         PrivateKey privateKey = KMUUtils.getPrivateKeyByFriendlyAlias(runtimeProperty,
-                runtimeProperty.getProperty(Constants.EID_ENC_DEC_PRIVATE_KEY_FRIENDLY_ALIAS_PROPERTY_NAME));
+                runtimeProperty.getProperty(EIDConstants.EID_ENC_DEC_PRIVATE_KEY_FRIENDLY_ALIAS_PROPERTY_NAME));
 
         if (privateKey instanceof RSAPrivateKey) {
             log.debug("decryptSymmetricContentKeyFromBase64Encode - private key getModulus:"
@@ -887,7 +887,7 @@ public class EIDClient {
                 runtimeProperty = inRuntimeProperty;
                 if (symmetricEncryptionKeyAPIURL == null || symmetricEncryptionKeyAPIURL.length() <= 0) {
                     symmetricEncryptionKeyAPIURL = runtimeProperty
-                            .getProperty(Constants.EID_SYM_ENC_KEY_REQUEST_URL_PROPERTY_NAME);
+                            .getProperty(EIDConstants.EID_SYM_ENC_KEY_REQUEST_URL_PROPERTY_NAME);
 
                     if (symmetricEncryptionKeyAPIURL == null || symmetricEncryptionKeyAPIURL.length() <= 0) {
                         throw new Exception("Please setup eID symmetric content key API URL.");
@@ -895,8 +895,8 @@ public class EIDClient {
                 }
 
                 if (clientID == null || clientID.length() <= 0) {
-                    clientID = runtimeProperty.getProperty(Constants.EID_CLIENT_ID_PROPERTY_NAME,
-                            Constants.EID_CLIENT_ID_DEFAULT_VALUE).trim();
+                    clientID = runtimeProperty.getProperty(EIDConstants.EID_CLIENT_ID_PROPERTY_NAME,
+                            EIDConstants.EID_CLIENT_ID_DEFAULT_VALUE).trim();
                     if (clientID == null || clientID.length() <= 0) {
                         throw new Exception("invalid eID client ID.");
                     }
@@ -904,8 +904,8 @@ public class EIDClient {
 
                 if (clientSecret == null) {
                     clientSecret = KMUUtils.getPasswordFromKMU(runtimeProperty,
-                            runtimeProperty.getProperty(Constants.EID_CLIENT_SECRET_ID_PROPERTY_NAME),
-                            runtimeProperty.getProperty(Constants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME));
+                            runtimeProperty.getProperty(EIDConstants.EID_CLIENT_SECRET_ID_PROPERTY_NAME),
+                            runtimeProperty.getProperty(EIDConstants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME));
                     if (clientSecret == null || clientSecret.length() <= 0) {
                         throw new Exception("Fail to retrieve eID onboard clientSecret from kmu");
                     }
@@ -913,7 +913,7 @@ public class EIDClient {
 
                 if (revokeSymmetricEncryptionKeyAPIURL == null || revokeSymmetricEncryptionKeyAPIURL.length() <= 0) {
                     revokeSymmetricEncryptionKeyAPIURL = runtimeProperty
-                            .getProperty(Constants.EID_REVOKE_SYM_ENC_KEY_REQUEST_URL_PROPERTY_NAME);
+                            .getProperty(EIDConstants.EID_REVOKE_SYM_ENC_KEY_REQUEST_URL_PROPERTY_NAME);
                     if (revokeSymmetricEncryptionKeyAPIURL == null
                             || revokeSymmetricEncryptionKeyAPIURL.length() <= 0) {
                         throw new Exception("Please setup eID revoke symmetric content key API URL.");
@@ -921,7 +921,7 @@ public class EIDClient {
                 }
 
                 if (eIDProxyURL == null) {
-                    eIDProxyURL = runtimeProperty.getProperty(Constants.EID_PROXY_SERVER_PROPERTY_NAME);
+                    eIDProxyURL = runtimeProperty.getProperty(EIDConstants.EID_PROXY_SERVER_PROPERTY_NAME);
                     if (eIDProxyURL == null || eIDProxyURL.length() <= 0) {
                         throw new Exception("Fail to retrieve eID onboard eIDProxyURL");
                     }
@@ -929,7 +929,7 @@ public class EIDClient {
 
                 if (eIDProxyPort == null) {
                     String eIDProxyPortString = runtimeProperty
-                            .getProperty(Constants.EID_PROXY_PORT_PROPERTY_NAME);
+                            .getProperty(EIDConstants.EID_PROXY_PORT_PROPERTY_NAME);
 
                     if (eIDProxyPortString == null || eIDProxyPortString.length() <= 0) {
                         throw new Exception("Fail to retrieve eID onboard eIDProxyPort");
@@ -940,13 +940,13 @@ public class EIDClient {
 
                 if (mobileAppContextURL == null) {
                     mobileAppContextURL = runtimeProperty
-                            .getProperty(Constants.EID_MOBILEAPP_CONTEXT_URL_PROPERTY_NAME);
+                            .getProperty(EIDConstants.EID_MOBILEAPP_CONTEXT_URL_PROPERTY_NAME);
                 }
 
-                enableEID = runtimeProperty.getProperty(Constants.ENABLE_EID_PROPERTY_NAME);
+                enableEID = runtimeProperty.getProperty(EIDConstants.ENABLE_EID_PROPERTY_NAME);
 
                 if (sslsf == null) {
-                    String keystoreFilePath = runtimeProperty.getProperty(Constants.EID_SSL_TRUST_STORE_PATH);
+                    String keystoreFilePath = runtimeProperty.getProperty(EIDConstants.EID_SSL_TRUST_STORE_PATH);
                     getSSLContext(keystoreFilePath);
                 }
                 if (("true".equalsIgnoreCase(enableEID)) || ("super".equalsIgnoreCase(enableEID))) {
@@ -992,7 +992,7 @@ public class EIDClient {
 
     public static void renewEnableIEID() throws Exception {
 
-        enableEID = runtimeProperty.getProperty(Constants.ENABLE_EID_PROPERTY_NAME);
+        enableEID = runtimeProperty.getProperty(EIDConstants.ENABLE_EID_PROPERTY_NAME);
     }
 
     private static void getSSLContext(String keystoreFilePath) throws Exception {

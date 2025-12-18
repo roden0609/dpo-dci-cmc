@@ -1,6 +1,6 @@
 package hk.gov.cmc.eid.common;
 
-public class Constants {
+public class EIDConstants {
     public final static String EID_CLIENT_ID_PROPERTY_NAME = "EID_CLIENT_ID";
     public final static String EID_CLIENT_ID_DEFAULT_VALUE = "mygovhkClientID";
     public final static String EID_CLIENT_SECRET_ID_PROPERTY_NAME = "EID_CLIENT_SECRET_ID";
