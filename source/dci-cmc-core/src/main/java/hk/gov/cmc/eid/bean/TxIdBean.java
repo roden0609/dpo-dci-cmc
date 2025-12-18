@@ -1,29 +1,28 @@
-
-
 package hk.gov.cmc.eid.bean;
 
-
 import java.io.Serializable;
-import java.util.ArrayList;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class TxIdBean implements Serializable
-{
+public class TxIdBean implements Serializable {
 
-    
     private static final long serialVersionUID = 1L;
 
     private String txID;
 
-    public TxIdBean() {}
+    public TxIdBean() {
+    }
 
     public TxIdBean(String content) {
-
-       this.txID = content;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(content);
+            this.txID = getJsonString(root, "txID");
+        } catch (Exception e) {
+            // fallback: treat content as plain txID (same as old behavior)
+            this.txID = content;
+        }
     }
 
     public String getTxID() {
@@ -31,22 +30,18 @@ public class TxIdBean implements Serializable
     }
 
     public void setTxID(String txid) {
-        this.txID =txid;
+        this.txID = txid;
     }
 
-    private static String getJsonString(JsonObject jsonobj, String tagname) {
-        String resultStr;
-        Object tag = jsonobj.get(tagname);
-        if (tag != null) {
-            resultStr = (String)tag.toString().replace("\"", "");
-        } else {
-            resultStr = null;
-        }
-        return resultStr;
+    private static String getJsonString(JsonNode jsonNode, String fieldName) {
+        JsonNode valueNode = jsonNode.get(fieldName);
+        return (valueNode != null && !valueNode.isNull())
+                ? valueNode.asText()
+                : null;
     }
 
-    public void printBean() {
-        System.out.println("txID=" + this.txID);
+    @Override
+    public String toString() {
+        return "TxIdBean [txID=" + txID + "]";
     }
-
 }

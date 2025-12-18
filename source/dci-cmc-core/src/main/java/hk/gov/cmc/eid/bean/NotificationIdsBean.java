@@ -1,46 +1,51 @@
-
-
 package hk.gov.cmc.eid.bean;
-
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+public class NotificationIdsBean implements Serializable {
 
-public class NotificationIdsBean implements Serializable
-{
-
-    
     private static final long serialVersionUID = 1L;
 
     private ArrayList<NotificationIdItem> notificationIDs;
 
-    private static final Log log = LogFactory.getLog(NotificationIdsBean.class);
-
-    public NotificationIdsBean() {}
+    public NotificationIdsBean() {
+    }
 
     public NotificationIdsBean(String content) {
-        log.info("NotificationIdsBean content: " + content);
-        ArrayList<NotificationIdItem> notiArray = new ArrayList<NotificationIdItem>();
-        JsonObject j = new JsonParser().parse(content).getAsJsonObject();
-        JsonArray jArray = j.getAsJsonArray("notificationIDs");
+        ArrayList<NotificationIdItem> notiArray = new ArrayList<>();
 
-        for (int i=0; i < jArray.size(); i++) {
-            JsonObject x = jArray.get(i).getAsJsonObject();
-            String status = getJsonString(x, "status");
-            String clientID = getJsonString(x, "clientID");
-            String openID = getJsonString(x, "openID");
-            String notificationID = getJsonString(x, "notificationID");
-            NotificationIdItem n = new NotificationIdItem(status, clientID, openID, notificationID);
-            notiArray.add(n);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(content);
+
+            JsonNode jArray = root.get("notificationIDs");
+
+            if (jArray != null && jArray.isArray()) {
+                for (JsonNode node : jArray) {
+                    String status = getJsonString(node, "status");
+                    String clientID = getJsonString(node, "clientID");
+                    String openID = getJsonString(node, "openID");
+                    String notificationID = getJsonString(node, "notificationID");
+
+                    NotificationIdItem n = new NotificationIdItem(
+                            status,
+                            clientID,
+                            openID,
+                            notificationID);
+
+                    notiArray.add(n);
+                }
+            }
+
+            this.notificationIDs = notiArray;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "Invalid JSON content for NotificationIdsBean", e);
         }
-        this.notificationIDs = notiArray;
     }
 
     public ArrayList<NotificationIdItem> getNotificationIDs() {
@@ -51,27 +56,27 @@ public class NotificationIdsBean implements Serializable
         this.notificationIDs = n;
     }
 
-    private static String getJsonString(JsonObject jsonobj, String tagname) {
-        String resultStr;
-        Object tag = jsonobj.get(tagname);
-        if (tag != null) {
-            resultStr = (String)tag.toString().replace("\"", "");
-        } else {
-            resultStr = null;
-        }
-        return resultStr;
+    private static String getJsonString(JsonNode jsonNode, String fieldName) {
+        JsonNode valueNode = jsonNode.get(fieldName);
+        return (valueNode != null && !valueNode.isNull())
+                ? valueNode.asText()
+                : null;
     }
 
     public void printBean() {
-        int i= 0;
-        for ( NotificationIdItem t : this.notificationIDs) {
+        int i = 0;
+        for (NotificationIdItem t : this.notificationIDs) {
             System.out.println("notificationIDs Item#" + i + ":" +
-                               "ClientId=" + t.getClientID() +
-                               ",OpenId=" + t.getOpenID() +
-                               ",NotificationID=" + t.getNotificationID() +
-                               ",Status=" + t.getStatus());
-          i++;
+                    "ClientId=" + t.getClientID() +
+                    ",OpenId=" + t.getOpenID() +
+                    ",NotificationID=" + t.getNotificationID() +
+                    ",Status=" + t.getStatus());
+            i++;
         }
     }
 
+    @Override
+    public String toString() {
+        return "NotificationIdsBean [notificationIDs=" + notificationIDs + "]";
+    }
 }

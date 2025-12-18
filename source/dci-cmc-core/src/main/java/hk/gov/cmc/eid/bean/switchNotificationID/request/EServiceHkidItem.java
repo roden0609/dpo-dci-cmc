@@ -6,10 +6,7 @@ public class EServiceHkidItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonProperty("clientID")
     private String clientID;
-
-    @JsonProperty("HKID")
     private String HKID;
 
     public EServiceHkidItem() {

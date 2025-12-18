@@ -1,38 +1,41 @@
-
-
 package hk.gov.cmc.eid.bean;
-
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class EServiceOpenIdsBean implements Serializable
-{
+public class EServiceOpenIdsBean implements Serializable {
 
-    
     private static final long serialVersionUID = 1L;
 
     private ArrayList<EServiceOpenIdItem> eServiceOpenIDs;
 
-    public EServiceOpenIdsBean() {}
+    public EServiceOpenIdsBean() {
+    }
 
     public EServiceOpenIdsBean(String content) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootArray = mapper.readTree(content);
 
-       JsonArray jarray = new JsonParser().parse(content).getAsJsonArray();
-       ArrayList<EServiceOpenIdItem> openIdArray = new ArrayList<EServiceOpenIdItem>();
-       for (int i=0; i < jarray.size(); i++) {
-        JsonObject x = jarray.get(i).getAsJsonObject();
-        String clientID = getJsonString(x, "clientID");
-        String openID = getJsonString(x, "openID");
-        EServiceOpenIdItem n = new EServiceOpenIdItem(clientID, openID);
-        openIdArray.add(n);
-       }
-       this.eServiceOpenIDs = openIdArray;
+            ArrayList<EServiceOpenIdItem> openIdArray = new ArrayList<>();
+
+            if (rootArray != null && rootArray.isArray()) {
+                for (JsonNode node : rootArray) {
+                    String clientID = getJsonString(node, "clientID");
+                    String openID = getJsonString(node, "openID");
+                    openIdArray.add(new EServiceOpenIdItem(clientID, openID));
+                }
+            }
+
+            this.eServiceOpenIDs = openIdArray;
+
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "Invalid JSON content for EServiceOpenIdsBean", e);
+        }
     }
 
     public ArrayList<EServiceOpenIdItem> getEServiceOpenIDs() {
@@ -43,25 +46,16 @@ public class EServiceOpenIdsBean implements Serializable
         this.eServiceOpenIDs = n;
     }
 
-    private static String getJsonString(JsonObject jsonobj, String tagname) {
-        String resultStr;
-        Object tag = jsonobj.get(tagname);
-        if (tag != null) {
-            resultStr = (String)tag.toString().replace("\"", "");
-        } else {
-            resultStr = null;
-        }
-        return resultStr;
+    private static String getJsonString(JsonNode jsonNode, String fieldName) {
+        JsonNode valueNode = jsonNode.get(fieldName);
+        return (valueNode != null && !valueNode.isNull())
+                ? valueNode.asText()
+                : null;
     }
 
-    public void printBean() {
-        int i= 0;
-        for ( EServiceOpenIdItem t : this.eServiceOpenIDs) {
-            System.out.println("eServiceOpenIDs Item#" + i + ":" +
-                               "ClientId=" + t.getClientID() +
-                               ",OpenId=" + t.getOpenID() );
-          i++;
-        }
+    @Override
+    public String toString() {
+        return "EServiceOpenIdsBean [eServiceOpenIDs=" + eServiceOpenIDs + "]";
     }
 
 }

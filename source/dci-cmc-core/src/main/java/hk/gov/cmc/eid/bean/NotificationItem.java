@@ -1,13 +1,11 @@
 
- package hk.gov.cmc.eid.bean;
+package hk.gov.cmc.eid.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class NotificationItem implements Serializable
-{
+public class NotificationItem implements Serializable {
 
-    
     private static final long serialVersionUID = 1L;
 
     private ArrayList<String> notificationIDs;
@@ -17,14 +15,15 @@ public class NotificationItem implements Serializable
     private String tcMessage;
     private String scMessage;
 
-    public NotificationItem() {};
+    public NotificationItem() {
+    };
 
     public NotificationItem(ArrayList<String> PnotificationIDs,
-                               String PmessageID,
-                               String PspID,
-                               String PenMessage,
-                               String PtcMessage,
-                               String PscMessage) {
+            String PmessageID,
+            String PspID,
+            String PenMessage,
+            String PtcMessage,
+            String PscMessage) {
         this.notificationIDs = PnotificationIDs;
         this.messageID = PmessageID;
         this.spID = PspID;
@@ -79,6 +78,12 @@ public class NotificationItem implements Serializable
 
     public void setScMessage(String scmsg) {
         this.scMessage = scmsg;
+    }
+
+    @Override
+    public String toString() {
+        return "NotificationItem [notificationIDs=" + notificationIDs + ", messageID=" + messageID + ", spID=" + spID
+                + ", enMessage=" + enMessage + ", tcMessage=" + tcMessage + ", scMessage=" + scMessage + "]";
     }
 
 }

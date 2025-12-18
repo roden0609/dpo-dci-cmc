@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class NotificationIdsByHKIDsBean implements Serializable {
 
@@ -23,20 +22,35 @@ public class NotificationIdsByHKIDsBean implements Serializable {
 
     public NotificationIdsByHKIDsBean(String content) {
         log.debug("NotificationIdsByHKIDsBean content: " + content);
-        ArrayList<NotificationIdByHKIDItem> notiArray = new ArrayList<NotificationIdByHKIDItem>();
-        JsonObject j = new JsonParser().parse(content).getAsJsonObject();
-        JsonArray jArray = j.getAsJsonArray("notificationIDs");
 
-        for (int i = 0; i < jArray.size(); i++) {
-            JsonObject x = jArray.get(i).getAsJsonObject();
-            String status = getJsonString(x, "status");
-            String clientID = getJsonString(x, "clientID");
-            String HKID = getJsonString(x, "HKID");
-            String notificationID = getJsonString(x, "notificationID");
-            NotificationIdByHKIDItem n = new NotificationIdByHKIDItem(status, clientID, HKID, notificationID);
-            notiArray.add(n);
+        ArrayList<NotificationIdByHKIDItem> notiArray = new ArrayList<>();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(content);
+
+            JsonNode jArray = root.get("notificationIDs");
+
+            if (jArray != null && jArray.isArray()) {
+                for (JsonNode node : jArray) {
+                    String status = getJsonString(node, "status");
+                    String clientID = getJsonString(node, "clientID");
+                    String HKID = getJsonString(node, "HKID");
+                    String notificationID = getJsonString(node, "notificationID");
+
+                    NotificationIdByHKIDItem item = new NotificationIdByHKIDItem(
+                            status, clientID, HKID, notificationID);
+
+                    notiArray.add(item);
+                }
+            }
+
+            this.notificationIDs = notiArray;
+
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "Invalid JSON content for NotificationIdsByHKIDsBean", e);
         }
-        this.notificationIDs = notiArray;
     }
 
     public ArrayList<NotificationIdByHKIDItem> getNotificationIDs() {
@@ -47,15 +61,16 @@ public class NotificationIdsByHKIDsBean implements Serializable {
         this.notificationIDs = n;
     }
 
-    private static String getJsonString(JsonObject jsonobj, String tagname) {
-        String resultStr;
-        Object tag = jsonobj.get(tagname);
-        if (tag != null) {
-            resultStr = (String) tag.toString().replace("\"", "");
-        } else {
-            resultStr = null;
-        }
-        return resultStr;
+    private static String getJsonString(JsonNode jsonNode, String fieldName) {
+        JsonNode valueNode = jsonNode.get(fieldName);
+        return (valueNode != null && !valueNode.isNull())
+                ? valueNode.asText()
+                : null;
+    }
+
+    @Override
+    public String toString() {
+        return "NotificationIdsByHKIDsBean [notificationIDs=" + notificationIDs + "]";
     }
 
 }

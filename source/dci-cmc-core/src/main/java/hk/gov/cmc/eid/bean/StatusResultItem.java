@@ -1,28 +1,25 @@
 
-
 package hk.gov.cmc.eid.bean;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
-public class StatusResultItem implements Serializable
-{
+public class StatusResultItem implements Serializable {
 
-    
     private static final long serialVersionUID = 1L;
 
     private String notificationID;
     private String messageID;
     private String status;
 
-    public StatusResultItem() {};
+    public StatusResultItem() {
+    };
 
     public StatusResultItem(String PnotificationID,
-                                  String PmessageID,
-                                  String Pstatus) {
+            String PmessageID,
+            String Pstatus) {
         this.notificationID = PnotificationID;
         this.messageID = PmessageID;
-        this.status    = Pstatus;
+        this.status = Pstatus;
     }
 
     public String getMessageID() {
@@ -47,6 +44,12 @@ public class StatusResultItem implements Serializable
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "StatusResultItem [notificationID=" + notificationID + ", messageID=" + messageID + ", status=" + status
+                + "]";
     }
 
 }

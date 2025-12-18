@@ -51,4 +51,11 @@ public class NotificationIdByHKIDItem implements Serializable {
     public void setNotificationID(String paramnotificationid) {
         this.notificationID = paramnotificationid;
     }
+
+    @Override
+    public String toString() {
+        return "NotificationIdByHKIDItem [status=" + status + ", clientID=" + clientID + ", HKID=" + HKID
+                + ", notificationID=" + notificationID + "]";
+    }
+
 }

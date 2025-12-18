@@ -3,10 +3,8 @@ package hk.gov.cmc.eid.bean;
 
 import java.io.Serializable;
 
-public class NotificationIdItem implements Serializable
-{
+public class NotificationIdItem implements Serializable {
 
-    
     private static final long serialVersionUID = 1L;
 
     private String status;
@@ -14,9 +12,10 @@ public class NotificationIdItem implements Serializable
     private String openID;
     private String notificationID;
 
-    public NotificationIdItem() {}
+    public NotificationIdItem() {
+    }
 
-    public NotificationIdItem(String status, String clientID, String openID, String notificationID ) {
+    public NotificationIdItem(String status, String clientID, String openID, String notificationID) {
         this.status = status;
         this.clientID = clientID;
         this.openID = openID;
@@ -54,4 +53,11 @@ public class NotificationIdItem implements Serializable
     public void setNotificationID(String paramnotificationid) {
         this.notificationID = paramnotificationid;
     }
+
+    @Override
+    public String toString() {
+        return "NotificationIdItem [status=" + status + ", clientID=" + clientID + ", openID=" + openID
+                + ", notificationID=" + notificationID + "]";
+    }
+
 }

@@ -52,4 +52,11 @@ public class EIDResponseBean implements Serializable {
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
     }
+
+    @Override
+    public String toString() {
+        return "EIDResponseBean [txID=" + txID + ", code=" + code + ", message=" + message + ", content=" + content
+                + ", secretKey=" + secretKey + "]";
+    }
+
 }

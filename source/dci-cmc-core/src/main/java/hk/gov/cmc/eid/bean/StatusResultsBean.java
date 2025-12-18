@@ -1,41 +1,45 @@
-
-
-
 package hk.gov.cmc.eid.bean;
-
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class StatusResultsBean implements Serializable
-{
+public class StatusResultsBean implements Serializable {
 
-    
     private static final long serialVersionUID = 1L;
 
     private ArrayList<StatusResultItem> statusResults;
 
-    public StatusResultsBean() {}
+    public StatusResultsBean() {
+    }
 
     public StatusResultsBean(String content) {
-        ArrayList<StatusResultItem> statusArray = new ArrayList<StatusResultItem>();
-        JsonObject j = new JsonParser().parse(content).getAsJsonObject();
-        JsonArray jArray = j.getAsJsonArray("statusResults");
+        ArrayList<StatusResultItem> statusArray = new ArrayList<>();
 
-        for (int i=0; i < jArray.size(); i++) {
-            JsonObject x = jArray.get(i).getAsJsonObject();
-            String status = getJsonString(x, "status");
-            String messageID = getJsonString(x, "messageID");
-            String notificationID = getJsonString(x, "notificationID");
-            StatusResultItem n = new StatusResultItem(notificationID, messageID, status );
-            statusArray.add(n);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(content);
+            JsonNode jArray = root.get("statusResults");
+
+            if (jArray != null && jArray.isArray()) {
+                for (JsonNode node : jArray) {
+                    String status = getJsonString(node, "status");
+                    String messageID = getJsonString(node, "messageID");
+                    String notificationID = getJsonString(node, "notificationID");
+
+                    StatusResultItem n = new StatusResultItem(notificationID, messageID, status);
+                    statusArray.add(n);
+                }
+            }
+
+            this.statusResults = statusArray;
+
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "Invalid JSON content for StatusResultsBean", e);
         }
-        this.statusResults = statusArray;
     }
 
     public ArrayList<StatusResultItem> getStatusResults() {
@@ -46,26 +50,16 @@ public class StatusResultsBean implements Serializable
         this.statusResults = n;
     }
 
-    private static String getJsonString(JsonObject jsonobj, String tagname) {
-        String resultStr;
-        Object tag = jsonobj.get(tagname);
-        if (tag != null) {
-            resultStr = (String)tag.toString().replace("\"", "");
-        } else {
-            resultStr = null;
-        }
-        return resultStr;
+    private static String getJsonString(JsonNode jsonNode, String fieldName) {
+        JsonNode valueNode = jsonNode.get(fieldName);
+        return (valueNode != null && !valueNode.isNull())
+                ? valueNode.asText()
+                : null;
     }
 
-    public void printBean() {
-        int i= 0;
-        for ( StatusResultItem t : this.statusResults) {
-            System.out.println("statusResult Item#" + i + ":" +
-                               "notificationID=" + t.getNotificationID() +
-                               ",messageID=" + t.getMessageID() +
-                               ",status=" + t.getStatus() );
-          i++;
-        }
+    @Override
+    public String toString() {
+        return "StatusResultsBean [statusResults=" + statusResults + "]";
     }
 
 }
