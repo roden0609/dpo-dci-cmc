@@ -34,6 +34,7 @@ import hk.gov.cmc.eid.bean.TxIdBean;
 import hk.gov.cmc.eid.bean.pushNotification.request.PushNotificationBean;
 import hk.gov.cmc.eid.bean.switchNotificationID.request.EServiceHkidsBean;
 import hk.gov.cmc.eid.common.Constants;
+import hk.gov.cmc.kmu.utils.KMUUtils;
 import hk.gov.cmc.eid.bean.NotificationBean;
 import hk.gov.ogcio.mars_cmc.framework.common.sql.HPFW_Connection;
 import jakarta.json.JsonObject;

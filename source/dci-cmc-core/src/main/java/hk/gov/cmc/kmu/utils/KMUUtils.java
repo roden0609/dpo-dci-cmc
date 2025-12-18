@@ -1,7 +1,4 @@
-package hk.gov.cmc.utils;
-
-import static hk.gov.ogcio.egis.rm.keyservice.appserver.AppPropertyNames.PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME;
-import static hk.gov.ogcio.egis.rm.keyservice.common.Constants.EGIS_RM_KEYSERVICE_MODULE_NAME;
+package hk.gov.cmc.kmu.utils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,13 +11,12 @@ import java.util.Properties;
 
 import javax.naming.InitialContext;
 
-import org.apache.wss4j.dom.util.EncryptionUtils;
-
+import hk.gov.cmc.kmu.common.KMUConstants;
 import hk.gov.gcis.rm.common.utils.PropertiesUtils;
+import hk.gov.gcis.rm.keyservice.appserver.AppPropertyNames;
 import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations;
-import hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IKeyServiceManager;
-import hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IPasswordOperations;
-import hk.gov.ogcio.mars_cmc.framework.common.CommonConstants;
+import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyServiceManager;
+import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IPasswordOperations;
 
 public class KMUUtils {
     private static final String LDAP_PASSWORD_KEY_SERVICE_ID_PROPERTY_NAME = "LDAP_PASSWORD_KEY_SERVICE_ID";
@@ -46,12 +42,13 @@ public class KMUUtils {
     public static String getPasswordFromKMU(Properties properties, String id, String usageType) throws Exception {
 
         String result = null;
-        String pwdOpsJNDIName = properties.getProperty(PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
-                CommonConstants.GLOBAL_CONTEXT_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
-                        + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + "PasswordOperations!hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IPasswordOperations");
+        String pwdOpsJNDIName = properties.getProperty(
+                AppPropertyNames.PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
+                KMUConstants.GLOBAL_CONTEXT_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
+                        + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + "PasswordOperations!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IPasswordOperations");
 
         InitialContext context = new InitialContext(properties);
         IPasswordOperations pwdOps = (IPasswordOperations) context.lookup(pwdOpsJNDIName);
@@ -66,12 +63,13 @@ public class KMUUtils {
 
     public static boolean isKMUInitialized(Properties properties) throws Exception {
 
-        String keyServiceJNDIName = properties.getProperty(PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
-                CommonConstants.GLOBAL_CONTEXT_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
-                        + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + "KeyServiceManager!hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IKeyServiceManager");
+        String keyServiceJNDIName = properties.getProperty(
+                AppPropertyNames.PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
+                KMUConstants.GLOBAL_CONTEXT_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
+                        + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + "KeyServiceManager!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyServiceManager");
 
         InitialContext context = new InitialContext(properties);
         IKeyServiceManager keyService = (IKeyServiceManager) context.lookup(keyServiceJNDIName);
@@ -84,12 +82,13 @@ public class KMUUtils {
         if (rawData == null)
             return null;
 
-        String keyOpsJNDIName = properties.getProperty(PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
-                CommonConstants.GLOBAL_CONTEXT_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
-                        + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + "KeyOperations!hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IKeyOperations");
+        String keyOpsJNDIName = properties.getProperty(
+                AppPropertyNames.PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
+                KMUConstants.GLOBAL_CONTEXT_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
+                        + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + "KeyOperations!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations");
 
         InitialContext context = new InitialContext(properties);
         IKeyOperations keyOps = (IKeyOperations) context.lookup(keyOpsJNDIName);
@@ -101,12 +100,13 @@ public class KMUUtils {
 
     public static Certificate getCertFromKMU(Properties properties, String friendlyAlias) throws Exception {
 
-        String keyOpsJNDIName = properties.getProperty(PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
-                CommonConstants.GLOBAL_CONTEXT_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
-                        + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + "KeyOperations!hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IKeyOperations");
+        String keyOpsJNDIName = properties.getProperty(
+                AppPropertyNames.PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
+                KMUConstants.GLOBAL_CONTEXT_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
+                        + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + "KeyOperations!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations");
 
         InitialContext context = new InitialContext(properties);
         IKeyOperations keyOps = (IKeyOperations) context.lookup(keyOpsJNDIName);
@@ -120,12 +120,13 @@ public class KMUUtils {
         if (encryptString == null)
             return null;
 
-        String keyOpsJNDIName = properties.getProperty(PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
-                CommonConstants.GLOBAL_CONTEXT_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
-                        + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + "KeyOperations!hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IKeyOperations");
+        String keyOpsJNDIName = properties.getProperty(
+                AppPropertyNames.PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
+                KMUConstants.GLOBAL_CONTEXT_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
+                        + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + "KeyOperations!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations");
 
         InitialContext context = new InitialContext(properties);
         IKeyOperations keyOps = (IKeyOperations) context.lookup(keyOpsJNDIName);
@@ -146,12 +147,13 @@ public class KMUUtils {
 
         InitialContext context = null;
         try {
-            String keyOpsJNDIName = properties.getProperty(PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
-                    CommonConstants.GLOBAL_CONTEXT_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                            + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                            + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
-                            + CommonConstants.CONTEXT_NAME_SEPARATOR
-                            + "KeyOperations!hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IKeyOperations");
+            String keyOpsJNDIName = properties.getProperty(
+                    AppPropertyNames.PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
+                    KMUConstants.GLOBAL_CONTEXT_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                            + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                            + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
+                            + KMUConstants.CONTEXT_NAME_SEPARATOR
+                            + "KeyOperations!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations");
 
             context = new InitialContext(properties);
             IKeyOperations keyOps = (IKeyOperations) context.lookup(keyOpsJNDIName);
@@ -172,12 +174,13 @@ public class KMUUtils {
         String friendlyAlias = PropertiesUtils.getMandatoryProperty(properties,
                 MY_ID_DECRYPT_KEY_FRIENDLY_ALIAS_PROPERTY_NAME);
 
-        String keyOpsJNDIName = properties.getProperty(PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
-                CommonConstants.GLOBAL_CONTEXT_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
-                        + CommonConstants.CONTEXT_NAME_SEPARATOR
-                        + "KeyOperations!hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IKeyOperations");
+        String keyOpsJNDIName = properties.getProperty(
+                AppPropertyNames.PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
+                KMUConstants.GLOBAL_CONTEXT_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
+                        + KMUConstants.CONTEXT_NAME_SEPARATOR
+                        + "KeyOperations!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations");
 
         InitialContext context = new InitialContext(properties);
         IKeyOperations keyOps = (IKeyOperations) context.lookup(keyOpsJNDIName);
@@ -203,14 +206,15 @@ public class KMUUtils {
         try {
 
             if (properties == null)
-                throw new Exception("getMyIdDecryptKey properties is NULL");
+                throw new Exception("getPrivateKeyByFriendlyAlias properties is NULL");
 
-            String keyOpsJNDIName = properties.getProperty(PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
-                    CommonConstants.GLOBAL_CONTEXT_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                            + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.CONTEXT_NAME_SEPARATOR
-                            + EGIS_RM_KEYSERVICE_MODULE_NAME + CommonConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
-                            + CommonConstants.CONTEXT_NAME_SEPARATOR
-                            + "KeyOperations!hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IKeyOperations");
+            String keyOpsJNDIName = properties.getProperty(
+                    AppPropertyNames.PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
+                    KMUConstants.GLOBAL_CONTEXT_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                            + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
+                            + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
+                            + KMUConstants.CONTEXT_NAME_SEPARATOR
+                            + "KeyOperations!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations");
 
             context = new InitialContext(properties);
             IKeyOperations keyOps = (IKeyOperations) context.lookup(keyOpsJNDIName);
