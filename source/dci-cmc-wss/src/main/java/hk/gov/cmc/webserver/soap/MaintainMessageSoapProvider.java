@@ -133,7 +133,7 @@ public class MaintainMessageSoapProvider {
 
                 HPFW_Connection conn = HPFW_Connection.getHPFW_Connection(false);
 
-                if (!EncryptionUtils.keyExistInKMU(conn, bodyDoc)) {
+                if (!EncryptionUtils.isKeyExistInKMU(conn, bodyDoc)) {
                     logger.warn("Key not found in processMaintainMessage.");
                     return generateResponse(responseMsg, ResultCodes.RESULT_CD_GENERAL_ERROR,
                             ResultMessages.RESULT_MSG_GENERAL_ERROR);

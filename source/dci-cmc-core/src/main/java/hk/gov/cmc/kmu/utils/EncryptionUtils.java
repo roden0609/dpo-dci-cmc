@@ -145,7 +145,7 @@ public class EncryptionUtils {
         return privKey;
     }
 
-    public static boolean keyExistInKMU(HPFW_Connection conn, Document xmlMessage)
+    public static boolean isKeyExistInKMU(HPFW_Connection conn, Document xmlMessage)
             throws Exception {
 
         if (xmlMessage == null) {
