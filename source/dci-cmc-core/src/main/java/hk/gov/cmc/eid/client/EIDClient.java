@@ -1,12 +1,13 @@
 package hk.gov.cmc.eid.client;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
-import java.security.InvalidKeyException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -20,61 +21,40 @@ import java.util.Properties;
 import java.util.UUID;
 
 import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.Mac;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.net.ssl.SSLContext;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
 
-import hk.gov.ogcio.mars_cmc.framework.common.Constants;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import hk.gov.cmc.eid.bean.EIDEncryptionContentBean;
-import hk.gov.cmc.eid.bean.EServiceOpenIdsBean;
 import hk.gov.cmc.eid.bean.EIDResponseBean;
+import hk.gov.cmc.eid.bean.EServiceOpenIdsBean;
+import hk.gov.cmc.eid.bean.NotificationBean;
 import hk.gov.cmc.eid.bean.TxIdBean;
 import hk.gov.cmc.eid.bean.pushNotification.request.PushNotificationBean;
 import hk.gov.cmc.eid.bean.switchNotificationID.request.EServiceHkidsBean;
 import hk.gov.cmc.eid.common.Constants;
 import hk.gov.cmc.kmu.utils.KMUUtils;
-import hk.gov.cmc.eid.bean.NotificationBean;
-import hk.gov.ogcio.mars_cmc.framework.common.sql.HPFW_Connection;
-import jakarta.json.JsonObject;
-
-import javax.crypto.KeyGenerator;
-import javax.crypto.Mac;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-
-import org.apache.commons.codec.binary.Base64;
-
-import hk.gov.ogcio.egis.rm.common.utils.encoder.EncoderUtils;
-
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.io.UnsupportedEncodingException;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-
-import javax.net.ssl.SSLContext;
-
-import org.apache.http.ssl.SSLContexts;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpStatus;
-
-import java.io.File;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
+import hk.gov.gcis.rm.common.utils.encoder.EncoderUtils;
 
 public class EIDClient {
 
@@ -83,26 +63,22 @@ public class EIDClient {
     public static String clientID = "";
     public static String clientSecret = null;
 
-    // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - BEGIN
-    // public static PrivateKey privateKey = null;
-    // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - END
-
     private static final String DEFAULT_TRANSFORMATION = "AES/GCM/NoPadding";
 
     private static int ivDefaultLength = 12;
-    public static final String successCode = "D00000"; // SUCCESS
+    public static final String successCode = "D00000";
 
-    public static final String ENCRYPT_DECRPT_ERROR_CODE_D30001 = "D30001"; // key encryption key not exist or expired
-    public static final String ENCRYPT_DECRPT_ERROR_CODE_D30002 = "D30002"; // content encryption key not exist or expired
-    public static final String ENCRYPT_DECRPT_ERROR_CODE_D30003 = "D30003"; // encryption exception
-    public static final String ENCRYPT_DECRPT_ERROR_CODE_D30004 = "D30004"; // decryption exception
+    public static final String ENCRYPT_DECRPT_ERROR_CODE_D30001 = "D30001";
+    public static final String ENCRYPT_DECRPT_ERROR_CODE_D30002 = "D30002";
+    public static final String ENCRYPT_DECRPT_ERROR_CODE_D30003 = "D30003";
+    public static final String ENCRYPT_DECRPT_ERROR_CODE_D30004 = "D30004";
     public static final String signatureMethod = "HmacSHA256";
     private static final String HASH_ALGORITHM = "SHA-256";
 
     private static String symmetricEncryptionKeyAPIURL = null;
-    // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - BEGIN
+
     private static String revokeSymmetricEncryptionKeyAPIURL = null;
-    // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - END
+
     private static String symmetricEncryptionKey = null;
     private static Timestamp symmetricEncryptionKeyExpiryTime = null;
     private static final String INITIALIZATION_MUTEX = "EID_INIT_MUTEX";
@@ -167,7 +143,7 @@ public class EIDClient {
         ByteBuffer byteBuffer = ByteBuffer.wrap(cipherMessage);
         int ivLength = byteBuffer.getInt();
 
-        if (ivLength != 12) { // check input parameter
+        if (ivLength != 12) {
             throw new IllegalArgumentException("invalid iv length");
         }
 
@@ -190,7 +166,7 @@ public class EIDClient {
     public static String issuePostCallToEID(String targetURL,
             Map<String, String> headerParms, String reqBodyJsonString, int timeoutSeconds)
             throws Exception {
-        log.info("issuePostCallToEID start!");
+        log.debug("issuePostCallToEID - targetURL: " + targetURL + ", timeoutSeconds: " + timeoutSeconds);
         CloseableHttpClient httpClient = null;
         HttpPost postMethod = null;
 
@@ -223,8 +199,6 @@ public class EIDClient {
                 postMethod.setEntity(entity);
             }
 
-            // CloseableHttpResponse response = httpClient.execute(postMethod);
-            // CMC-2025-001: Modify EIDUtil to retry and remove error log when call iAM Smart error in one time - BEGIN
             CloseableHttpResponse response = null;
             try {
                 response = httpClient.execute(postMethod);
@@ -233,11 +207,10 @@ public class EIDClient {
                 log.warn("issuePostCallToEID retry to targetURL: " + targetURL);
                 response = httpClient.execute(postMethod);
             }
-            // CMC-2025-001: Modify EIDUtil to retry and remove error log when call iAM Smart error in one time - END
 
             InputStream inputStream = null;
             ByteArrayOutputStream outputStream = null;
-            log.info("eID response body statusCode :" + response.getStatusLine());
+            log.debug("eID response body statusCode:" + response.getStatusLine());
 
             try {
                 int statusCode = response.getStatusLine().getStatusCode();
@@ -245,7 +218,7 @@ public class EIDClient {
                         (HttpStatus.SC_BAD_GATEWAY == statusCode) ||
                         (HttpStatus.SC_GATEWAY_TIMEOUT == statusCode) ||
                         (HttpStatus.SC_INTERNAL_SERVER_ERROR == statusCode) ||
-                        (429 == statusCode)) { // MyGov6-C2-013: Add "Http Status Code 429 Too Many Requests" response status code to iAM Smart request
+                        (429 == statusCode)) {
                     log.warn("Calling iAM Smart system failed. StatusCode=" + response.getStatusLine().getStatusCode());
                 } else {
                     inputStream = response.getEntity().getContent();
@@ -278,7 +251,7 @@ public class EIDClient {
             if (httpClient != null)
                 httpClient.close();
         }
-        log.info("issuePostCallToEID end");
+        log.debug("issuePostCallToEID end");
         return jsonResponse;
     }
 
@@ -307,19 +280,17 @@ public class EIDClient {
 
     public static String decryptSymmetricContentKeyFromBase64Encode(String encryptedBase64RawData) throws Exception {
         log.debug("decryptSymmetricContentKeyFromBase64Encode" + ":" + encryptedBase64RawData);
-        // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - BEGIN
-        // if(privateKey == null) {
+
         PrivateKey privateKey = KMUUtils.getPrivateKeyByFriendlyAlias(runtimeProperty,
                 runtimeProperty.getProperty(Constants.EID_ENC_DEC_PRIVATE_KEY_FRIENDLY_ALIAS_PROPERTY_NAME));
-        // }
+
         if (privateKey instanceof RSAPrivateKey) {
-            log.info("decryptSymmetricContentKeyFromBase64Encode - private key getModulus:"
+            log.debug("decryptSymmetricContentKeyFromBase64Encode - private key getModulus:"
                     + ((RSAPrivateKey) privateKey).getModulus());
         }
-        // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - END
 
         if (encryptedBase64RawData != null && encryptedBase64RawData.length() > 0) {
-            byte[] b = Base64.decodeBase64(encryptedBase64RawData); // decode
+            byte[] b = Base64.decodeBase64(encryptedBase64RawData);
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
@@ -378,21 +349,20 @@ public class EIDClient {
         String returnResult = issuePostCallToEID(targetURL, headerParms, "", postCallTimeout);
         log.debug("doGetSymmetricEncryptionKey after issuePostCallToEID" + ":" + returnResult);
         if (returnResult != null) {
-            JsonParser jparser = new JsonParser();
-            JsonObject jsonObject = jparser.parse(returnResult).getAsJsonObject();
-            String txnId = jsonObject.get("txID").getAsString();
-            String responseCode = jsonObject.get("code").getAsString();
-            String message = jsonObject.get("message").getAsString();
-            log.info("doGetSymmetricEncryptionKey code" + ":" + responseCode);
+            JsonNode jsonObject = objectMapper.readTree(returnResult);
+            String txnId = jsonObject.path("txID").asText();
+            String responseCode = jsonObject.path("code").asText();
+            String message = jsonObject.path("message").asText();
+            log.debug("doGetSymmetricEncryptionKey code" + ":" + responseCode);
 
-            String content = (jsonObject.get("content") != null) ? jsonObject.get("content").toString() : null;
+            String content = jsonObject.path("content").isMissingNode() ? null : jsonObject.get("content").toString();
             log.debug("doGetSymmetricEncryptionKey content" + ":" + content);
 
             if (successCode.equalsIgnoreCase(responseCode) && content != null && content.length() > 0) {
-                jsonObject = jsonObject.getAsJsonObject("content");
-                String secretKey = jsonObject.get("secretKey").getAsString();
-                long expiresIn = jsonObject.get("expiresIn").getAsLong();
-                long issueAt = jsonObject.get("issueAt").getAsLong();
+                JsonNode contentNode = jsonObject.path("content");
+                String secretKey = contentNode.path("secretKey").asText();
+                long expiresIn = contentNode.path("expiresIn").asLong();
+                long issueAt = contentNode.path("issueAt").asLong();
 
                 Timestamp newExpiryTime = new Timestamp(issueAt + expiresIn);
 
@@ -401,14 +371,14 @@ public class EIDClient {
 
                 if (secretKey != null && secretKey.length() > 0) {
                     symmetricEncryptionKeyExpiryTime = newExpiryTime;
-                    log.info("doGetSymmetricEncryptionKey symmetricEncryptionKeyExpiryTime" + ":" + newExpiryTime);
+                    log.debug("doGetSymmetricEncryptionKey symmetricEncryptionKeyExpiryTime" + ":" + newExpiryTime);
                     symmetricEncryptionKey = decryptSymmetricContentKeyFromBase64Encode(secretKey);
                     log.debug("doGetSymmetricEncryptionKey symmetricEncryptionKey end " + ":" + symmetricEncryptionKey);
                     result = true;
                 }
             } else {
-                log.info("response error code" + ":" + responseCode);
-                log.info("response end error msg" + ":" + message);
+                log.debug("response error code" + ":" + responseCode);
+                log.debug("response end error msg" + ":" + message);
             }
         }
 
@@ -423,9 +393,8 @@ public class EIDClient {
         EIDResponseBean returnBean = doRequestGetNotificationIDs(targetURL, reqTimeStamp, reqNonce,
                 eSerivceOpenIdsBean);
 
-        // If Encryption/Decryption Error Code,renew CEK and fire a request one more time.
         if (returnBean != null) {
-            log.info("doRequestGetNotificationIDs returnBean.getCode()=" + returnBean.getCode());
+            log.debug("doRequestGetNotificationIDs returnBean.getCode()=" + returnBean.getCode());
             if (ENCRYPT_DECRPT_ERROR_CODE_D30001.equalsIgnoreCase(returnBean.getCode())
                     || ENCRYPT_DECRPT_ERROR_CODE_D30002.equalsIgnoreCase(returnBean.getCode())
                     || ENCRYPT_DECRPT_ERROR_CODE_D30003.equalsIgnoreCase(returnBean.getCode())
@@ -449,9 +418,8 @@ public class EIDClient {
         EIDResponseBean returnBean = doRequestSwitchNotificationIDsByHKIDs(targetURL, reqTimeStamp, reqNonce,
                 eSerivceHkidssBean);
 
-        // If Encryption/Decryption Error Code,renew CEK and fire a request one more time.
         if (returnBean != null) {
-            log.info("doRequestSwitchNotificationIDsByHKIDs returnBean.getCode()=" + returnBean.getCode());
+            log.debug("doRequestSwitchNotificationIDsByHKIDs returnBean.getCode()=" + returnBean.getCode());
             if (ENCRYPT_DECRPT_ERROR_CODE_D30001.equalsIgnoreCase(returnBean.getCode())
                     || ENCRYPT_DECRPT_ERROR_CODE_D30002.equalsIgnoreCase(returnBean.getCode())
                     || ENCRYPT_DECRPT_ERROR_CODE_D30003.equalsIgnoreCase(returnBean.getCode())
@@ -471,7 +439,7 @@ public class EIDClient {
     private static EIDResponseBean doRequestGetNotificationIDs(
             String targetURL, String reqTimeStamp, String reqNonce, EServiceOpenIdsBean eSerivceOpenIdsBean)
             throws Exception {
-        log.info("doRequestGetNotificationIDs targetURL=" + targetURL + ", clientID=" + clientID
+        log.debug("doRequestGetNotificationIDs targetURL=" + targetURL + ", clientID=" + clientID
                 + ", reqTimeStamp=" + reqTimeStamp + ", reqNonce=" + reqNonce);
 
         if (targetURL == null || targetURL.isEmpty() ||
@@ -481,8 +449,6 @@ public class EIDClient {
             return null;
         }
 
-        // check whether CEK is going to be invalid,renew it if needed.
-        // It will be used to encrypt the request body later
         renewSymmetricEncryptionKey(false);
 
         EIDResponseBean responseBean = null;
@@ -497,7 +463,6 @@ public class EIDClient {
         headerParms.put("timestamp", reqTimeStamp);
         headerParms.put("nonce", reqNonce);
 
-        // Using the CEK to encrypt the request body
         if (symmetricEncryptionKey != null) {
             String encryptedRequestBody = encryptToBase64(reqBodyStr,
                     Base64.decodeBase64(symmetricEncryptionKey.getBytes("UTF-8")));
@@ -522,7 +487,7 @@ public class EIDClient {
                 responseBean = new EIDResponseBean();
 
                 if (jsonObject.get("content") == null) {
-                    log.info("doRequestGetNotificationIDs content is null");
+                    log.debug("doRequestGetNotificationIDs content is null");
                 } else {
 
                     JsonNode contentNode = jsonObject.get("content");
@@ -546,7 +511,7 @@ public class EIDClient {
     private static EIDResponseBean doRequestSwitchNotificationIDsByHKIDs(
             String targetURL, String reqTimeStamp, String reqNonce, EServiceHkidsBean eServiceHkidsBean)
             throws Exception {
-        log.info("doRequestSwitchNotificationIDsByHKIDs targetURL=" + targetURL + ", clientID=" + clientID
+        log.debug("doRequestSwitchNotificationIDsByHKIDs targetURL=" + targetURL + ", clientID=" + clientID
                 + ", reqTimeStamp=" + reqTimeStamp + ", reqNonce=" + reqNonce);
 
         if (targetURL == null || targetURL.isEmpty() ||
@@ -556,8 +521,6 @@ public class EIDClient {
             return null;
         }
 
-        // check whether CEK is going to be invalid,renew it if needed.
-        // It will be used to encrypt the request body later
         renewSymmetricEncryptionKey(false);
 
         EIDResponseBean responseBean = null;
@@ -572,7 +535,6 @@ public class EIDClient {
         headerParms.put("timestamp", reqTimeStamp);
         headerParms.put("nonce", reqNonce);
 
-        // Using the CEK to encrypt the request body
         if (symmetricEncryptionKey != null) {
             String encryptedRequestBody = encryptToBase64(reqBodyStr,
                     Base64.decodeBase64(symmetricEncryptionKey.getBytes("UTF-8")));
@@ -588,7 +550,7 @@ public class EIDClient {
 
             String returnResult = issuePostCallToEID(targetURL, headerParms, reqBodyStr, postCallTimeout);
 
-            log.info("doRequestSwitchNotificationIDsByHKIDs returnResult=" + returnResult);
+            log.debug("doRequestSwitchNotificationIDsByHKIDs returnResult=" + returnResult);
             if (returnResult != null) {
                 JsonNode jsonObject = objectMapper.readTree(returnResult);
                 String txnID = jsonObject.get("txID").asText();
@@ -598,7 +560,7 @@ public class EIDClient {
                 responseBean = new EIDResponseBean();
 
                 if (jsonObject.get("content") == null) {
-                    log.info("doRequestSwitchNotificationIDsByHKIDs content is null");
+                    log.debug("doRequestSwitchNotificationIDsByHKIDs content is null");
                 } else {
                     JsonNode contentNode = jsonObject.get("content");
                     String content = (contentNode != null) ? contentNode.toString() : null;
@@ -625,14 +587,13 @@ public class EIDClient {
         EIDResponseBean returnBean = doRequestQueryNotificationDeliveryStatus(targetURL, reqTimeStamp, reqNonce,
                 txIdBean);
 
-        // If Encryption/Decryption Error Code,renew CEK and fire a request one more time.
         if (returnBean != null) {
-            log.info("doRequestQueryNotificationDeliveryStatus returnBean.getCode()=" + returnBean.getCode());
+            log.debug("doRequestQueryNotificationDeliveryStatus returnBean.getCode()=" + returnBean.getCode());
             if (ENCRYPT_DECRPT_ERROR_CODE_D30001.equalsIgnoreCase(returnBean.getCode())
                     || ENCRYPT_DECRPT_ERROR_CODE_D30002.equalsIgnoreCase(returnBean.getCode())
                     || ENCRYPT_DECRPT_ERROR_CODE_D30003.equalsIgnoreCase(returnBean.getCode())
                     || ENCRYPT_DECRPT_ERROR_CODE_D30004.equalsIgnoreCase(returnBean.getCode())) {
-                log.info("renewSymmetricEncryptionKey 2 start");
+                log.debug("renewSymmetricEncryptionKey 2 start");
                 renewSymmetricEncryptionKey(true);
 
                 reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
@@ -646,9 +607,7 @@ public class EIDClient {
 
     private static EIDResponseBean doRequestQueryNotificationDeliveryStatus(
             String targetURL, String reqTimeStamp, String reqNonce, TxIdBean txIdBean) throws Exception {
-        gson = new Gson();
-
-        log.info("doRequestQueryNotificationDeliveryStatus targetURL=" + targetURL + ", clientID=" + clientID
+        log.debug("doRequestQueryNotificationDeliveryStatus targetURL=" + targetURL + ", clientID=" + clientID
                 + ", reqTimeStamp=" + reqTimeStamp + ", reqNonce=" + reqNonce);
 
         if (targetURL == null || targetURL.isEmpty() ||
@@ -658,8 +617,6 @@ public class EIDClient {
             return null;
         }
 
-        // check whether CEK is going to be invalid,renew it if needed.
-        // It will be used to encrypt the request body later
         renewSymmetricEncryptionKey(false);
 
         EIDResponseBean responseBean = null;
@@ -674,7 +631,6 @@ public class EIDClient {
         headerParms.put("timestamp", reqTimeStamp);
         headerParms.put("nonce", reqNonce);
 
-        // Using the CEK to encrypt the request body
         if (symmetricEncryptionKey != null) {
             String encryptedRequestBody = encryptToBase64(reqBodyStr,
                     Base64.decodeBase64(symmetricEncryptionKey.getBytes("UTF-8")));
@@ -699,7 +655,7 @@ public class EIDClient {
                 responseBean = new EIDResponseBean();
 
                 if (jsonObject.get("content") == null) {
-                    log.info("doRequestQueryNotificationDeliveryStatus content is null");
+                    log.debug("doRequestQueryNotificationDeliveryStatus content is null");
                 } else {
 
                     JsonNode contentNode = jsonObject.get("content");
@@ -724,19 +680,18 @@ public class EIDClient {
             throws Exception {
         String reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
         String reqNonce = EIDClient.genStateByUsingUUID();
-        log.info("doRequestSendNotificationMessages pass 2, reqTimeStamp=" + reqTimeStamp +
+        log.debug("doRequestSendNotificationMessages pass 2, reqTimeStamp=" + reqTimeStamp +
                 ",reqNonce=" + reqNonce);
         EIDResponseBean returnBean = doRequestSendNotificationMessages(targetURL, reqTimeStamp, reqNonce,
                 notificationBean);
 
-        // If Encryption/Decryption Error Code,renew CEK and fire a request one more time.
         if (returnBean != null) {
-            log.info("doRequestSendNotificationMessages returnBean.getCode()=" + returnBean.getCode());
+            log.debug("doRequestSendNotificationMessages returnBean.getCode()=" + returnBean.getCode());
             if (ENCRYPT_DECRPT_ERROR_CODE_D30001.equalsIgnoreCase(returnBean.getCode())
                     || ENCRYPT_DECRPT_ERROR_CODE_D30002.equalsIgnoreCase(returnBean.getCode())
                     || ENCRYPT_DECRPT_ERROR_CODE_D30003.equalsIgnoreCase(returnBean.getCode())
                     || ENCRYPT_DECRPT_ERROR_CODE_D30004.equalsIgnoreCase(returnBean.getCode())) {
-                log.info("renewSymmetricEncryptionKey 2 start");
+                log.debug("renewSymmetricEncryptionKey 2 start");
                 renewSymmetricEncryptionKey(true);
 
                 reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
@@ -752,9 +707,8 @@ public class EIDClient {
             String reqNonce,
             NotificationBean notificationBean) throws Exception {
 
-        log.info("doRequestSendNotificationMessages targetURL=" + targetURL + ", clientID=" + clientID
+        log.debug("doRequestSendNotificationMessages targetURL=" + targetURL + ", clientID=" + clientID
                 + ", reqTimeStamp=" + reqTimeStamp + ", reqNonce=" + reqNonce);
-        gson = new Gson();
         if (targetURL == null || targetURL.isEmpty() ||
                 clientID == null || clientID.isEmpty() ||
                 reqTimeStamp == null || reqTimeStamp.isEmpty() ||
@@ -762,8 +716,6 @@ public class EIDClient {
             return null;
         }
 
-        // check whether CEK is going to be invalid,renew it if needed.
-        // It will be used to encrypt the request body later
         renewSymmetricEncryptionKey(false);
 
         EIDResponseBean responseBean = null;
@@ -778,7 +730,6 @@ public class EIDClient {
         headerParms.put("timestamp", reqTimeStamp);
         headerParms.put("nonce", reqNonce);
 
-        // Using the CEK to encrypt the request body
         if (symmetricEncryptionKey != null) {
             String encryptedRequestBody = encryptToBase64(reqBodyStr,
                     Base64.decodeBase64(symmetricEncryptionKey.getBytes("UTF-8")));
@@ -803,7 +754,7 @@ public class EIDClient {
                 responseBean = new EIDResponseBean();
 
                 if (jsonObject.get("content") == null) {
-                    log.info("doRequestSendNotificationMessages content is null");
+                    log.debug("doRequestSendNotificationMessages content is null");
                 } else {
 
                     JsonNode contentNode = jsonObject.get("content");
@@ -828,18 +779,17 @@ public class EIDClient {
             PushNotificationBean pushNotificationBean) throws Exception {
         String reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
         String reqNonce = EIDClient.genStateByUsingUUID();
-        log.info("doRequestPushNotificationMessages pass 2, reqTimeStamp=" + reqTimeStamp + ",reqNonce=" + reqNonce);
+        log.debug("doRequestPushNotificationMessages pass 2, reqTimeStamp=" + reqTimeStamp + ",reqNonce=" + reqNonce);
         EIDResponseBean returnBean = doRequestPushNotificationMessages(targetURL, reqTimeStamp, reqNonce,
                 pushNotificationBean);
 
-        // If Encryption/Decryption Error Code,renew CEK and fire a request one more time.
         if (returnBean != null) {
-            log.info("doRequestPushNotificationMessages returnBean.getCode()=" + returnBean.getCode());
+            log.debug("doRequestPushNotificationMessages returnBean.getCode()=" + returnBean.getCode());
             if (ENCRYPT_DECRPT_ERROR_CODE_D30001.equalsIgnoreCase(returnBean.getCode()) ||
                     ENCRYPT_DECRPT_ERROR_CODE_D30002.equalsIgnoreCase(returnBean.getCode()) ||
                     ENCRYPT_DECRPT_ERROR_CODE_D30003.equalsIgnoreCase(returnBean.getCode()) ||
                     ENCRYPT_DECRPT_ERROR_CODE_D30004.equalsIgnoreCase(returnBean.getCode())) {
-                log.info("renewSymmetricEncryptionKey 2 start");
+                log.debug("renewSymmetricEncryptionKey 2 start");
                 renewSymmetricEncryptionKey(true);
 
                 reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
@@ -855,9 +805,8 @@ public class EIDClient {
             String targetURL, String reqTimeStamp, String reqNonce, PushNotificationBean pushNotificationBean)
             throws Exception {
 
-        log.info("doRequestPushNotificationMessages targetURL=" + targetURL + ", clientID=" + clientID
+        log.debug("doRequestPushNotificationMessages targetURL=" + targetURL + ", clientID=" + clientID
                 + ", reqTimeStamp=" + reqTimeStamp + ", reqNonce=" + reqNonce);
-        gson = new Gson();
         if (targetURL == null || targetURL.isEmpty() ||
                 clientID == null || clientID.isEmpty() ||
                 reqTimeStamp == null || reqTimeStamp.isEmpty() ||
@@ -865,13 +814,10 @@ public class EIDClient {
             return null;
         }
 
-        // check whether CEK is going to be invalid,renew it if needed.
-        // It will be used to encrypt the request body later
         renewSymmetricEncryptionKey(false);
 
         EIDResponseBean responseBean = null;
         String reqBodyStr = objectMapper.writeValueAsString(pushNotificationBean);
-        
 
         log.debug("doRequestPushNotificationMessages raw reqBodyStr=" + reqBodyStr);
 
@@ -882,7 +828,6 @@ public class EIDClient {
         headerParms.put("timestamp", reqTimeStamp);
         headerParms.put("nonce", reqNonce);
 
-        // Using the CEK to encrypt the request body
         if (symmetricEncryptionKey != null) {
             String encryptedRequestBody = encryptToBase64(reqBodyStr,
                     Base64.decodeBase64(symmetricEncryptionKey.getBytes("UTF-8")));
@@ -897,7 +842,7 @@ public class EIDClient {
             headerParms.put("signature", reqSignature);
 
             String returnResult = issuePostCallToEID(targetURL, headerParms, reqBodyStr, postCallTimeout);
-            log.info("doRequestPushNotificationMessages returnResult=" + returnResult);
+            log.debug("doRequestPushNotificationMessages returnResult=" + returnResult);
 
             if (returnResult != null) {
                 JsonNode jsonObject = objectMapper.readTree(returnResult);
@@ -908,14 +853,14 @@ public class EIDClient {
                 responseBean = new EIDResponseBean();
 
                 if (jsonObject.get("content") == null) {
-                    log.info("doRequestPushNotificationMessages content is null");
+                    log.debug("doRequestPushNotificationMessages content is null");
                 } else {
                     JsonNode contentNode = jsonObject.get("content");
                     String content = (contentNode != null) ? contentNode.toString() : null;
 
                     if (content != null && content.length() > 0) {
                         content = decryptFromBase64(content, (symmetricEncryptionKey.getBytes("UTF-8")));
-                        log.info("doRequestPushNotificationMessages decrypted content=" + content);
+                        log.debug("doRequestPushNotificationMessages decrypted content=" + content);
                         responseBean.setContent(content);
                     }
                 }
@@ -966,7 +911,6 @@ public class EIDClient {
                     }
                 }
 
-                // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - BEGIN
                 if (revokeSymmetricEncryptionKeyAPIURL == null || revokeSymmetricEncryptionKeyAPIURL.length() <= 0) {
                     revokeSymmetricEncryptionKeyAPIURL = runtimeProperty
                             .getProperty(Constants.EID_REVOKE_SYM_ENC_KEY_REQUEST_URL_PROPERTY_NAME);
@@ -975,17 +919,6 @@ public class EIDClient {
                         throw new Exception("Please setup eID revoke symmetric content key API URL.");
                     }
                 }
-
-                // if(privateKey == null)
-                // {
-                // privateKey = KMUUtils.getPrivateKeyByFriendlyAlias(runtimeProperty, runtimeProperty.getProperty(Constants.EID_ENC_DEC_PRIVATE_KEY_FRIENDLY_ALIAS_PROPERTY_NAME));
-                //
-                // if(privateKey == null)
-                // {
-                // throw new Exception("Fail to retrieve eID onboard certificate private key");
-                // }
-                // }
-                // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - END
 
                 if (eIDProxyURL == null) {
                     eIDProxyURL = runtimeProperty.getProperty(Constants.EID_PROXY_SERVER_PROPERTY_NAME);
@@ -1017,7 +950,7 @@ public class EIDClient {
                     getSSLContext(keystoreFilePath);
                 }
                 if (("true".equalsIgnoreCase(enableEID)) || ("super".equalsIgnoreCase(enableEID))) {
-                    log.info("EIDUtils:before call renewSysmmetricEncryptionKey(false)");
+                    log.debug("EIDUtils:before call renewSysmmetricEncryptionKey(false)");
                     renewSymmetricEncryptionKey(false);
                 }
             }
@@ -1040,7 +973,7 @@ public class EIDClient {
 
     protected static void renewSymmetricEncryptionKey(boolean forceUpdate) throws Exception {
         synchronized (INITIALIZATION_MUTEX) {
-            log.info("** renewSymmetricEncryptionKey - start ");
+            log.debug("** renewSymmetricEncryptionKey - start ");
             Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
             String reqNonce = genStateByUsingUUID();
             boolean getSuccess = false;
@@ -1053,7 +986,7 @@ public class EIDClient {
                             (currentTimestamp.getTime() + ""), reqNonce);
                 }
             }
-            log.info("** renewSymmetricEncryptionKey - end ");
+            log.debug("** renewSymmetricEncryptionKey - end ");
         }
     }
 
@@ -1064,11 +997,11 @@ public class EIDClient {
 
     private static void getSSLContext(String keystoreFilePath) throws Exception {
         try {
-            // Trust own CA and all self-signed certs
+
             SSLContext sslcontext = SSLContexts.custom()
                     .loadTrustMaterial(new File(keystoreFilePath), null, new TrustSelfSignedStrategy())
                     .build();
-            // Allow TLSv1 protocol only
+
             sslsf = new SSLConnectionSocketFactory(
                     sslcontext,
                     new String[] { "TLSv1.2" },
@@ -1080,13 +1013,6 @@ public class EIDClient {
         }
     }
 
-    /**
-     * Calculate hash value by SHA-256
-     * 
-     * @param value
-     * @return
-     * @throws NoSuchAlgorithmException
-     */
     public static String hashBySHA256(String value) throws NoSuchAlgorithmException {
         return new String(
                 EncoderUtils.base64Encode(MessageDigest.getInstance(HASH_ALGORITHM).digest(value.getBytes())));
@@ -1149,18 +1075,15 @@ public class EIDClient {
         return openEIDAppURL;
     }
 
-    // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - BEGIN
     public static void doRevokeSymmetricEncryptionKey(String targetURL, String reqTimeStamp, String reqNonce)
             throws Exception {
-        log.info("--doRevokeSymmetricEncryptionKey start");
+        log.debug("--doRevokeSymmetricEncryptionKey start");
         if (targetURL == null || targetURL.isEmpty() ||
                 clientID == null || clientID.isEmpty() ||
                 reqTimeStamp == null || reqTimeStamp.isEmpty() ||
                 reqNonce == null || reqNonce.isEmpty()) {
             return;
         }
-
-        // targetURL = https://<iAM_Smart_domain>/api/v1/security/revokeKey
 
         String reqSignature = genSignatureHmacSHA256(reqTimeStamp, reqNonce, "");
 
@@ -1172,30 +1095,27 @@ public class EIDClient {
         headerParms.put("nonce", reqNonce);
 
         String returnResult = issuePostCallToEID(targetURL, headerParms, "", postCallTimeout);
-        log.info("doRevokeSymmetricEncryptionKey returnResult" + ":" + returnResult);
+        log.debug("doRevokeSymmetricEncryptionKey returnResult" + ":" + returnResult);
         if (returnResult != null) {
-            JsonParser jparser = new JsonParser();
+            JsonNode jsonObject = objectMapper.readTree(returnResult);
+            String txnId = jsonObject.path("txID").asText();
+            String responseCode = jsonObject.path("code").asText();
+            String message = jsonObject.path("message").asText();
 
-            JsonObject jsonObject = jparser.parse(returnResult).getAsJsonObject();
-            String txnId = jsonObject.get("txID").getAsString();
-            String responseCode = jsonObject.get("code").getAsString();
-            String message = jsonObject.get("message").getAsString();
-
-            log.info("revoke response message: " + message);
+            log.debug("revoke response message: " + message);
         }
-        log.info("--doRevokeSymmetricEncryptionKey end");
+        log.debug("--doRevokeSymmetricEncryptionKey end");
     }
 
     public static void revokeSymmetricEncryptionKey() throws Exception {
         synchronized (INITIALIZATION_MUTEX) {
-            log.info("revokeSymmetricEncryptionKey() - start");
+            log.debug("revokeSymmetricEncryptionKey() - start");
             Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
             String reqNonce = genStateByUsingUUID();
             doRevokeSymmetricEncryptionKey(revokeSymmetricEncryptionKeyAPIURL, (currentTimestamp.getTime() + ""),
                     reqNonce);
-            log.info("revokeSymmetricEncryptionKey() - end");
+            log.debug("revokeSymmetricEncryptionKey() - end");
         }
     }
-    // CMC-2023-008: Renewal iAM Smart KEK cert in ESP & KMU - END
 
 }
