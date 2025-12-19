@@ -1,0 +1,133 @@
+package hk.gov.ogcio.mars_cmc.cmc.admsys.servlet;
+
+import hk.gov.ogcio.egis.rm.common.utils.ServiceLocator;
+import hk.gov.ogcio.mars_cmc.cmc.admsys.dao.GenAdminBatchReportDAO;
+import hk.gov.ogcio.mars_cmc.cmc.appserver.AppPropertyName;
+import hk.gov.ogcio.mars_cmc.cmc.utils.JobControlUtils;
+import hk.gov.ogcio.mars_cmc.framework.common.sql.HPFW_Connection;
+import hk.gov.ogcio.mars_cmc.reportapi.utils.ReportApiUtils;
+import hk.gov.spica_scopes.common.utils.PropertiesUtils;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+public class GenAdminBatchReportServlet extends HttpServlet {
+	private static final long serialVersionUID = 6846341751353149377L;
+	
+	private static Log logger = LogFactory.getLog(GenAdminBatchReportServlet.class);
+	
+	private static final String REQUSET_PARA_NAME_REPORT_ID = "reportId";
+	private static final String REQUEST_PARA_NAME_BATCH_NAME = "batchName";
+	
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletException, IOException {
+		doPost(req, resp);
+	}
+
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletException, IOException {
+		logger.info("GenAdminBatchReportServlet starts");
+		HPFW_Connection hpfwConn = null;
+		
+		/*cmc job control lock*/
+		JobControlUtils jobControlUtils = null;
+		String jobControlName = "";
+		boolean releaseLock = true;
+		Properties props;
+		
+		String reportId = null;
+		String batchName = null;
+		
+		try {
+			reportId = req.getParameter(REQUSET_PARA_NAME_REPORT_ID);
+			batchName = req.getParameter(REQUEST_PARA_NAME_BATCH_NAME);
+			
+			hpfwConn = HPFW_Connection.getHPFW_Connection(false);
+			hpfwConn.setAutoCommit(false);
+			hpfwConn.begin(null, null, HPFW_Connection.DIRECT);
+			
+			String[] reportIdList;
+			
+			if (reportId == null) {
+				logger.info("No report ID is received....");
+				return;
+			} else {
+				reportIdList = reportId.split(",");
+				
+				if (reportIdList != null) {
+					for (String tempReportId : reportIdList) {
+						logger.info("tempReportId = " + tempReportId);
+						if (!GenAdminBatchReportDAO.isValidReportId(hpfwConn, tempReportId)) {
+							logger.info("Invalid report ID ....");
+							return;
+						}
+					}
+				}
+			}
+			
+			props = ServiceLocator.getInstance(null).getProperties();
+			jobControlName = PropertiesUtils.getMandatoryProperty(props, AppPropertyName.JOB_CONTROL_GEN_ADMIN_REPORT_PROPERTY_NAME)+"_"+batchName;
+			jobControlUtils = new JobControlUtils();
+			
+			if (jobControlUtils.lockJobControl(jobControlName)) {
+				releaseLock = false;
+				
+				Map<String, String> paramMap = new HashMap<String, String>();
+				Calendar cal = Calendar.getInstance();
+				Date now = cal.getTime();
+				
+				SimpleDateFormat sdf = new SimpleDateFormat(hk.gov.ogcio.mars_cmc.reportapi.Constants.REPORTING_DATE_FORMAT);
+				String reportingDateStr = sdf.format(now);
+				
+				paramMap.put(hk.gov.ogcio.mars_cmc.reportapi.Constants.MAP_PARAM_KEY_REPORTING_DATE, reportingDateStr);
+				
+				Enumeration<String> parameterNames = req.getParameterNames();
+				while (parameterNames.hasMoreElements()) {
+					String paramName = parameterNames.nextElement();
+					
+					if(!REQUSET_PARA_NAME_REPORT_ID.equals(paramName) && !REQUEST_PARA_NAME_BATCH_NAME.equals(paramName)) {
+						logger.info("additional paramName = " + paramName);
+						paramMap.put(paramName, (String)req.getParameter(paramName));
+					}
+				}
+				
+				for (String tempReportId : reportIdList) {
+					logger.info("prepare generate report tempReportId = " + tempReportId);
+					ReportApiUtils.generateBatchReport(tempReportId, paramMap);
+				}
+			} else {
+				logger.info("[GEN_ADMIN_REPORT] CMC_MARS_SYN_JOB_LOCK table cannot be locked."+jobControlName);
+			}
+			
+		} catch (Exception e) {
+			logger.error("General Error Found in GenAdminBatchReportServlet: " + e.getMessage(), e);
+		} finally {
+			if (hpfwConn != null)
+				HPFW_Connection.close(hpfwConn);
+			
+			if (!releaseLock) {
+				if (jobControlUtils != null) {
+					jobControlUtils.releaseJobControl(jobControlName);
+					releaseLock = true;
+				}
+			}
+		}
+		
+		logger.info("GenAdminBatchReportServlet end");
+	}
+
+}

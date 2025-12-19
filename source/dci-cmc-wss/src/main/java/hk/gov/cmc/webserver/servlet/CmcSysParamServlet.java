@@ -22,7 +22,6 @@ public class CmcSysParamServlet extends HttpServlet {
     private static Log logger = LogFactory.getLog(CmcSysParamServlet.class);
     private static Timer cmcSysParamTimer = null;
     private final static long SYS_PARAM_DEFAULT_RELOAD_PERIOD = 60 * 60 * 1000; // 1 hr in milli-second
-
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)

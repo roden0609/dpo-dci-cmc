@@ -1,0 +1,66 @@
+package hk.gov.ogcio.mars_cmc.cmc.admsys.servlet;
+
+import hk.gov.ogcio.egis.rm.common.utils.ServiceLocator;
+import hk.gov.ogcio.mars_cmc.cmc.appserver.AppPropertyName;
+import hk.gov.ogcio.mars_cmc.cmc.utils.JobControlUtils;
+import hk.gov.ogcio.mars_cmc.framework.common.sql.HPFW_Connection;
+import hk.gov.ogcio.mars_cmc.reportapi.utils.ReportApiUtils;
+import hk.gov.spica_scopes.common.utils.PropertiesUtils;
+
+import java.io.IOException;
+import java.util.Properties;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+public class RegenerateAdminBatchReportServlet extends HttpServlet{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2536109735659615950L;
+	
+	private static Log logger = LogFactory.getLog(RegenerateAdminBatchReportServlet.class);
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		doPost(req, resp);
+	}
+
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		logger.info("RegenerateAdminBatchReportServlet start");
+		Properties props;
+		
+		/*cmc job control lock*/
+		JobControlUtils jobControlUtils = null;
+		String jobControlName = "";
+		boolean releaseLock = true;
+		
+		try {
+			props = ServiceLocator.getInstance(null).getProperties();
+			jobControlName = PropertiesUtils.getMandatoryProperty(props, AppPropertyName.JOB_CONTROL_REGEN_ADMIN_BATCH_REPORT_PROPERTY_NAME);
+			jobControlUtils = new JobControlUtils();
+			
+			if (jobControlUtils.lockJobControl(jobControlName)) {
+				releaseLock = false;
+				
+				ReportApiUtils.executeBatchRegen(hk.gov.ogcio.mars_cmc.reportapi.Constants.PROJECT_CMC);
+			} else {
+				logger.info("[GEN_ADMIN_REPORT] CMC_MARS_SYN_JOB_LOCK table cannot be locked." + jobControlName);
+			}
+		} catch (Exception e) {
+			logger.error("General Error Found in RegenerateAdminBatchReportServlet: " + e.getMessage(), e);
+		} finally {
+			if (!releaseLock) {
+				if (jobControlUtils != null) {
+					jobControlUtils.releaseJobControl(jobControlName);
+					releaseLock = true;
+				}
+			}
+		}
+		logger.info("RegenerateAdminBatchReportServlet end");
+	}
+}
