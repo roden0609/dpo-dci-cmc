@@ -17,21 +17,6 @@
 	</properties>
 
 	<dependencies>
-		<!-- <dependency>
-			<groupId>javax.resource</groupId>
-			<artifactId>connector</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>weblogic</groupId>
-			<artifactId>wlthint3client</artifactId>
-			<version>10.3.6.0</version>
-		</dependency>
-		<dependency>
-			<groupId>hk.gov.ehr.service.tch.fax.drs</groupId>
-			<artifactId>afw-fax-drs-ejb-client</artifactId>
-			<version>${project.version}</version>
-		</dependency> -->
 	</dependencies>
 	
 	<build>

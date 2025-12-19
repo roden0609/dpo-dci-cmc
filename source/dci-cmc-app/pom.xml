@@ -39,24 +39,28 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
                 <configuration>
-                    <defaultJavaBundleDir>APP-INF/lib</defaultJavaBundleDir>
-                    <webModule>
-                        <groupId>hk.gov.cmc</groupId>
-                        <artifactId>dci-cmc-wss</artifactId>
-                        <context-root>/dci-cmc-wss-3-0</context-root>
-                    </webModule>
+                    <skinnyWars>true</skinnyWars>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <earSourceIncludes>META-INF/*</earSourceIncludes>
+                    <outputFileNameMapping>${ear.output.file.name.pattern}</outputFileNameMapping>
                     <modules>
+                        <!-- <jarModule>
+                            <groupId>hk.gov.cmc</groupId>
+                            <artifactId>dci-cmc-core</artifactId>
+                        </jarModule> -->
+                        <webModule>
+                            <groupId>hk.gov.cmc</groupId>
+                            <artifactId>dci-cmc-wss</artifactId>
+                            <context-root>/dci-cmc-wss</context-root>
+                        </webModule>
                         <ejbModule>
                             <groupId>hk.gov.cmc</groupId>
                             <artifactId>dci-cmc-ejb</artifactId>
                         </ejbModule>
                     </modules>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                        </manifest>
-                    </archive>
-                    <!-- <generateApplicationXml>true</generateApplicationXml> -->
+                    <applicationName>dci-cmc-app</applicationName>
+                    <displayName>Common Middleware Components Application</displayName>
+                    <generateApplicationXml>true</generateApplicationXml>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  wildfly:
+    build: .
+    container_name: dci-cmc-wildfly
+    ports:
+      - "8080:8080"
+      - "9990:9990"
+    volumes:
+      - ./source/dci-cmc-app/target:/opt/jboss/wildfly/standalone/deployments
+    environment:
+      JAVA_OPTS: >
+        -Xms512m -Xmx2048m
+        -Duser.timezone=Asia/Hong_Kong

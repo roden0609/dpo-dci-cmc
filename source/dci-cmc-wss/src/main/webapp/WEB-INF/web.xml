@@ -92,14 +92,14 @@
 
     <env-entry>
         <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value><![CDATA[/config/common_app.properties]]></env-entry-value>
-        <!-- <env-entry-type>java.lang.String</env-entry-type> -->
     </env-entry>
 
     <env-entry>
         <env-entry-name>APP_PROPERTIES_FILENAME</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value><![CDATA[/config/cmc/cmc_app.properties]]></env-entry-value>
-        <!-- <env-entry-type>java.lang.String</env-entry-type> -->
     </env-entry>
 
 </web-app>
