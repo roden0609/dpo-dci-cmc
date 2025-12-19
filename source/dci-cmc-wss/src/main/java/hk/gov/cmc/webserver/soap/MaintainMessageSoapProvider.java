@@ -42,7 +42,9 @@ import jakarta.jws.WebService;
 import jakarta.jws.soap.SOAPBinding;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.soap.SOAPBody;
 import jakarta.xml.soap.MessageFactory;
 import jakarta.xml.soap.SOAPBodyElement;
 import jakarta.xml.soap.SOAPEnvelope;
@@ -231,7 +233,16 @@ public class MaintainMessageSoapProvider {
 
     private SOAPMessage generateResponse(SOAPMessage responseMsg, MaintainMessageResponse maintainMessageResponse)
             throws Exception {
-        return CastorUtils.marshal(responseMsg, maintainMessageResponse);
+        SOAPEnvelope envelope = responseMsg.getSOAPPart().getEnvelope();
+        SOAPBody body = envelope.getBody();
+        body.removeContents();
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(MaintainMessageResponse.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
+        marshaller.marshal(maintainMessageResponse, body);
+        responseMsg.saveChanges();
+        return responseMsg;
     }
 
     private Document toDocument(org.w3c.dom.Node node) throws Exception {
