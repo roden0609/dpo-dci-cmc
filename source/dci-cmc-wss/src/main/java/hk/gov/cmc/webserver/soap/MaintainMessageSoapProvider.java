@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.naming.InitialContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -38,6 +40,8 @@ import jakarta.ejb.EJB;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebService;
 import jakarta.jws.soap.SOAPBinding;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Unmarshaller;
 import jakarta.xml.soap.MessageFactory;
 import jakarta.xml.soap.SOAPBodyElement;
@@ -94,7 +98,7 @@ public class MaintainMessageSoapProvider {
 
             String appId = null;
             SOAPEnvelope envelope = (SOAPEnvelope) requestMsg.getSOAPPart().getEnvelope();
-            Document envDoc = envelope.getAsDocument();
+            Document envDoc = envelope.getOwnerDocument();
             NodeList nodeList = envDoc.getElementsByTagName(CmcConstants.APPID_TAG_NAME);
             if (nodeList != null && nodeList.getLength() > 0)
                 appId = nodeList.item(0).getFirstChild().getNodeValue();
@@ -106,7 +110,7 @@ public class MaintainMessageSoapProvider {
             logger.info("processMaintainMessage - appId=" + appId);
 
             SOAPBodyElement body = (SOAPBodyElement) SoapUtils.getFirstBodyElement(requestMsg);
-            Document bodyDoc = body.getAsDocument();
+            Document bodyDoc = toDocument(body);
             logger.debug("Request body: " + documentToString(bodyDoc));
 
             Properties properties = cmcEnvProperties.getProperties();
@@ -139,32 +143,40 @@ public class MaintainMessageSoapProvider {
                             ResultMessages.RESULT_MSG_GENERAL_ERROR);
                 } else {
 
-                    String pkiUtilJNDIName = properties.getProperty(AppPropertyNames.PROPERTY_NAME_PKI_UTIL_EJB_REMOTE_JNDI_NAME,
+                    String pkiUtilJNDIName = properties.getProperty(
+                            AppPropertyNames.PROPERTY_NAME_PKI_UTIL_EJB_REMOTE_JNDI_NAME,
                             CmcConstants.GLOBAL_CONTEXT_NAME + CmcConstants.CONTEXT_NAME_SEPARATOR
                                     + Constants.GCIS_RM_KEYSERVICE_MODULE_NAME + CmcConstants.CONTEXT_NAME_SEPARATOR
-                                    + Constants.GCIS_RM_KEYSERVICE_MODULE_NAME + CmcConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
+                                    + Constants.GCIS_RM_KEYSERVICE_MODULE_NAME
+                                    + CmcConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
                                     + CmcConstants.CONTEXT_NAME_SEPARATOR
-                                    + "PKIUtil!hk.gov.ogcio.egis.rm.keyservice.appserver.ejb.session.IPKIUtil");
+                                    + "PKIUtil!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IPKIUtil");
 
                     InitialContext context = new InitialContext(properties);
                     IPKIUtil pkiUtil = (IPKIUtil) context.lookup(pkiUtilJNDIName);
 
                     Document decDoc = pkiUtil.decryptXML(null, bodyDoc, null);
 
-                    maintainMessageRequest = (MaintainMessageRequest) Unmarshaller
-                            .unmarshal(MaintainMessageRequest.class, decDoc);
+                    JAXBContext jaxbContext = JAXBContext.newInstance(MaintainMessageRequest.class);
+                    Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                    JAXBElement<MaintainMessageRequest> root = unmarshaller.unmarshal(decDoc,
+                            MaintainMessageRequest.class);
+                    maintainMessageRequest = root.getValue();
                 }
             } else {
                 logger.info(
                         "This message is not encrypted in-transit. encryptedDataList: " + encryptedDataList.getLength()
                                 + ", appId: " + appId);
-                maintainMessageRequest = (MaintainMessageRequest) Unmarshaller.unmarshal(MaintainMessageRequest.class,
-                        bodyDoc);
+                JAXBContext jaxbContext = JAXBContext.newInstance(MaintainMessageRequest.class);
+                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                JAXBElement<MaintainMessageRequest> root = unmarshaller.unmarshal(bodyDoc,
+                        MaintainMessageRequest.class);
+                maintainMessageRequest = root.getValue();
             }
 
             InitialContext ctx = new InitialContext();
             IMaintainMessageSessionBM maintainMessageEJB = (IMaintainMessageSessionBM) ctx.lookup(
-                    "java:global/cmc/cmc_app/MaintainMessageSessionEJB!hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMLocal");
+                    "java:global/cmc/cmc_app/MaintainMessageSessionEJB!hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMLocal");
 
             MaintainMessageResponse maintainMessageResponse = maintainMessageEJB.processMessage(appId,
                     maintainMessageRequest);
@@ -181,7 +193,6 @@ public class MaintainMessageSoapProvider {
 
     }
 
-    // CMC-2025-034: CMC send RVD VIP request to DCI-CMC in RPC mode - BEGIN
     private Map<String, String> parseCmcToDciCmcAppIdMap(String cmcToDciCmcAppIdMap) {
         Map<String, String> result = new HashMap<String, String>();
         if (StringUtils.isEmpty(cmcToDciCmcAppIdMap)) {
@@ -221,6 +232,15 @@ public class MaintainMessageSoapProvider {
     private SOAPMessage generateResponse(SOAPMessage responseMsg, MaintainMessageResponse maintainMessageResponse)
             throws Exception {
         return CastorUtils.marshal(responseMsg, maintainMessageResponse);
+    }
+
+    private Document toDocument(org.w3c.dom.Node node) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.newDocument();
+        document.appendChild(document.importNode(node, true));
+        return document;
     }
 
     private String documentToString(Document document) throws Exception {
