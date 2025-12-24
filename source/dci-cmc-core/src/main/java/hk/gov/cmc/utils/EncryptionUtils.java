@@ -1,5 +1,5 @@
 
-package hk.gov.cmc.kmu.utils;
+package hk.gov.cmc.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;

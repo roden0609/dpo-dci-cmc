@@ -12,9 +12,13 @@ mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_noti_rest
 mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_pki_soap_client -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_pki_soap_client-1.1.0.jar
 mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_pki_rest_client -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_pki_rest_client-1.1.0.jar
 
-<!-- Clean and build the application ear -->
+<!-- Clean and build the EAR -->
 mvn -f source/pom.xml clean package
 
 <!-- Run with docker -->
-docker build -t dci-cmc-wildfly .
-docker run -p 8080:8080 -p 9990:9990 dci-cmc-wildfly
+<!-- docker build -t dci-cmc-wildfly .
+docker run -p 8080:8080 -p 9990:9990 dci-cmc-wildfly -->
+
+<!-- Start WildFly with compose -->
+docker compose up --build
+<!-- docker compose up --build | tee docker-compose.log -->

@@ -42,11 +42,9 @@
                 <configuration>
                     <webXml>${project.basedir}\src\main\webapp\WEB-INF\web.xml</webXml>
                     <archive>
-                        <manifest />
-                        <!-- <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                        </manifest> -->
+                        <manifest>
+                            <addClasspath>false</addClasspath>
+                        </manifest>
                     </archive>
                 </configuration>
             </plugin>

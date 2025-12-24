@@ -1,0 +1,7 @@
+<jboss-deployment-structure>
+    <deployment>
+        <!-- <dependencies>
+            <module name="deployment.gcis_rm_common-1.1.0.jar" />
+        </dependencies> -->
+    </deployment>
+</jboss-deployment-structure>
