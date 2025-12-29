@@ -1,4 +1,4 @@
-package hk.gov.cmc.kmu.utils;
+package hk.gov.cmc.kmu.client;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -19,7 +19,7 @@ import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations;
 import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyServiceManager;
 import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IPasswordOperations;
 
-public class KMUUtils {
+public class KMUClient {
     private static final String LDAP_PASSWORD_KEY_SERVICE_ID_PROPERTY_NAME = "LDAP_PASSWORD_KEY_SERVICE_ID";
     private static final String LDAP_PASSWORD_KEY_SERVICE_USAGE_TYPE_PROPERTY_NAME = "LDAP_PASSWORD_KEY_SERVICE_USAGE_TYPE";
     private static final String DB_PASSWORD_KEY_SERVICE_ID_PROPERTY_NAME = "DB_PASSWORD_KEY_SERVICE_ID";

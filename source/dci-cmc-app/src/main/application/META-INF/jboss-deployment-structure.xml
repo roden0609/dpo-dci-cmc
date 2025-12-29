@@ -1,7 +1,13 @@
 <jboss-deployment-structure>
+    <!-- <ear-subdeployments-isolated>false</ear-subdeployments-isolated> -->
+    <!-- <sub-deployment name="dci-cmc-wss-3.0.0.war">
+        <dependencies>
+            <module name="deployment.dci-cmc-app-3.0.0.ear.lib.dci-cmc-core-3.0.0.jar" />
+        </dependencies>
+    </sub-deployment> -->
     <deployment>
-        <!-- <dependencies>
-            <module name="deployment.gcis_rm_common-1.1.0.jar" />
-        </dependencies> -->
+        <dependencies>
+            <module name="jakarta.jms.api" />
+        </dependencies>
     </deployment>
 </jboss-deployment-structure>

@@ -8,7 +8,8 @@ services:
       - "8080:8080"
       - "9990:9990"
     volumes:
-      - ./source/dci-cmc-app/target:/opt/jboss/wildfly/standalone/deployments
+      # - ./source/dci-cmc-app/target:/opt/jboss/wildfly/standalone/deployments
+      - ./source/dci-cmc-app/target/dci-cmc-app-3.0.0.ear:/opt/jboss/wildfly/standalone/deployments/dci-cmc-app-3.0.0.ear
     environment:
       JAVA_OPTS: >
         -Xms512m -Xmx2048m

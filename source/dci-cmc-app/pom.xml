@@ -31,6 +31,18 @@
             <version>${project.version}</version>
             <type>ejb</type>
         </dependency>
+        <dependency>
+            <groupId>hk.gov.gcis.rm</groupId>
+            <artifactId>gcis_rm_keyservice_ejb</artifactId>
+            <version>${keyservice_ejb.version}</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>hk.gov.gcis.rm</groupId>
+            <artifactId>gcis_rm_keyservice_persistence</artifactId>
+            <version>${keyservice_ejb.version}</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -39,6 +51,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
                 <configuration>
+                    <!-- Off for docker deployment -->
                     <skinnyWars>true</skinnyWars>
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
                     <earSourceIncludes>META-INF/*</earSourceIncludes>
@@ -57,6 +70,14 @@
                             <groupId>hk.gov.cmc</groupId>
                             <artifactId>dci-cmc-ejb</artifactId>
                         </ejbModule>
+                        <ejbModule>
+                            <groupId>hk.gov.gcis.rm</groupId>
+                            <artifactId>gcis_rm_keyservice_ejb</artifactId>
+                        </ejbModule>
+                        <jarModule>
+                            <groupId>hk.gov.gcis.rm</groupId>
+                            <artifactId>gcis_rm_keyservice_persistence</artifactId>
+                        </jarModule>
                     </modules>
                     <applicationName>dci-cmc-app</applicationName>
                     <displayName>Common Middleware Components Application</displayName>

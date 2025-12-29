@@ -154,11 +154,6 @@
             </dependency>
             <dependency>
                 <groupId>hk.gov.gcis.ss</groupId>
-                <artifactId>gcis_ss_common</artifactId>
-                <version>${gcis_ss_common.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>hk.gov.gcis.ss</groupId>
                 <artifactId>gcis_ss_msg_soap_client</artifactId>
                 <version>${gcis_ss_msg_soap_client.version}</version>
             </dependency>

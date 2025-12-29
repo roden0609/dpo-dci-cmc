@@ -53,7 +53,7 @@ import hk.gov.cmc.eid.bean.TxIdBean;
 import hk.gov.cmc.eid.bean.pushNotification.request.PushNotificationBean;
 import hk.gov.cmc.eid.bean.switchNotificationID.request.EServiceHkidsBean;
 import hk.gov.cmc.eid.common.EIDConstants;
-import hk.gov.cmc.kmu.utils.KMUUtils;
+import hk.gov.cmc.kmu.client.KMUClient;
 import hk.gov.gcis.rm.common.utils.encoder.EncoderUtils;
 
 public class EIDClient {
@@ -258,7 +258,7 @@ public class EIDClient {
     public static String genSignatureHmacSHA256(String timestamp, String nonce, String reqBody) throws Exception {
         String base64HashString = null;
         if (clientSecret == null) {
-            clientSecret = KMUUtils.getPasswordFromKMU(runtimeProperty,
+            clientSecret = KMUClient.getPasswordFromKMU(runtimeProperty,
                     EIDConstants.EID_CLIENT_SECRET_ID_PROPERTY_NAME,
                     EIDConstants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME);
         }
@@ -281,7 +281,7 @@ public class EIDClient {
     public static String decryptSymmetricContentKeyFromBase64Encode(String encryptedBase64RawData) throws Exception {
         log.debug("decryptSymmetricContentKeyFromBase64Encode" + ":" + encryptedBase64RawData);
 
-        PrivateKey privateKey = KMUUtils.getPrivateKeyByFriendlyAlias(runtimeProperty,
+        PrivateKey privateKey = KMUClient.getPrivateKeyByFriendlyAlias(runtimeProperty,
                 runtimeProperty.getProperty(EIDConstants.EID_ENC_DEC_PRIVATE_KEY_FRIENDLY_ALIAS_PROPERTY_NAME));
 
         if (privateKey instanceof RSAPrivateKey) {
@@ -903,7 +903,7 @@ public class EIDClient {
                 }
 
                 if (clientSecret == null) {
-                    clientSecret = KMUUtils.getPasswordFromKMU(runtimeProperty,
+                    clientSecret = KMUClient.getPasswordFromKMU(runtimeProperty,
                             runtimeProperty.getProperty(EIDConstants.EID_CLIENT_SECRET_ID_PROPERTY_NAME),
                             runtimeProperty.getProperty(EIDConstants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME));
                     if (clientSecret == null || clientSecret.length() <= 0) {
