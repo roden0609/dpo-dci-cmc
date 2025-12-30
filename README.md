@@ -20,6 +20,10 @@ mvn -f source/pom.xml clean package
 <!-- docker build -t dci-cmc-wildfly .
 docker run -p 8080:8080 -p 9990:9990 dci-cmc-wildfly -->
 
-<!-- Start WildFly with compose -->
+<!-- Rebuild image and start WildFly with compose -->
 docker compose up --build
 <!-- docker compose up --build | tee docker-compose.log -->
+
+<!-- Generate db-credential-store.cs -->
+docker exec -it dci-cmc-wildfly /opt/jboss/wildfly/bin/jboss-cli.sh --connect
+/subsystem=elytron/credential-store=db-credential-store:add-alias(alias=db-password,secret-value="fAy=2Pet")
