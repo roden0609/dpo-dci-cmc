@@ -37,6 +37,7 @@ temp/
 *.pem
 *.key
 *.crt
+*.cs
 
 # Application config (keep *.example files)
 config/*
