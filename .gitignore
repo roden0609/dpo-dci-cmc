@@ -40,9 +40,9 @@ temp/
 *.cs
 
 # Application config (keep *.example files)
-config/*
-!config/*.example
-!config/**/*.example
+# config/*
+# !config/*.example
+# !config/**/*.example
 
 ###############################################################################
 # WildFly / JBoss EAP
