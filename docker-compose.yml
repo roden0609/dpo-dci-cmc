@@ -11,7 +11,9 @@ services:
       # - ./source/dci-cmc-app/target:/opt/jboss/wildfly/standalone/deployments
       - ./source/dci-cmc-app/target/dci-cmc-app-3.0.0.ear:/opt/jboss/wildfly/standalone/deployments/dci-cmc-app-3.0.0.ear
       - ./docker/wildfly/standalone.xml:/opt/jboss/wildfly/standalone/configuration/standalone.xml
-      - ./secrets/db-credential-store.cs:/opt/jboss/wildfly/standalone/data/credentials/db-credential-store.cs:ro
+      - ./secrets/credential-store.cs:/opt/jboss/wildfly/standalone/data/credentials/credential-store.cs:ro
+      - ./config:/bd-ogcmr/uat/cmc/cmc-core/config:ro
+      - ./cert:/bd-ogcmr/uat/cmc/cmc-core/cert:ro
     environment:
       JAVA_OPTS: >
         -Xms512m -Xmx2048m

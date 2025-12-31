@@ -11,12 +11,6 @@ COPY docker/wildfly/mysql/mysql-connector-j-8.4.0.jar \
 COPY docker/wildfly/mysql/module.xml \
      /opt/jboss/wildfly/modules/com/mysql/main/
 
-# Create config dir
-RUN mkdir -p /bd-ogcmr/uat/cmc/cmc-core/config/cmc
-RUN mkdir -p /bd-ogcmr/uat/cmc/cmc-core/cert
-RUN mkdir -p /bd-ogcmr/uat/cmc/cmc-adm/config
-RUN mkdir -p /bd-ogcmr/uat/cmc/cmc-adm/cert
-
 # Deploy EAR
 COPY source/dci-cmc-app/target/dci-cmc-app-3.0.0.ear /opt/jboss/wildfly/standalone/deployments/
 
