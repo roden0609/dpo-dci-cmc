@@ -81,7 +81,7 @@ public class CmcSysParamServlet extends HttpServlet {
             try {
                 reloadPeriod = Long.parseLong(props.getProperty("LOAD_CMC_SYS_PARAM_MILLIS"));
             } catch (Exception e) {
-                logger.info("SYS_PARAM_DEFAULT_RELOAD_PERIOD is not configured, use default value:" + reloadPeriod
+                logger.info("SYS_PARAM_DEFAULT_RELOAD_PERIOD is not configured, use default value: " + reloadPeriod
                         + " millisecond");
             }
             logger.info("SYS_PARAM_DEFAULT_RELOAD_PERIOD = " + reloadPeriod + " millisecond");
