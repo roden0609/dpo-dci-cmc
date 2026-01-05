@@ -30,6 +30,10 @@
 
 
     <servlet-mapping>
+        <servlet-name>HPFWServlet</servlet-name>
+        <url-pattern>/servlet/HPFWServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>CmcSysParamServlet</servlet-name>
         <url-pattern>/servlet/CmcSysParamServlet</url-pattern>
     </servlet-mapping>

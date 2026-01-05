@@ -612,26 +612,32 @@ public class HPFW_Connection implements Serializable {
     }
 
     public static void initPool(Properties properties) throws Exception {
+        logger.info("initPool()");
         String dsname1 = properties.getProperty(DB_CONNECTION_DS_NAME_1_PROPERTY_NAME);
         String dsname2 = properties.getProperty(DB_CONNECTION_DS_NAME_2_PROPERTY_NAME);
         String sec_dsname1 = properties.getProperty(DB_CONNECTION_SECONDARY_DS_NAME_1_PROPERTY_NAME);
         String server_id = properties.getProperty(SERVER_ID);
+        logger.info("dsname1: " + dsname1 + ", dsname2: " + dsname2 + ", sec_dsname1: " + sec_dsname1 + ", server_id: "
+                + server_id);
 
         dbName = properties.getProperty("DB") == null ? "" : properties.getProperty("DB").toUpperCase();
+        logger.info("dbName: " + dbName);
 
         mysqlSelfGenSeqPrefix = properties.getProperty(MYSQL_SELFGEN_SEQ_PREFIX);
+        logger.info("mysqlSelfGenSeqPrefix: " + mysqlSelfGenSeqPrefix);
 
         try {
             if (initContext == null) {
                 initContext = new InitialContext();
 
-                if (dsname1 != null && !"".equals(dsname2))
+                if (dsname1 != null && !"".equals(dsname1))
                     ds1 = (DataSource) initContext.lookup(dsname1);
                 if (dsname2 != null && !"".equals(dsname2))
                     ds2 = (DataSource) initContext.lookup(dsname2);
                 simple_ds1 = sec_dsname1 == null || "".equals(sec_dsname1) ? null
                         : (DataSource) initContext.lookup(sec_dsname1);
             }
+            logger.info("ds1 is null: " + (ds1 == null) + ", ds2 is null: " + (ds2 == null) + ", simple_ds1 is null: " + (simple_ds1 == null));
 
             if (simple_ds1 != null) {
                 logger.debug("Test simple pool - " + sec_dsname1);
@@ -723,11 +729,13 @@ public class HPFW_Connection implements Serializable {
     }
 
     private static Connection getConnection(final String mode, boolean isConnectionManaged) {
+        logger.info("getConnection(mode=" + mode + ", isConnectionManaged=" + isConnectionManaged + ")");
         try {
             return getConnection(
                     PRI.equals(mode) ? pri_ds : SEC.equals(mode) ? sec_ds : MASTER.equals(mode) ? ds1 : ds2,
                     isConnectionManaged);
         } catch (Exception e) {
+            logger.warn("getConnection fail, e: " + e);
             return null;
         }
     }
@@ -800,11 +808,14 @@ public class HPFW_Connection implements Serializable {
     }
 
     public static HPFW_Connection getHPFW_Connection(boolean sameConPerThread, boolean isContainerManaged) {
+        logger.info("getHPFW_Connection(sameConPerThread=" + sameConPerThread + ", isContainerManaged="
+                + isContainerManaged + ")");
         Connection conn = getConnection(sameConPerThread, isContainerManaged);
         return globalMapping.get(conn);
     }
 
     public static HPFW_Connection getHPFW_Connection() {
+        logger.info("getHPFW_Connection()");
         return getHPFW_Connection(false, false);
     }
 

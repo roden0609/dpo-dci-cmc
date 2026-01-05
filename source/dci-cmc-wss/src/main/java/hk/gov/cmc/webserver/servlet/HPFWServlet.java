@@ -1,6 +1,7 @@
 package hk.gov.cmc.webserver.servlet;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -33,8 +34,17 @@ public class HPFWServlet extends HttpServlet {
     public void init(ServletConfig servletconfig) throws ServletException {
         super.init(servletconfig);
         try {
-            logger.debug("init HPFWServlet");
+            logger.info("init HPFWServlet");
             Properties properties = cmcEnvProperties.getProperties();
+            logger.info("properties is null: " + (properties == null));
+            if (properties != null) {
+                StringBuilder builder = new StringBuilder(256);
+                builder.append("properties:");
+                for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+                    builder.append('\n').append(entry.getKey()).append('=').append(entry.getValue());
+                }
+                logger.info(builder.toString());
+            }
             HPFW_Connection.initPool(properties);
 
             String synByThreadEnabled = (properties.getProperty("DB_HIST_SYN_BY_THREAD_ENABLED") == null) ? "N"
