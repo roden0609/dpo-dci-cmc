@@ -612,7 +612,7 @@ public class HPFW_Connection implements Serializable {
     }
 
     public static void initPool(Properties properties) throws Exception {
-        logger.info("initPool()");
+        logger.debug("initPool()");
         String dsname1 = properties.getProperty(DB_CONNECTION_DS_NAME_1_PROPERTY_NAME);
         String dsname2 = properties.getProperty(DB_CONNECTION_DS_NAME_2_PROPERTY_NAME);
         String sec_dsname1 = properties.getProperty(DB_CONNECTION_SECONDARY_DS_NAME_1_PROPERTY_NAME);
@@ -735,7 +735,7 @@ public class HPFW_Connection implements Serializable {
                     PRI.equals(mode) ? pri_ds : SEC.equals(mode) ? sec_ds : MASTER.equals(mode) ? ds1 : ds2,
                     isConnectionManaged);
         } catch (Exception e) {
-            logger.warn("getConnection fail, e: " + e);
+            logger.error("getConnection fail, e: " + e);
             return null;
         }
     }

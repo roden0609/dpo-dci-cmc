@@ -36,14 +36,14 @@ public class HPFWServlet extends HttpServlet {
         try {
             logger.info("init HPFWServlet");
             Properties properties = cmcEnvProperties.getProperties();
-            logger.info("properties is null: " + (properties == null));
+            logger.debug("properties is null: " + (properties == null));
             if (properties != null) {
                 StringBuilder builder = new StringBuilder(256);
                 builder.append("properties:");
                 for (Map.Entry<Object, Object> entry : properties.entrySet()) {
                     builder.append('\n').append(entry.getKey()).append('=').append(entry.getValue());
                 }
-                logger.info(builder.toString());
+                logger.debug(builder.toString());
             }
             HPFW_Connection.initPool(properties);
 

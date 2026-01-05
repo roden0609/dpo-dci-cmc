@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.config.CmcSystemParam;
-import hk.gov.cmc.eid.client.EIDClient;
+import hk.gov.cmc.eid.client.EIDUtils;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -51,11 +51,11 @@ public class CmcSysParamServlet extends HttpServlet {
 
                     if ("REVOKECEK".equals(reloadRequest.toUpperCase())) {
                         logger.info("REVOKECEK Check EIDUtils.initialize");
-                        if (!EIDClient.initialize(props)) {
+                        if (!EIDUtils.initialize(props)) {
                             throw new Exception("Servlet init EIDUtils.initialize failed in CmcSysParamServlet.doPost");
                         }
                         logger.info("EIDUtils.revokeSymmetricEncryptionKey() - Start");
-                        EIDClient.revokeSymmetricEncryptionKey();
+                        EIDUtils.revokeSymmetricEncryptionKey();
                         logger.info("EIDUtils.revokeSymmetricEncryptionKey() - End");
                     }
 

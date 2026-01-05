@@ -180,6 +180,23 @@
                         <share-prepared-statements>false</share-prepared-statements>
                     </statement>
                 </datasource>
+                <datasource jta="true" jndi-name="java:jboss/jdbc/CMCDataSource"
+                    pool-name="CMCDataSource" enabled="true" use-ccm="false">
+                    <connection-url>
+                        jdbc:mysql://host.docker.internal:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false
+                    </connection-url>
+                    <driver>com.mysql</driver>
+                    <security user-name="ogcmrceu11">
+                        <credential-reference store="credential-store" alias="db-password" />
+                    </security>
+                    <validation>
+                        <validate-on-match>false</validate-on-match>
+                        <background-validation>false</background-validation>
+                    </validation>
+                    <statement>
+                        <share-prepared-statements>false</share-prepared-statements>
+                    </statement>
+                </datasource>
                 <!-- <datasource jta="false" jndi-name="java:jboss/jdbc/nonManagedTXDS"
                     pool-name="nonManagedTXDS" enabled="true" use-ccm="false">
                     <connection-url>jdbc:mysql://127.0.0.1:xxxxx/rm_portal_uat?useUnicode=true&amp;</connection-url>

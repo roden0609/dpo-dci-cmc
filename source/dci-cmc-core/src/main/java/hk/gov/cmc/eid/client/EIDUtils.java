@@ -53,13 +53,13 @@ import hk.gov.cmc.eid.bean.TxIdBean;
 import hk.gov.cmc.eid.bean.pushNotification.request.PushNotificationBean;
 import hk.gov.cmc.eid.bean.switchNotificationID.request.EServiceHkidsBean;
 import hk.gov.cmc.eid.common.EIDConstants;
-import hk.gov.cmc.kmu.client.KMUClient;
+import hk.gov.cmc.kmu.client.KMUUtils;
 import hk.gov.gcis.rm.common.utils.encoder.EncoderUtils;
 
-public class EIDClient {
+public class EIDUtils {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    public static final Log log = LogFactory.getLog(EIDClient.class);
+    public static final Log log = LogFactory.getLog(EIDUtils.class);
     public static String clientID = "";
     public static String clientSecret = null;
 
@@ -258,7 +258,7 @@ public class EIDClient {
     public static String genSignatureHmacSHA256(String timestamp, String nonce, String reqBody) throws Exception {
         String base64HashString = null;
         if (clientSecret == null) {
-            clientSecret = KMUClient.getPasswordFromKMU(runtimeProperty,
+            clientSecret = KMUUtils.getPasswordFromKMU(runtimeProperty,
                     EIDConstants.EID_CLIENT_SECRET_ID_PROPERTY_NAME,
                     EIDConstants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME);
         }
@@ -281,7 +281,7 @@ public class EIDClient {
     public static String decryptSymmetricContentKeyFromBase64Encode(String encryptedBase64RawData) throws Exception {
         log.debug("decryptSymmetricContentKeyFromBase64Encode" + ":" + encryptedBase64RawData);
 
-        PrivateKey privateKey = KMUClient.getPrivateKeyByFriendlyAlias(runtimeProperty,
+        PrivateKey privateKey = KMUUtils.getPrivateKeyByFriendlyAlias(runtimeProperty,
                 runtimeProperty.getProperty(EIDConstants.EID_ENC_DEC_PRIVATE_KEY_FRIENDLY_ALIAS_PROPERTY_NAME));
 
         if (privateKey instanceof RSAPrivateKey) {
@@ -388,8 +388,8 @@ public class EIDClient {
 
     public static EIDResponseBean doRequestGetNotificationIDs(String targetURL, EServiceOpenIdsBean eSerivceOpenIdsBean)
             throws Exception {
-        String reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
-        String reqNonce = EIDClient.genStateByUsingUUID();
+        String reqTimeStamp = EIDUtils.doGenCurrentTimeInMilliSecond();
+        String reqNonce = EIDUtils.genStateByUsingUUID();
         EIDResponseBean returnBean = doRequestGetNotificationIDs(targetURL, reqTimeStamp, reqNonce,
                 eSerivceOpenIdsBean);
 
@@ -401,8 +401,8 @@ public class EIDClient {
                     || ENCRYPT_DECRPT_ERROR_CODE_D30004.equalsIgnoreCase(returnBean.getCode())) {
                 renewSymmetricEncryptionKey(true);
 
-                reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
-                reqNonce = EIDClient.genStateByUsingUUID();
+                reqTimeStamp = EIDUtils.doGenCurrentTimeInMilliSecond();
+                reqNonce = EIDUtils.genStateByUsingUUID();
                 returnBean = doRequestGetNotificationIDs(targetURL, reqTimeStamp, reqNonce, eSerivceOpenIdsBean);
             }
         }
@@ -413,8 +413,8 @@ public class EIDClient {
     public static EIDResponseBean doRequestSwitchNotificationIDsByHKIDs(
             String targetURL, EServiceHkidsBean eSerivceHkidssBean) throws Exception {
 
-        String reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
-        String reqNonce = EIDClient.genStateByUsingUUID();
+        String reqTimeStamp = EIDUtils.doGenCurrentTimeInMilliSecond();
+        String reqNonce = EIDUtils.genStateByUsingUUID();
         EIDResponseBean returnBean = doRequestSwitchNotificationIDsByHKIDs(targetURL, reqTimeStamp, reqNonce,
                 eSerivceHkidssBean);
 
@@ -426,8 +426,8 @@ public class EIDClient {
                     || ENCRYPT_DECRPT_ERROR_CODE_D30004.equalsIgnoreCase(returnBean.getCode())) {
                 renewSymmetricEncryptionKey(true);
 
-                reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
-                reqNonce = EIDClient.genStateByUsingUUID();
+                reqTimeStamp = EIDUtils.doGenCurrentTimeInMilliSecond();
+                reqNonce = EIDUtils.genStateByUsingUUID();
                 returnBean = doRequestSwitchNotificationIDsByHKIDs(targetURL, reqTimeStamp, reqNonce,
                         eSerivceHkidssBean);
             }
@@ -582,8 +582,8 @@ public class EIDClient {
 
     public static EIDResponseBean doRequestQueryNotificationDeliveryStatus(String targetURL, TxIdBean txIdBean)
             throws Exception {
-        String reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
-        String reqNonce = EIDClient.genStateByUsingUUID();
+        String reqTimeStamp = EIDUtils.doGenCurrentTimeInMilliSecond();
+        String reqNonce = EIDUtils.genStateByUsingUUID();
         EIDResponseBean returnBean = doRequestQueryNotificationDeliveryStatus(targetURL, reqTimeStamp, reqNonce,
                 txIdBean);
 
@@ -596,8 +596,8 @@ public class EIDClient {
                 log.debug("renewSymmetricEncryptionKey 2 start");
                 renewSymmetricEncryptionKey(true);
 
-                reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
-                reqNonce = EIDClient.genStateByUsingUUID();
+                reqTimeStamp = EIDUtils.doGenCurrentTimeInMilliSecond();
+                reqNonce = EIDUtils.genStateByUsingUUID();
                 returnBean = doRequestQueryNotificationDeliveryStatus(targetURL, reqTimeStamp, reqNonce, txIdBean);
             }
         }
@@ -678,8 +678,8 @@ public class EIDClient {
 
     public static EIDResponseBean doRequestSendNotificationMessages(String targetURL, NotificationBean notificationBean)
             throws Exception {
-        String reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
-        String reqNonce = EIDClient.genStateByUsingUUID();
+        String reqTimeStamp = EIDUtils.doGenCurrentTimeInMilliSecond();
+        String reqNonce = EIDUtils.genStateByUsingUUID();
         log.debug("doRequestSendNotificationMessages pass 2, reqTimeStamp=" + reqTimeStamp +
                 ",reqNonce=" + reqNonce);
         EIDResponseBean returnBean = doRequestSendNotificationMessages(targetURL, reqTimeStamp, reqNonce,
@@ -694,8 +694,8 @@ public class EIDClient {
                 log.debug("renewSymmetricEncryptionKey 2 start");
                 renewSymmetricEncryptionKey(true);
 
-                reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
-                reqNonce = EIDClient.genStateByUsingUUID();
+                reqTimeStamp = EIDUtils.doGenCurrentTimeInMilliSecond();
+                reqNonce = EIDUtils.genStateByUsingUUID();
                 returnBean = doRequestSendNotificationMessages(targetURL, reqTimeStamp, reqNonce, notificationBean);
             }
         }
@@ -777,8 +777,8 @@ public class EIDClient {
 
     public static EIDResponseBean doRequestPushNotificationMessages(String targetURL,
             PushNotificationBean pushNotificationBean) throws Exception {
-        String reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
-        String reqNonce = EIDClient.genStateByUsingUUID();
+        String reqTimeStamp = EIDUtils.doGenCurrentTimeInMilliSecond();
+        String reqNonce = EIDUtils.genStateByUsingUUID();
         log.debug("doRequestPushNotificationMessages pass 2, reqTimeStamp=" + reqTimeStamp + ",reqNonce=" + reqNonce);
         EIDResponseBean returnBean = doRequestPushNotificationMessages(targetURL, reqTimeStamp, reqNonce,
                 pushNotificationBean);
@@ -792,8 +792,8 @@ public class EIDClient {
                 log.debug("renewSymmetricEncryptionKey 2 start");
                 renewSymmetricEncryptionKey(true);
 
-                reqTimeStamp = EIDClient.doGenCurrentTimeInMilliSecond();
-                reqNonce = EIDClient.genStateByUsingUUID();
+                reqTimeStamp = EIDUtils.doGenCurrentTimeInMilliSecond();
+                reqNonce = EIDUtils.genStateByUsingUUID();
                 returnBean = doRequestPushNotificationMessages(targetURL, reqTimeStamp, reqNonce, pushNotificationBean);
             }
         }
@@ -903,7 +903,7 @@ public class EIDClient {
                 }
 
                 if (clientSecret == null) {
-                    clientSecret = KMUClient.getPasswordFromKMU(runtimeProperty,
+                    clientSecret = KMUUtils.getPasswordFromKMU(runtimeProperty,
                             runtimeProperty.getProperty(EIDConstants.EID_CLIENT_SECRET_ID_PROPERTY_NAME),
                             runtimeProperty.getProperty(EIDConstants.EID_CLIENT_SECRET_USAGE_TYPE_PROPERTY_NAME));
                     if (clientSecret == null || clientSecret.length() <= 0) {
@@ -1026,7 +1026,7 @@ public class EIDClient {
             String state) {
         String returnURL = eIDApiUrl;
         Map<String, String> parameterMap = new HashMap<String, String>();
-        parameterMap.put("clientID", EIDClient.clientID);
+        parameterMap.put("clientID", EIDUtils.clientID);
         parameterMap.put("responseType", responseType);
         parameterMap.put("source", source);
         parameterMap.put("redirectURI", redirectURI);
@@ -1042,9 +1042,9 @@ public class EIDClient {
 
             if (value != null && (!value.isEmpty())) {
                 if (0 == idx) {
-                    returnURL += "?" + key + "=" + EIDClient.encodeURLValue(value);
+                    returnURL += "?" + key + "=" + EIDUtils.encodeURLValue(value);
                 } else {
-                    returnURL += "&" + key + "=" + EIDClient.encodeURLValue(value);
+                    returnURL += "&" + key + "=" + EIDUtils.encodeURLValue(value);
                 }
             }
             idx++;
