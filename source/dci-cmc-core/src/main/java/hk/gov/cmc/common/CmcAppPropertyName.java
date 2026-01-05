@@ -182,4 +182,8 @@ public class CmcAppPropertyName {
 
     public static final String CMC_CORE_CERT_FILE_NAME_P12 = "CMC_CORE_CERT_FILE_NAME_P12";
 
+    public static final String PULL_ACK_RECIPIENT_APP_ID_PROPERTY_NAME = "PULL_ACK_RECIPIENT_APP_ID";
+    public static final String PULL_ACK_RECIPIENT_APP_TYPE_PROPERTY_NAME = "PULL_ACK_RECIPIENT_APP_TYPE";
+    public static final String ASYN_MSG_SOAP_ACTION_PROPERTY_NAME = "ASYN_MSG_SOAP_ACTION";
+
 }
