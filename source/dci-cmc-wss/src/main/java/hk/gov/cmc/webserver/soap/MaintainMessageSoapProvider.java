@@ -23,8 +23,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBM;
+import hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMLocal;
 import hk.gov.cmc.common.CmcAppPropertyName;
-import hk.gov.cmc.common.CmcConstants;
+import hk.gov.cmc.common.CmcAppConstants;
 import hk.gov.cmc.common.ResultCodes;
 import hk.gov.cmc.common.ResultMessages;
 import hk.gov.cmc.config.CmcEnvProperties;
@@ -58,7 +59,7 @@ public class MaintainMessageSoapProvider {
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
 
     @EJB
-    private IMaintainMessageSessionBM maintainMessageEJB;
+    private IMaintainMessageSessionBMLocal maintainMessageEJB;
 
     static {
         Init.init();
@@ -101,7 +102,7 @@ public class MaintainMessageSoapProvider {
             String appId = null;
             SOAPEnvelope envelope = (SOAPEnvelope) requestMsg.getSOAPPart().getEnvelope();
             Document envDoc = envelope.getOwnerDocument();
-            NodeList nodeList = envDoc.getElementsByTagName(CmcConstants.APPID_TAG_NAME);
+            NodeList nodeList = envDoc.getElementsByTagName(CmcAppConstants.APPID_TAG_NAME);
             if (nodeList != null && nodeList.getLength() > 0)
                 appId = nodeList.item(0).getFirstChild().getNodeValue();
             if (appId == null || appId.length() == 0) {
@@ -147,11 +148,11 @@ public class MaintainMessageSoapProvider {
 
                     String pkiUtilJNDIName = properties.getProperty(
                             AppPropertyNames.PROPERTY_NAME_PKI_UTIL_EJB_REMOTE_JNDI_NAME,
-                            CmcConstants.GLOBAL_CONTEXT_NAME + CmcConstants.CONTEXT_NAME_SEPARATOR
-                                    + Constants.GCIS_RM_KEYSERVICE_MODULE_NAME + CmcConstants.CONTEXT_NAME_SEPARATOR
+                            CmcAppConstants.GLOBAL_CONTEXT_NAME + CmcAppConstants.CONTEXT_NAME_SEPARATOR
+                                    + Constants.GCIS_RM_KEYSERVICE_MODULE_NAME + CmcAppConstants.CONTEXT_NAME_SEPARATOR
                                     + Constants.GCIS_RM_KEYSERVICE_MODULE_NAME
-                                    + CmcConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
-                                    + CmcConstants.CONTEXT_NAME_SEPARATOR
+                                    + CmcAppConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
+                                    + CmcAppConstants.CONTEXT_NAME_SEPARATOR
                                     + "PKIUtil!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IPKIUtil");
 
                     InitialContext context = new InitialContext(properties);

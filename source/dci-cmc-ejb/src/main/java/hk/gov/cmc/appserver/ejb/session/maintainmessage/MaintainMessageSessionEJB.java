@@ -1,9 +1,6 @@
 
 package hk.gov.cmc.appserver.ejb.session.maintainmessage;
 
-import hk.gov.gcis.rm.keyservice.appserver.AppPropertyNames;
-import hk.gov.gcis.rm.keyservice.common.Constants;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +12,6 @@ import java.util.Vector;
 import javax.naming.InitialContext;
 
 import org.apache.xml.security.utils.EncryptionConstants;
-import org.bouncycastle.asn1.ocsp.ServiceLocator;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -32,11 +28,14 @@ import hk.gov.cmc.utils.EncryptionUtils;
 import hk.gov.cmc.utils.JobControlUtils;
 import hk.gov.gcis.rm.common.javaee.ejb.EJBBase;
 import hk.gov.gcis.rm.common.utils.PropertiesUtils;
+import hk.gov.gcis.rm.common.utils.XmlUtils;
+import hk.gov.gcis.rm.keyservice.appserver.AppPropertyNames;
 import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IPKIUtil;
-import hk.gov.gcis.ss.common.utils.CommonConstants;
+import hk.gov.gcis.rm.keyservice.common.Constants;
 import hk.gov.gcis.ss.common.utils.SoapUtils;
 import hk.gov.gcis.ss.common.webserver.elements.FaultEntry;
 import hk.gov.gcis.ss.messaging.client.MessagingClient;
+import hk.gov.gcis.ss.messaging.fault.IErrorCodes;
 import hk.gov.gcis.ss.messaging.types.IMessageType;
 import hk.gov.gcis.ss.messaging.types.IMessagingConstants;
 import hk.gov.gcis.ss.messaging.webserver.elements.asyncmessaging.AsyncRequest;
@@ -44,8 +43,10 @@ import jakarta.ejb.EJBException;
 import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionManagement;
 import jakarta.ejb.TransactionManagementType;
+import jakarta.xml.soap.Name;
 import jakarta.xml.soap.SOAPBody;
 import jakarta.xml.soap.SOAPElement;
+import jakarta.xml.soap.SOAPEnvelope;
 import jakarta.xml.soap.SOAPMessage;
 
 @Stateless
@@ -210,38 +211,38 @@ public class MaintainMessageSessionEJB extends EJBBase
                                     try {
 
                                         // if (asynMessageDAO.isAsynMessageRetrievedBefore(conn, scopesMsgId)) {
-                                        //     logWarn("[MaintMsg]processMessageByBatchPull asyn msg already retrieved: "
-                                        //             + scopesMsgId);
+                                        // logWarn("[MaintMsg]processMessageByBatchPull asyn msg already retrieved: "
+                                        // + scopesMsgId);
                                         // } else {
 
-                                        //     conn.begin(null, null, HPFW_Connection.DIRECT_WITH_HISTORY);
+                                        // conn.begin(null, null, HPFW_Connection.DIRECT_WITH_HISTORY);
 
-                                        //     asynMessageDAO.createAsynMessageRecord(conn, scopesMsgId,
-                                        //             maintMsgReqRecptAppId, maintMsgReqRecptAppType, null,
-                                        //             CmcAppConstants.ASYN_MSG_STATUS_ACKNOWLEDGED);
+                                        // asynMessageDAO.createAsynMessageRecord(conn, scopesMsgId,
+                                        // maintMsgReqRecptAppId, maintMsgReqRecptAppType, null,
+                                        // CmcAppConstants.ASYN_MSG_STATUS_ACKNOWLEDGED);
 
-                                        //     try {
-                                        //         conn.commit();
-                                        //         createAsynSuccess = true;
-                                        //     } catch (java.sql.SQLException sqlEx) {
-                                        //         String errMessage = sqlEx.getMessage();
-                                        //         if (errMessage.indexOf("ORA-00001") == -1) {
-                                        //             logError("[MaintMsg]processMessageByBatchPull Error message: "
-                                        //                     + errMessage);
-                                        //         } else {
-                                        //             logWarn("[MaintMsg]processMessageByBatchPull corr_id exists in DB");
-                                        //         }
-                                        //     }
+                                        // try {
+                                        // conn.commit();
+                                        // createAsynSuccess = true;
+                                        // } catch (java.sql.SQLException sqlEx) {
+                                        // String errMessage = sqlEx.getMessage();
+                                        // if (errMessage.indexOf("ORA-00001") == -1) {
+                                        // logError("[MaintMsg]processMessageByBatchPull Error message: "
+                                        // + errMessage);
+                                        // } else {
+                                        // logWarn("[MaintMsg]processMessageByBatchPull corr_id exists in DB");
+                                        // }
+                                        // }
 
-                                        //     if (!noConcurrentAppIdList.contains(getAsynSenderAppId)) {
+                                        // if (!noConcurrentAppIdList.contains(getAsynSenderAppId)) {
 
-                                        //         if (!releaseLock) {
-                                        //             if (jobControlUtils != null) {
-                                        //                 jobControlUtils.releaseJobControl(jobControlName);
-                                        //                 releaseLock = true;
-                                        //             }
-                                        //         }
-                                        //     }
+                                        // if (!releaseLock) {
+                                        // if (jobControlUtils != null) {
+                                        // jobControlUtils.releaseJobControl(jobControlName);
+                                        // releaseLock = true;
+                                        // }
+                                        // }
+                                        // }
                                         // }
 
                                         if (createAsynSuccess) {
@@ -279,7 +280,7 @@ public class MaintainMessageSessionEJB extends EJBBase
 
                                                     if (!EncryptionUtils.isKeyExistInKMU(conn, bodyDoc)) {
                                                         logWarn("Key not found in processMessageByBatchPull.");
-                                                        maintMsgResponse = generateResponse(responseSoapMsg,
+                                                        maintMsgResponse = generateResponse(
                                                                 ResultCodes.RESULT_CD_GENERAL_ERROR,
                                                                 ResultMessages.RESULT_MSG_GENERAL_ERROR);
                                                     } else {
@@ -300,8 +301,8 @@ public class MaintainMessageSessionEJB extends EJBBase
 
                                                         Document decDoc = pkiUtil.decryptXML(null, bodyDoc, null);
 
-                                                        maintMsgReq = (MaintainMessageRequest) Unmarshaller
-                                                                .unmarshal(MaintainMessageRequest.class, decDoc);
+                                                        maintMsgReq = SoapUtils.documentToJaxb(decDoc,
+                                                                MaintainMessageRequest.class);
                                                     }
                                                 } else {
 
@@ -309,15 +310,16 @@ public class MaintainMessageSessionEJB extends EJBBase
                                                             + encryptedDataList.getLength() + ", sendAppId: "
                                                             + sendAppId);
 
-                                                    maintMsgReq = (MaintainMessageRequest) Unmarshaller
-                                                            .unmarshal(MaintainMessageRequest.class, body);
+                                                    maintMsgReq = SoapUtils.documentToJaxb(bodyDoc,
+                                                            MaintainMessageRequest.class);
 
                                                 }
 
                                                 conn.begin(null, null, HPFW_Connection.DIRECT_WITH_HISTORY);
 
                                                 if (maintMsgReq != null) {
-                                                    // maintMsgResponse = maintainMessageDAO.processMessage(conn, sendAppId, maintMsgReq);
+                                                    // maintMsgResponse = maintainMessageDAO.processMessage(conn,
+                                                    // sendAppId, maintMsgReq);
                                                 }
 
                                                 conn.commit();
@@ -329,8 +331,7 @@ public class MaintainMessageSessionEJB extends EJBBase
                                         logError(
                                                 "[MaintMsg]General exception caught in maintainMessageDAO.processMessage",
                                                 pEx);
-                                        maintMsgResponse = generateResponse(responseSoapMsg,
-                                                ResultCodes.RESULT_CD_GENERAL_ERROR,
+                                        maintMsgResponse = generateResponse(ResultCodes.RESULT_CD_GENERAL_ERROR,
                                                 ResultMessages.RESULT_MSG_GENERAL_ERROR);
 
                                         conn.clear();
@@ -338,7 +339,12 @@ public class MaintainMessageSessionEJB extends EJBBase
 
                                     if (sendAppId != null && sendAppId.length() > 0) {
 
-                                        responseSoapMsg = CastorUtils.marshal(responseSoapMsg, maintMsgResponse);
+                                        // responseSoapMsg = CastorUtils.marshal(responseSoapMsg, maintMsgResponse);
+                                        Document requestDocument = SoapUtils.jaxbToDocument(maintMsgResponse,
+                                                MaintainMessageResponse.class);
+                                        SOAPEnvelope envelopeMessage = responseSoapMsg.getSOAPPart().getEnvelope();
+                                        Document requestDocumentCopy = XmlUtils.copyDOM(requestDocument);
+                                        envelopeMessage.getBody().addDocument(requestDocumentCopy);
 
                                         String soapaction = properties
                                                 .getProperty(CmcAppPropertyName.ASYN_MSG_SOAP_ACTION_PROPERTY_NAME);
@@ -398,11 +404,11 @@ public class MaintainMessageSessionEJB extends EJBBase
 
                                                 if (createAsynSuccess) {
                                                     // asynMessageDAO.updateAsynMessageStatus(conn, scopesMsgId,
-                                                    //         CmcAppConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
+                                                    // CmcAppConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
                                                 } else {
                                                     // asynMessageDAO.createAsynMessageRecord(conn, scopesMsgId,
-                                                    //         maintMsgReqRecptAppId, maintMsgReqRecptAppType, null,
-                                                    //         CmcAppConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
+                                                    // maintMsgReqRecptAppId, maintMsgReqRecptAppType, null,
+                                                    // CmcAppConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
                                                 }
 
                                                 conn.commit();
@@ -415,7 +421,8 @@ public class MaintainMessageSessionEJB extends EJBBase
                                             logWarn("[MaintMsg]sendMsgResponseByAsyn send response msg failed. scopesMsgId="
                                                     + scopesMsgId);
 
-                                            // asynMessageDAO.updateAsynMessage(conn, scopesMsgId, responseSoapMsg, CmcAppConstants.ASYN_MSG_STATUS_ACKNOWLEDGED);
+                                            // asynMessageDAO.updateAsynMessage(conn, scopesMsgId, responseSoapMsg,
+                                            // CmcAppConstants.ASYN_MSG_STATUS_ACKNOWLEDGED);
                                             conn.commit();
 
                                         }
@@ -556,7 +563,7 @@ public class MaintainMessageSessionEJB extends EJBBase
         return responseMsg;
     }
 
-    private MaintainMessageResponse generateResponse(SOAPMessage responseMsg, String resultCd, String resultMsg)
+    private MaintainMessageResponse generateResponse(String resultCd, String resultMsg)
             throws Exception {
 
         MaintainMessageResponse maintainMessageResponse = new MaintainMessageResponse();
@@ -569,7 +576,11 @@ public class MaintainMessageSessionEJB extends EJBBase
             String clientAppId, String clientAppType, String serverAppId, String serverAppType,
             String scopesCorrelationId) throws Exception {
         SOAPMessage responseSoapMsg = SoapUtils.emptyMessage();
-        responseSoapMsg = CastorUtils.marshal(responseSoapMsg, messageCastorObject);
+        // responseSoapMsg = CastorUtils.marshal(responseSoapMsg, messageCastorObject);
+        Document requestDocument = SoapUtils.jaxbToDocument(messageCastorObject, MaintainMessageResponse.class);
+        SOAPEnvelope envelopeMessage = responseSoapMsg.getSOAPPart().getEnvelope();
+        Document requestDocumentCopy = XmlUtils.copyDOM(requestDocument);
+        envelopeMessage.getBody().addDocument(requestDocumentCopy);
 
         List<String> rcptList = new Vector<>();
         List<String> rcptAppTypeList = new Vector<>();
