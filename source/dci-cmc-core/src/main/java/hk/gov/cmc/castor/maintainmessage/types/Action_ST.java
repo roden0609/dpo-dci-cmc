@@ -70,7 +70,7 @@ public class Action_ST implements java.io.Serializable {
     public static Action_ST valueOf(String string) {
         Object obj = null;
         if (string != null)
-            obj = _memberTable.get(string);
+        obj = _memberTable.get(string);
         if (obj == null) {
             String err = "'" + string + "' is not a valid Action_ST";
             throw new IllegalArgumentException(err);

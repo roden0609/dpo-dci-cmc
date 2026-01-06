@@ -1,19 +1,5 @@
 
-
-
-
-
-
-
-
-
-
-
-package hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage;
-
-  
- 
-
+package hk.gov.cmc.castor.maintainmessage;
 
 import hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.types.Action_ST;
 import java.io.IOException;
@@ -27,56 +13,20 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.ContentHandler;
 
-
-
-
-
-
-
 public class Recipient_CT implements java.io.Serializable, Cloneable {
-
-
-
-      
-     
-    
-
-    
-
 
     private java.lang.String _tranID;
 
-    
-
-
     private java.lang.String _idpID;
-
-    
-
 
     private java.lang.String _recipientID;
 
-    
-
-
     private java.util.Date _itemDate;
-
-    
-
 
     private hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.types.Action_ST _action;
 
-    
-
-
     private java.lang.String _correlatedTranID;
 
-
-      
-     
-    
-
-    
     private java.lang.String _recipientIDType;
     private java.lang.String _appRefNum;
     private java.lang.String _appStatus;
@@ -84,85 +34,42 @@ public class Recipient_CT implements java.io.Serializable, Cloneable {
     private java.lang.String _contactEmail;
     private java.lang.String _contactNum;
     private java.lang.String _miscInfo;
-    
 
-    public Recipient_CT() 
-     {
+    public Recipient_CT()
+    {
         super();
-    } 
-
-
-      
-     
-    
-
-    
-
-
-
-
+    }
 
     public hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.types.Action_ST getAction()
     {
         return this._action;
-    } 
-
-    
-
-
-
-
+    }
 
     public java.lang.String getCorrelatedTranID()
     {
         return this._correlatedTranID;
-    } 
-
-    
-
-
-
-
+    }
 
     public java.lang.String getIdpID()
     {
         return this._idpID;
-    } 
-
-    
-
-
-
-
+    }
 
     public java.util.Date getItemDate()
     {
         return this._itemDate;
-    } 
-
-    
-
-
-
-
+    }
 
     public java.lang.String getRecipientID()
     {
         return this._recipientID;
-    } 
-
-    
-
-
-
-
+    }
 
     public java.lang.String getTranID()
     {
         return this._tranID;
-    } 
+    }
 
-    
     public void setAppRefNum(java.lang.String appRefNum) {
         this._appRefNum = appRefNum;
     }
@@ -205,14 +112,6 @@ public class Recipient_CT implements java.io.Serializable, Cloneable {
     public String getMiscInfo() {
         return this._miscInfo;
     }
-    
-
-    
-
-
-
-
-
 
     public boolean isValid()
     {
@@ -223,122 +122,65 @@ public class Recipient_CT implements java.io.Serializable, Cloneable {
             return false;
         }
         return true;
-    } 
-
-    
-
-
-
-
-
+    }
 
     public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        
+
         Marshaller.marshal(this, out);
-    } 
-
-    
-
-
-
-
-
+    }
 
     public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        
+
         Marshaller.marshal(this, handler);
-    } 
-
-    
-
-
-
+    }
 
     public void setAction(hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.types.Action_ST action)
     {
         this._action = action;
-    } 
-
-    
-
-
-
+    }
 
     public void setCorrelatedTranID(java.lang.String correlatedTranID)
     {
         this._correlatedTranID = correlatedTranID;
-    } 
-
-    
-
-
-
+    }
 
     public void setIdpID(java.lang.String idpID)
     {
         this._idpID = idpID;
-    } 
-
-    
-
-
-
+    }
 
     public void setItemDate(java.util.Date itemDate)
     {
         this._itemDate = itemDate;
-    } 
-
-    
-
-
-
+    }
 
     public void setRecipientID(java.lang.String recipientID)
     {
         this._recipientID = recipientID;
-    } 
-
-    
-
-
-
+    }
 
     public void setTranID(java.lang.String tranID)
     {
         this._tranID = tranID;
-    } 
-
-    
-
-
-
-
-
-
+    }
 
     public static hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.Recipient_CT unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         return (hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.Recipient_CT) Unmarshaller.unmarshal(hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.Recipient_CT.class, reader);
-    } 
-
-    
-
-
+    }
 
     public void validate()
-        throws org.exolab.castor.xml.ValidationException
+    throws org.exolab.castor.xml.ValidationException
     {
         org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
         validator.validate(this);
-    } 
+    }
 
-    
     @Override
     public Recipient_CT clone() {
         try {
@@ -350,15 +192,14 @@ public class Recipient_CT implements java.io.Serializable, Cloneable {
             throw new AssertionError(e);
         }
     }
-    
 
     @Override
     public String toString() {
         return "Recipient_CT [_tranID=" + _tranID + ", _idpID=" + _idpID + ", _recipientID=" + _recipientID
-                + ", _itemDate=" + _itemDate + ", _action=" + _action + ", _correlatedTranID=" + _correlatedTranID
-                + ", _recipientIDType=" + _recipientIDType + ", _appRefNum=" + _appRefNum + ", _appStatus=" + _appStatus
-                + ", _appStatusUpdateDate=" + _appStatusUpdateDate + ", _contactEmail=" + _contactEmail
-                + ", _contactNum=" + _contactNum + ", _miscInfo=" + _miscInfo + "]";
+        + ", _itemDate=" + _itemDate + ", _action=" + _action + ", _correlatedTranID=" + _correlatedTranID
+        + ", _recipientIDType=" + _recipientIDType + ", _appRefNum=" + _appRefNum + ", _appStatus=" + _appStatus
+        + ", _appStatusUpdateDate=" + _appStatusUpdateDate + ", _contactEmail=" + _contactEmail
+        + ", _contactNum=" + _contactNum + ", _miscInfo=" + _miscInfo + "]";
     }
 
 }

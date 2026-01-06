@@ -1,185 +1,77 @@
 
-
-
-
-
-
-
-package hk.gov.ogcio.mars_cmc.cmc.castor.retrievecmctemplate;
-
-  
- 
-
+package hk.gov.cmc.castor.retrievecmctemplate;
 
 import org.exolab.castor.mapping.AccessMode;
 import org.exolab.castor.xml.TypeValidator;
 import org.exolab.castor.xml.XMLFieldDescriptor;
 import org.exolab.castor.xml.validators.*;
 
-
-
-
-
-
 public class TemplateDetailDescriptor extends TemplateDetail_CTDescriptor {
-
-
-      
-     
-    
-
-    
-
 
     private boolean elementDefinition;
 
-    
-
-
     private java.lang.String nsPrefix;
-
-    
-
 
     private java.lang.String nsURI;
 
-    
-
-
     private java.lang.String xmlName;
-
-    
-
 
     private org.exolab.castor.xml.XMLFieldDescriptor identity;
 
-
-      
-     
-    
-
-    public TemplateDetailDescriptor() 
-     {
+    public TemplateDetailDescriptor()
+    {
         super();
         setExtendsWithoutFlatten(new TemplateDetail_CTDescriptor());
         nsURI = "http://ws.mygovhk.gov.hk/schema/RetrieveCmcTemplate.xsd";
         xmlName = "TemplateDetail";
         elementDefinition = true;
-    } 
-
-
-      
-     
-    
-
-    
-
-
-
-
-
+    }
 
     public org.exolab.castor.mapping.AccessMode getAccessMode()
     {
         return null;
-    } 
-
-    
-
-
-
-
-
+    }
 
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
         return super.getExtends();
-    } 
-
-    
-
-
-
-
-
+    }
 
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
         if (identity == null)
-            return super.getIdentity();
+        return super.getIdentity();
         return identity;
-    } 
-
-    
-
-
-
-
-
+    }
 
     public java.lang.Class getJavaClass()
     {
         return hk.gov.ogcio.mars_cmc.cmc.castor.retrievecmctemplate.TemplateDetail.class;
-    } 
-
-    
-
-
-
-
-
+    }
 
     public java.lang.String getNameSpacePrefix()
     {
         return nsPrefix;
-    } 
-
-    
-
-
-
-
-
+    }
 
     public java.lang.String getNameSpaceURI()
     {
         return nsURI;
-    } 
-
-    
-
-
-
-
-
+    }
 
     public org.exolab.castor.xml.TypeValidator getValidator()
     {
         return this;
-    } 
-
-    
-
-
-
-
-
+    }
 
     public java.lang.String getXMLName()
     {
         return xmlName;
-    } 
-
-    
-
-
-
-
-
+    }
 
     public boolean isElementDefinition()
     {
         return elementDefinition;
-    } 
+    }
 
 }

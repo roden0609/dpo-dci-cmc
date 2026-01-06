@@ -1,4 +1,4 @@
-package hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage;
+package hk.gov.cmc.castor.maintainmessage;
 
 public class ApplicationDescriptor extends Application_CTDescriptor {
 
@@ -26,7 +26,7 @@ public class ApplicationDescriptor extends Application_CTDescriptor {
 
     public org.exolab.castor.mapping.FieldDescriptor getIdentity() {
         if (identity == null)
-            return super.getIdentity();
+        return super.getIdentity();
         return identity;
     }
 

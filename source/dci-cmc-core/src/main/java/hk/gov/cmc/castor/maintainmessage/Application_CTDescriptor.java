@@ -1,4 +1,4 @@
-package hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage;
+package hk.gov.cmc.castor.maintainmessage;
 
 import org.exolab.castor.xml.validators.StringValidator;
 
@@ -22,7 +22,7 @@ public class Application_CTDescriptor extends org.exolab.castor.xml.util.XMLClas
         org.exolab.castor.xml.FieldValidator fieldValidator = null;
 
         desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_templateID",
-                "TemplateID", org.exolab.castor.xml.NodeType.Element);
+        "TemplateID", org.exolab.castor.xml.NodeType.Element);
         desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue(java.lang.Object object) throws IllegalStateException {
@@ -31,7 +31,7 @@ public class Application_CTDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
 
             public void setValue(java.lang.Object object, java.lang.Object value)
-                    throws IllegalStateException, IllegalArgumentException {
+            throws IllegalStateException, IllegalArgumentException {
                 try {
                     Application_CT target = (Application_CT) object;
                     target.setTemplateID((java.lang.String) value);
@@ -59,7 +59,7 @@ public class Application_CTDescriptor extends org.exolab.castor.xml.util.XMLClas
         }
         desc.setValidator(fieldValidator);
         desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_templateVersion",
-                "TemplateVersion", org.exolab.castor.xml.NodeType.Element);
+        "TemplateVersion", org.exolab.castor.xml.NodeType.Element);
         desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue(java.lang.Object object) throws IllegalStateException {
@@ -68,7 +68,7 @@ public class Application_CTDescriptor extends org.exolab.castor.xml.util.XMLClas
             }
 
             public void setValue(java.lang.Object object, java.lang.Object value)
-                    throws IllegalStateException, IllegalArgumentException {
+            throws IllegalStateException, IllegalArgumentException {
                 try {
                     Application_CT target = (Application_CT) object;
                     target.setTemplateVersion((java.lang.String) value);

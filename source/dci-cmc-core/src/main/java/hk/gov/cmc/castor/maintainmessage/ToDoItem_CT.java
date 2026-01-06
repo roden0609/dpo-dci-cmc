@@ -1,19 +1,5 @@
 
-
-
-
-
-
-
-
-
-
-
-package hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage;
-
-  
- 
-
+package hk.gov.cmc.castor.maintainmessage;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -25,71 +11,26 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.ContentHandler;
 
-
-
-
-
-
 public class ToDoItem_CT implements java.io.Serializable {
-
-
-      
-     
-    
-
-    
-
 
     private java.lang.String _templateID;
 
-    
-
-
     private java.lang.String _templateVersion;
 
-
-      
-     
-    
-
-    public ToDoItem_CT() 
-     {
+    public ToDoItem_CT()
+    {
         super();
-    } 
-
-
-      
-     
-    
-
-    
-
-
-
-
+    }
 
     public java.lang.String getTemplateID()
     {
         return this._templateID;
-    } 
-
-    
-
-
-
-
+    }
 
     public java.lang.String getTemplateVersion()
     {
         return this._templateVersion;
-    } 
-
-    
-
-
-
-
-
+    }
 
     public boolean isValid()
     {
@@ -100,86 +41,48 @@ public class ToDoItem_CT implements java.io.Serializable {
             return false;
         }
         return true;
-    } 
-
-    
-
-
-
-
-
+    }
 
     public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        
+
         Marshaller.marshal(this, out);
-    } 
-
-    
-
-
-
-
-
+    }
 
     public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        
+
         Marshaller.marshal(this, handler);
-    } 
-
-    
-
-
-
+    }
 
     public void setTemplateID(java.lang.String templateID)
     {
         this._templateID = templateID;
-    } 
-
-    
-
-
-
+    }
 
     public void setTemplateVersion(java.lang.String templateVersion)
     {
         this._templateVersion = templateVersion;
-    } 
-
-    
-
-
-
-
-
-
+    }
 
     public static hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.ToDoItem_CT unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         return (hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.ToDoItem_CT) Unmarshaller.unmarshal(hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.ToDoItem_CT.class, reader);
-    } 
-
-    
-
-
+    }
 
     public void validate()
-        throws org.exolab.castor.xml.ValidationException
+    throws org.exolab.castor.xml.ValidationException
     {
         org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
         validator.validate(this);
-    } 
+    }
 
-    
-	@Override
-	public String toString() {
+    @Override
+    public String toString() {
         return "ToDoItem_CT [_templateID=" + _templateID + ", _templateVersion=" + _templateVersion + "]";
     }
-    
 
 }

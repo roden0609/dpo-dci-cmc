@@ -1,19 +1,5 @@
 
-
-
-
-
-
-
-
-
-
-
-package hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage;
-
-  
- 
-
+package hk.gov.cmc.castor.maintainmessage;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -25,36 +11,14 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.ContentHandler;
 
-
-
-
-
-
-public class Recipient extends Recipient_CT 
+public class Recipient extends Recipient_CT
 implements java.io.Serializable
 {
 
-
-      
-     
-    
-
-    public Recipient() 
-     {
+    public Recipient()
+    {
         super();
-    } 
-
-
-      
-     
-    
-
-    
-
-
-
-
-
+    }
 
     public boolean isValid()
     {
@@ -65,67 +29,33 @@ implements java.io.Serializable
             return false;
         }
         return true;
-    } 
-
-    
-
-
-
-
-
+    }
 
     public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        
+
         Marshaller.marshal(this, out);
-    } 
-
-    
-
-
-
-
-
+    }
 
     public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        
+
         Marshaller.marshal(this, handler);
-    } 
-
-    
-
-
-
-
-
-
+    }
 
     public static hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.Recipient_CT unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
+    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
         return (hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.Recipient_CT) Unmarshaller.unmarshal(hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.Recipient.class, reader);
-    } 
-
-    
-
-
+    }
 
     public void validate()
-        throws org.exolab.castor.xml.ValidationException
+    throws org.exolab.castor.xml.ValidationException
     {
         org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
         validator.validate(this);
-    } 
-
-
-    
-    
-    
-    
-    
-    
+    }
 
 }
