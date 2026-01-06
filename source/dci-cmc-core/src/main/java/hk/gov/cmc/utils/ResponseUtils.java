@@ -1,6 +1,5 @@
 package hk.gov.cmc.utils;
 
-import hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.MessageResponse;
 
 public class ResponseUtils {
 
