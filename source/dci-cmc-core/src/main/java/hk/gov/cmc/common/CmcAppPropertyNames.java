@@ -1,7 +1,7 @@
 
 package hk.gov.cmc.common;
 
-public class CmcAppPropertyName {
+public class CmcAppPropertyNames {
 
     public static final String MAINT_MSG_REQ_RECIPIENT_APP_ID_PROPERTY_NAME = "MAINT_MSG_REQ_RECIPIENT_APP_ID";
 

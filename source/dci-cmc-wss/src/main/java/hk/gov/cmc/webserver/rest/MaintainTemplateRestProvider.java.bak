@@ -70,7 +70,7 @@ public class MaintainTemplateRestProvider {
 
         } catch (Exception ex) {
             logError("General exception caught in processMaintainTemplate", ex);
-            return generateResponse(responseMsg, Result.VALUE_9999, Constants.RESULT_MSG_RETRIEVE_CMC_TEMPLATE_9999);
+            return generateResponse(responseMsg, Result.VALUE_9999, ResultMessages.RESULT_MSG_RETRIEVE_CMC_TEMPLATE_9999);
         }
 
         return generateResponse(responseMsg, response);

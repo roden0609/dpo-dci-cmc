@@ -12,7 +12,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import hk.gov.cmc.common.CmcAppPropertyName;
+import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.persistence.connection.hpfw.CommonDBUtils;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
@@ -41,11 +41,11 @@ public class JobControlUtils {
 
             boolean timeoutCheckNeeded = "Y".equals(
                     properties.getProperty(
-                            jobName + CmcAppPropertyName.JOB_CONTROL_TIMEOUT_CHECK_NEEDED_PROPERTY_SUFFIX));
+                            jobName + CmcAppPropertyNames.JOB_CONTROL_TIMEOUT_CHECK_NEEDED_PROPERTY_SUFFIX));
 
             if (timeoutCheckNeeded)
                 timeoutInMins = Long.parseLong(PropertiesUtils.getMandatoryProperty(properties,
-                        jobName + CmcAppPropertyName.JOB_CONTROL_TIMEOUT_MINS_PROPERTY_SUFFIX));
+                        jobName + CmcAppPropertyNames.JOB_CONTROL_TIMEOUT_MINS_PROPERTY_SUFFIX));
 
             priCon = HPFW_Connection.getHPFW_Connection(HPFW_Connection.PRI);
             con = priCon.getConnectionPtr();

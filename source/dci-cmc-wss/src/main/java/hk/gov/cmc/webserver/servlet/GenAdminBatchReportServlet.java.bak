@@ -80,7 +80,7 @@ public class GenAdminBatchReportServlet extends HttpServlet {
 			}
 			
 			props = ServiceLocator.getInstance(null).getProperties();
-			jobControlName = PropertiesUtils.getMandatoryProperty(props, AppPropertyName.JOB_CONTROL_GEN_ADMIN_REPORT_PROPERTY_NAME)+"_"+batchName;
+			jobControlName = PropertiesUtils.getMandatoryProperty(props, CmcAppPropertyNames.JOB_CONTROL_GEN_ADMIN_REPORT_PROPERTY_NAME)+"_"+batchName;
 			jobControlUtils = new JobControlUtils();
 			
 			if (jobControlUtils.lockJobControl(jobControlName)) {

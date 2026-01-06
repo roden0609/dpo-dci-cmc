@@ -109,7 +109,7 @@ public class MaintainMessageRestProvider {
             if (nodeList != null && nodeList.getLength() > 0)
                 appId = nodeList.item(0).getFirstChild().getNodeValue();
             if (appId == null || appId.length() == 0) {
-                return generateResponse(responseMsg, Constants.RESULT_CD_SENDER_APPID_NOT_FOUND, Constants.RESULT_MSG_SENDER_APPID_NOT_FOUND);
+                return generateResponse(responseMsg, ResultCodes.RESULT_CD_SENDER_APPID_NOT_FOUND, ResultMessages.RESULT_MSG_SENDER_APPID_NOT_FOUND);
             }
 
             logInfo("processMaintainMessage -- appId="+appId);
@@ -120,7 +120,7 @@ public class MaintainMessageRestProvider {
 
             Properties properties = ServiceLocator.getInstance().getProperties();
 
-            String cmcToDciCmcAppIdMap = properties.getProperty(AppPropertyName.CMC_TO_DCI_CMC_APP_ID_MAP_PROPERTY_NAME);
+            String cmcToDciCmcAppIdMap = properties.getProperty(CmcAppPropertyNames.CMC_TO_DCI_CMC_APP_ID_MAP_PROPERTY_NAME);
             Map<String, String> cmcToDciMap = parseCmcToDciCmcAppIdMap(cmcToDciCmcAppIdMap);
 
             if (cmcToDciMap.containsKey(appId)) {
@@ -143,7 +143,7 @@ public class MaintainMessageRestProvider {
 
                 if (!encUtils.keyExistInKMU(conn, bodyDoc)) {
                     logWarn("Key not found in processMaintainMessage.");
-                    return generateResponse(responseMsg, Constants.RESULT_CD_GENERAL_ERROR, Constants.RESULT_MSG_GENERAL_ERROR);
+                    return generateResponse(responseMsg, ResultCodes.RESULT_CD_GENERAL_ERROR, ResultMessages.RESULT_MSG_GENERAL_ERROR);
                 }
                 else {
 
@@ -176,7 +176,7 @@ public class MaintainMessageRestProvider {
 
         } catch (Exception ex) {
             logError("General exception caught in processMaintainMessage", ex);
-                return generateResponse(responseMsg, Constants.RESULT_CD_GENERAL_ERROR, Constants.RESULT_MSG_GENERAL_ERROR);
+                return generateResponse(responseMsg, ResultCodes.RESULT_CD_GENERAL_ERROR, ResultMessages.RESULT_MSG_GENERAL_ERROR);
             }
 
         }

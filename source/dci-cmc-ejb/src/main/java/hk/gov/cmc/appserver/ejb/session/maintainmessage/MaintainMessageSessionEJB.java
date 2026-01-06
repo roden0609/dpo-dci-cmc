@@ -16,7 +16,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import hk.gov.cmc.common.CmcAppConstants;
-import hk.gov.cmc.common.CmcAppPropertyName;
+import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.common.ResultCodes;
 import hk.gov.cmc.common.ResultMessages;
 import hk.gov.cmc.config.CmcEnvProperties;
@@ -71,8 +71,7 @@ public class MaintainMessageSessionEJB extends EJBBase
 
             logInfo("[MaintMsg]processMessage sendAppId=" + sendAppId + ", maintMsgReq=" + maintMsgReq.toString());
 
-            // retrieveEventDetailResponse = new MaintainMessageDAO().processMessage(conn,
-            // sendAppId, maintMsgReq);
+            retrieveEventDetailResponse = new MaintainMessageController().processMessage(conn, sendAppId, maintMsgReq);
 
             conn.commit();
 
@@ -108,14 +107,14 @@ public class MaintainMessageSessionEJB extends EJBBase
             Properties properties = cmcEnvProperties.getProperties();
 
             String maintMsgReqRecptAppId = PropertiesUtils.getMandatoryProperty(properties,
-                    CmcAppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_ID_PROPERTY_NAME);
+                    CmcAppPropertyNames.MAINT_MSG_REQ_RECIPIENT_APP_ID_PROPERTY_NAME);
 
             String maintMsgReqSenderAppType = PropertiesUtils.getMandatoryProperty(properties,
-                    CmcAppPropertyName.MAINT_MSG_REQ_SENDER_APP_TYPE_PROPERTY_NAME);
+                    CmcAppPropertyNames.MAINT_MSG_REQ_SENDER_APP_TYPE_PROPERTY_NAME);
             String maintMsgReqRecptAppType = PropertiesUtils.getMandatoryProperty(properties,
-                    CmcAppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_TYPE_PROPERTY_NAME);
+                    CmcAppPropertyNames.MAINT_MSG_REQ_RECIPIENT_APP_TYPE_PROPERTY_NAME);
             int singlePullCallLimit = Integer.parseInt(PropertiesUtils.getMandatoryProperty(properties,
-                    CmcAppPropertyName.MAINT_MSG_SINGLE_PULL_CALL_LIMIT_PROPERTY));
+                    CmcAppPropertyNames.MAINT_MSG_SINGLE_PULL_CALL_LIMIT_PROPERTY));
 
             if (singlePullCallLimitStr != null && !singlePullCallLimitStr.trim().equals("")) {
                 singlePullCallLimit = Integer.parseInt(singlePullCallLimitStr);
@@ -131,7 +130,7 @@ public class MaintainMessageSessionEJB extends EJBBase
             List<String> noConcurrentAppIdList = new ArrayList<>();
 
             String serverId = PropertiesUtils.getMandatoryProperty(properties,
-                    CmcAppPropertyName.SERVER_ID_PROPERTY_NAME);
+                    CmcAppPropertyNames.SERVER_ID_PROPERTY_NAME);
 
             if (getAsynAppIdStr == null || getAsynAppIdStr.trim().equals(""))
                 getAsynAppIdStr = CmcSystemParam
@@ -347,7 +346,7 @@ public class MaintainMessageSessionEJB extends EJBBase
                                         envelopeMessage.getBody().addDocument(requestDocumentCopy);
 
                                         String soapaction = properties
-                                                .getProperty(CmcAppPropertyName.ASYN_MSG_SOAP_ACTION_PROPERTY_NAME);
+                                                .getProperty(CmcAppPropertyNames.ASYN_MSG_SOAP_ACTION_PROPERTY_NAME);
                                         responseSoapMsg.getMimeHeaders().setHeader(SoapUtils.SOAP_ACTION, soapaction);
 
                                         responseSoapMsg = createAsyncResponseMsg(msgClient, maintMsgResponse, sendAppId,
@@ -490,12 +489,12 @@ public class MaintainMessageSessionEJB extends EJBBase
 
             Map<String, String> inMap = new TreeMap<>();
             inMap.put(IMessagingConstants.RECIPIENT_APP_ID,
-                    properties.getProperty(CmcAppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_ID_PROPERTY_NAME));
+                    properties.getProperty(CmcAppPropertyNames.MAINT_MSG_REQ_RECIPIENT_APP_ID_PROPERTY_NAME));
 
             SOAPMessage requestMsg = SoapUtils.emptyMessage();
             msgClient.addBatchPullRequest(requestMsg, inMap,
-                    properties.getProperty(CmcAppPropertyName.MAINT_MSG_REQ_SENDER_APP_TYPE_PROPERTY_NAME),
-                    properties.getProperty(CmcAppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_TYPE_PROPERTY_NAME));
+                    properties.getProperty(CmcAppPropertyNames.MAINT_MSG_REQ_SENDER_APP_TYPE_PROPERTY_NAME),
+                    properties.getProperty(CmcAppPropertyNames.MAINT_MSG_REQ_RECIPIENT_APP_TYPE_PROPERTY_NAME));
 
             SOAPMessage responseMsg = msgClient.sendBatchPullRequest(requestMsg);
 
@@ -528,13 +527,13 @@ public class MaintainMessageSessionEJB extends EJBBase
 
             Map<String, String> inMap = new TreeMap<>();
             inMap.put(IMessagingConstants.RECIPIENT_APP_ID,
-                    properties.getProperty(CmcAppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_ID_PROPERTY_NAME));
+                    properties.getProperty(CmcAppPropertyNames.MAINT_MSG_REQ_RECIPIENT_APP_ID_PROPERTY_NAME));
             inMap.put(IMessagingConstants.SENDER_APP_ID, senderAppId);
 
             SOAPMessage requestMsg = SoapUtils.emptyMessage();
             msgClient.addSinglePullRequest(requestMsg, inMap,
-                    properties.getProperty(CmcAppPropertyName.MAINT_MSG_REQ_SENDER_APP_TYPE_PROPERTY_NAME),
-                    properties.getProperty(CmcAppPropertyName.MAINT_MSG_REQ_RECIPIENT_APP_TYPE_PROPERTY_NAME));
+                    properties.getProperty(CmcAppPropertyNames.MAINT_MSG_REQ_SENDER_APP_TYPE_PROPERTY_NAME),
+                    properties.getProperty(CmcAppPropertyNames.MAINT_MSG_REQ_RECIPIENT_APP_TYPE_PROPERTY_NAME));
 
             responseMsg = msgClient.sendSinglePullRequest(requestMsg);
 

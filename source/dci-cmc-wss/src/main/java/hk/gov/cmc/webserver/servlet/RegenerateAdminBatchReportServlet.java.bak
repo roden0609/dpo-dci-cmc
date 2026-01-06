@@ -41,7 +41,7 @@ public class RegenerateAdminBatchReportServlet extends HttpServlet{
 		
 		try {
 			props = ServiceLocator.getInstance(null).getProperties();
-			jobControlName = PropertiesUtils.getMandatoryProperty(props, AppPropertyName.JOB_CONTROL_REGEN_ADMIN_BATCH_REPORT_PROPERTY_NAME);
+			jobControlName = PropertiesUtils.getMandatoryProperty(props, CmcAppPropertyNames.JOB_CONTROL_REGEN_ADMIN_BATCH_REPORT_PROPERTY_NAME);
 			jobControlUtils = new JobControlUtils();
 			
 			if (jobControlUtils.lockJobControl(jobControlName)) {

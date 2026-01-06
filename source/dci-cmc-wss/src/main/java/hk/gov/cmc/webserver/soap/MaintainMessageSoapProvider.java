@@ -24,7 +24,7 @@ import org.w3c.dom.NodeList;
 
 import hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBM;
 import hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMLocal;
-import hk.gov.cmc.common.CmcAppPropertyName;
+import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.common.CmcAppConstants;
 import hk.gov.cmc.common.ResultCodes;
 import hk.gov.cmc.common.ResultMessages;
@@ -119,7 +119,7 @@ public class MaintainMessageSoapProvider {
             Properties properties = cmcEnvProperties.getProperties();
 
             String cmcToDciCmcAppIdMap = properties
-                    .getProperty(CmcAppPropertyName.CMC_TO_DCI_CMC_APP_ID_MAP_PROPERTY_NAME);
+                    .getProperty(CmcAppPropertyNames.CMC_TO_DCI_CMC_APP_ID_MAP_PROPERTY_NAME);
             Map<String, String> cmcToDciMap = parseCmcToDciCmcAppIdMap(cmcToDciCmcAppIdMap);
 
             if (cmcToDciMap.containsKey(appId)) {
