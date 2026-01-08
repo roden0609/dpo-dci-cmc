@@ -12,7 +12,7 @@ import java.util.Properties;
 import javax.naming.InitialContext;
 
 import hk.gov.cmc.kmu.common.KMUConstants;
-import hk.gov.cmc.utils.EncryptionUtils;
+import hk.gov.cmc.utils.common.EncryptionUtils;
 import hk.gov.gcis.rm.common.utils.PropertiesUtils;
 import hk.gov.gcis.rm.keyservice.appserver.AppPropertyNames;
 import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations;

@@ -5,35 +5,16 @@ public final class IntegrationConstants {
     private IntegrationConstants() {
     }
 
-    // CMC-RA16-17 - Revise the e-Message request from RS such that they can voided those payment transaction -- BEGIN
-    public static final String PAYMENT_METHOD_MYGOVHK = "01";
-    // CMC-RA16-17 - Revise the e-Message request from RS such that they can voided those payment transaction -- END
-    //
-    // CMC-COR-95 - Support e-Cheque payment method -- BEGIN
-    public static final String PAYMENT_METHOD_MYGOVHK_ECHQ = "20";
-    // CMC-COR-95 - Support e-Cheque payment method -- END
-
-    // MyGov6-C1-002 Enhance Maintain Message module to support iAM Smart message -- START
-    // iAM Smart User status code "ACTIVE"
     public static final String IAS_USER_STATUS_ACTIVE = "A";
-    // iAM Smart User status code "DEREGISTERED"
     public static final String IAS_USER_STATUS_DEREGISTERED = "D";
-    // iAM Smart User status code "INVALID"
     public static final String IAS_USER_STATUS_INVALID = "I";
-    // iAM Smart User status code "SUSPENDED"
     public static final String IAS_USER_STATUS_SUSPENDED = "S";
-    // iAM Smart User status code "MISSING"
     public static final String IAS_USER_STATUS_MISSING = "M";
 
-    // IAS NOTI STATUS - New
     public static final String IAS_NOTI_STATUS_NEW = "N";
-    // IAS NOTI STATUS - Open ID invalid
-    public static final String IAS_NOTI_STATUS_I = "I";
-    // IAS NOTI STATUS - Sent successfully
+    public static final String IAS_NOTI_STATUS_INVALID = "I";
     public static final String IAS_NOTI_STATUS_SENT = "S";
-    // IAS NOTI STATUS - User Opt-out to receive message
     public static final String IAS_NOTI_STATUS_OPT_OUT = "O";
-    // IAS NOTI STATUS - Fail to send
     public static final String IAS_NOTI_STATUS_FAIL = "F";
 
     // OPT_IN - Opt-in to receive iAM Smart message from this BD
@@ -114,9 +95,4 @@ public final class IntegrationConstants {
     public static final String IAS_UNDELIVER_MSG_REASON_INVALID_NOTI_ID = "Notification ID is invalid";
     public static final String IAS_UNDELIVER_MSG_REASON_INVALID_CONSENT = "Invalid Consent";
     public static final String IAS_UNDELIVER_MSG_REASON_OTHER_EROR = "Other Errors";
-
-    // ENC_IND - Yes
-    public static final String ENC_IND_YES = "Y";
-    // ENC_IND - No
-    public static final String ENC_IND_NO = "N";
 }

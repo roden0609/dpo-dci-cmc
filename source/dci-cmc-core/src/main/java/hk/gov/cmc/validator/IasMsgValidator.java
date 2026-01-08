@@ -1,4 +1,4 @@
-package hk.gov.ogcio.mars_cmc.cmc.service.validator;
+package hk.gov.cmc.validator;
 
 import java.util.Properties;
 
@@ -6,18 +6,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import hk.gov.ogcio.egis.rm.common.utils.ServiceLocator;
-import hk.gov.ogcio.mars_cmc.cmc.appserver.AppPropertyName;
-import hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.MessageResponse;
-import hk.gov.ogcio.mars_cmc.cmc.castor.maintainmessage.types.Action_ST;
-import hk.gov.ogcio.mars_cmc.cmc.datatype.message.Constants;
-import hk.gov.ogcio.mars_cmc.cmc.service.constant.MsgTypeConstant;
-import hk.gov.ogcio.mars_cmc.cmc.service.constant.RecipientIDTypeConstant;
-import hk.gov.ogcio.mars_cmc.cmc.utils.ResponseUtils;
+import hk.gov.cmc.common.CmcAppPropertyNames;
+import hk.gov.cmc.common.IntegrationConstants;
+import hk.gov.cmc.common.MsgTypeConstant;
+import hk.gov.cmc.common.RecipientIDTypeConstant;
+import hk.gov.cmc.common.ResultCodes;
+import hk.gov.cmc.common.ResultMessages;
+import hk.gov.cmc.config.CmcEnvProperties;
+import hk.gov.cmc.model.maintainmessage.action.Action;
+import hk.gov.cmc.model.maintainmessage.response.MessageResponse;
+import hk.gov.cmc.utils.maintainmessage.MaintainMessageUtils;
 
 public class IasMsgValidator {
 
     private static Log logger = LogFactory.getLog(IasMsgValidator.class);
+    private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
 
     public IasMsgValidator() {
     }
@@ -32,7 +35,7 @@ public class IasMsgValidator {
                 + ", mergedContentEn: " + mergedContentEn + ", mergedContentTc: " + mergedContentTc
                 + ", mergedContentSc: " + mergedContentSc + ", msgType: " + msgType);
 
-        Properties properties = ServiceLocator.getInstance(null).getProperties();
+        Properties properties = cmcEnvProperties.getProperties();
 
         int subjectESizeLimit = Integer
                 .parseInt(properties.getProperty(CmcAppPropertyNames.MAINT_MSG_IAS_MSG_SUBJ_ENG_SIZE_LIMIT_PROPERTY_NAME));
@@ -46,42 +49,42 @@ public class IasMsgValidator {
 
         if ((mergedSubjectEn == null || mergedSubjectEn.length() == 0) ||
                 (mergedContentEn == null || mergedContentEn.length() == 0)) {
-            return ResponseUtils.getMessageResponse(null, null, null, msgType, 
+            return MaintainMessageUtils.getMessageResponse(null, null, null, msgType, 
                 ResultCodes.RESULT_CD_GENERAL_ERROR, ResultMessages.RESULT_MSG_GENERAL_ERROR);
         }
 
         if (getMsgSize(mergedSubjectEn) > subjectESizeLimit) {
-            return ResponseUtils.getMessageResponse(null, null, null, msgType,
+            return MaintainMessageUtils.getMessageResponse(null, null, null, msgType,
                     ResultCodes.RESULT_CD_MERGED_IAS_MSG_SUBJECT_EN_LENGTH_OVER_LIMIT,
                     ResultMessages.RESULT_MSG_MERGED_IAS_MSG_SUBJECT_EN_LENGTH_OVER_LIMIT);
         }
 
         if (getMsgSize(mergedSubjectTc) > subjectCSizeLimit) {
-            return ResponseUtils.getMessageResponse(null, null, null, msgType,
+            return MaintainMessageUtils.getMessageResponse(null, null, null, msgType,
                     ResultCodes.RESULT_CD_MERGED_IAS_MSG_SUBJECT_TC_LENGTH_OVER_LIMIT,
                     ResultMessages.RESULT_MSG_MERGED_IAS_MSG_SUBJECT_TC_LENGTH_OVER_LIMIT);
         }
 
         if (getMsgSize(mergedSubjectSc) > subjectCSizeLimit) {
-            return ResponseUtils.getMessageResponse(null, null, null, msgType,
+            return MaintainMessageUtils.getMessageResponse(null, null, null, msgType,
                     ResultCodes.RESULT_CD_MERGED_IAS_MSG_SUBJECT_SC_LENGTH_OVER_LIMIT,
                     ResultMessages.RESULT_MSG_MERGED_IAS_MSG_SUBJECT_SC_LENGTH_OVER_LIMIT);
         }
 
         if (getMsgSize(mergedContentEn) > contentESizeLimit) {
-            return ResponseUtils.getMessageResponse(null, null, null, msgType,
+            return MaintainMessageUtils.getMessageResponse(null, null, null, msgType,
                     ResultCodes.RESULT_CD_MERGED_IAS_MSG_CONTENT_EN_LENGTH_OVER_LIMIT,
                     ResultMessages.RESULT_MSG_MERGED_IAS_MSG_CONTENT_EN_LENGTH_OVER_LIMIT);
         }
 
         if (getMsgSize(mergedContentTc) > contentCSizeLimit) {
-            return ResponseUtils.getMessageResponse(null, null, null, msgType,
+            return MaintainMessageUtils.getMessageResponse(null, null, null, msgType,
                     ResultCodes.RESULT_CD_MERGED_IAS_MSG_CONTENT_TC_LENGTH_OVER_LIMIT,
                     ResultMessages.RESULT_MSG_MERGED_IAS_MSG_CONTENT_TC_LENGTH_OVER_LIMIT);
         }
 
         if (getMsgSize(mergedContentSc) > contentCSizeLimit) {
-            return ResponseUtils.getMessageResponse(null, null, null, msgType,
+            return MaintainMessageUtils.getMessageResponse(null, null, null, msgType,
                     ResultCodes.RESULT_CD_MERGED_IAS_MSG_CONTENT_SC_LENGTH_OVER_LIMIT,
                     ResultMessages.RESULT_MSG_MERGED_IAS_MSG_CONTENT_SC_LENGTH_OVER_LIMIT);
         }
@@ -95,20 +98,20 @@ public class IasMsgValidator {
         logger.debug("validateOptInStatus - tranId: " + tranId + ", idpId: " + idpId  + ", msgRequestRecipientId: " + 
                 msgRequestRecipientId + ", iasOptCheck: " + iasOptCheck + ", optIn: " + optIn);
 
-        if ((iasOptCheck) && ((optIn != null && (Constants.OPT_IN_N.equals(optIn) || Constants.OPT_IN_U.equals(optIn))))) {
-            return ResponseUtils.getMessageResponse(tranId, idpId, msgRequestRecipientId, MsgTypeConstant.MESSAGE, 
+        if ((iasOptCheck) && ((optIn != null && (IntegrationConstants.OPT_IN_N.equals(optIn) || IntegrationConstants.OPT_IN_U.equals(optIn))))) {
+            return MaintainMessageUtils.getMessageResponse(tranId, idpId, msgRequestRecipientId, MsgTypeConstant.MESSAGE, 
                 ResultCodes.RESULT_CD_USER_REJECT_MSG, ResultMessages.RESULT_MSG_USER_REJECT_MSG);
         }
 
         return null;
     }
 
-    public static MessageResponse validateAction(String clientId, String idpId, String msgRequestRecipientId, String tranId, int action) throws Exception {
+    public static MessageResponse validateAction(String clientId, String idpId, String msgRequestRecipientId, String tranId, Action action) throws Exception {
 
         logger.debug("validateAction - tranId: " + tranId + ", idpId: " + idpId + ", msgRequestRecipientId: " + msgRequestRecipientId + ", action: " + action);
 
-        if (action == Action_ST.UPDATE_TYPE) {
-            return ResponseUtils.getMessageResponse(tranId, idpId, msgRequestRecipientId, MsgTypeConstant.MESSAGE, 
+        if (action == Action.UPDATE) {
+            return MaintainMessageUtils.getMessageResponse(tranId, idpId, msgRequestRecipientId, MsgTypeConstant.MESSAGE, 
                 ResultCodes.RESULT_CD_EMSG_ACTION_IS_NOT_VALID, ResultMessages.RESULT_MSG_EMSG_ACTION_IS_NOT_VALID);
         }
 
@@ -121,7 +124,7 @@ public class IasMsgValidator {
         logger.debug("validateRecipientIdTypeOnlyEmptyOrOpenId - recipientIdType: " + recipientIdType);
 
         if (!StringUtils.isEmpty(recipientIdType) && !RecipientIDTypeConstant.OPEN_ID.equals(recipientIdType)) {
-            return ResponseUtils.getMessageResponse(tranId, idpId, msgRequestRecipientId, MsgTypeConstant.MESSAGE, 
+            return MaintainMessageUtils.getMessageResponse(tranId, idpId, msgRequestRecipientId, MsgTypeConstant.MESSAGE, 
                 ResultCodes.RESULT_CD_RECIPIENT_ID_TYPE_NOT_VALID, ResultMessages.RESULT_MSG_RECIPIENT_ID_TYPE_NOT_VALID);
         }
 

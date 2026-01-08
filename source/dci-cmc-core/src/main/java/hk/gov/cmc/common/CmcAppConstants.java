@@ -41,4 +41,10 @@ public class CmcAppConstants {
     public static final String LANGUAGE_EN = "EN";
     public static final String LANGUAGE_TC = "TC";
     public static final String LANGUAGE_SC = "SC";
+
+    public static final String ENC_IND_YES = "Y";
+    public static final String ENC_IND_NO = "N";
+
+    public static final String READ_IND_READ = "R";
+	public static final String READ_IND_UNREAD = "U";
 }

@@ -6,6 +6,8 @@ public final class ResultCodes {
     }
 
     public static final String RESULT_CD_GENERAL_ERROR = "9999";
+    public static final String RESULT_CD_REQUEST_SCHEMA_INVALID = "9998";
+    public static final String RESULT_CD_MESSAGE_PROCESSED_WITH_ERROR = "9997";
     public static final String RESULT_CD_SUCCESS = "0000";
     public static final String RESULT_CD_SENDER_APPID_NOT_FOUND = "0001";
     public static final String RESULT_CD_PORTAL_ID_NOT_FOUND = "0002";

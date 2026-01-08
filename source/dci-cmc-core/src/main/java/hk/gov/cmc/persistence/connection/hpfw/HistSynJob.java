@@ -14,7 +14,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import hk.gov.cmc.utils.StringUtils;
+import hk.gov.cmc.utils.common.StringUtils;
 
 public class HistSynJob {
     private static Log logger = LogFactory.getLog(HistSynJob.class);

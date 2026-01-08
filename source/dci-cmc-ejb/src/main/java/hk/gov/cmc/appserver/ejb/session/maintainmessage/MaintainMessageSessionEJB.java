@@ -21,11 +21,14 @@ import hk.gov.cmc.common.ResultCodes;
 import hk.gov.cmc.common.ResultMessages;
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.config.CmcSystemParam;
+import hk.gov.cmc.controller.maintainmessage.MaintainMessageController;
 import hk.gov.cmc.jaxb.maintainmessage.MaintainMessageRequest;
 import hk.gov.cmc.jaxb.maintainmessage.MaintainMessageResponse;
+import hk.gov.cmc.mapper.maintainmessage.MaintainMessageRequestMapper;
+import hk.gov.cmc.mapper.maintainmessage.MaintainMessageResponseMapper;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
-import hk.gov.cmc.utils.EncryptionUtils;
-import hk.gov.cmc.utils.JobControlUtils;
+import hk.gov.cmc.utils.common.EncryptionUtils;
+import hk.gov.cmc.utils.job.JobControlUtils;
 import hk.gov.gcis.rm.common.javaee.ejb.EJBBase;
 import hk.gov.gcis.rm.common.utils.PropertiesUtils;
 import hk.gov.gcis.rm.common.utils.XmlUtils;
@@ -71,7 +74,12 @@ public class MaintainMessageSessionEJB extends EJBBase
 
             logInfo("[MaintMsg]processMessage sendAppId=" + sendAppId + ", maintMsgReq=" + maintMsgReq.toString());
 
-            retrieveEventDetailResponse = new MaintainMessageController().processMessage(conn, sendAppId, maintMsgReq);
+            MaintainMessageController maintainMessageController = new MaintainMessageController();
+            hk.gov.cmc.model.maintainmessage.request.MaintainMessageRequest maintMsgReqDomain = MaintainMessageRequestMapper
+                    .fromJaxb(maintMsgReq);
+            hk.gov.cmc.model.maintainmessage.response.MaintainMessageResponse maintainMsgRespDomain = maintainMessageController
+                    .processMessage(conn, sendAppId, maintMsgReqDomain);
+            retrieveEventDetailResponse = MaintainMessageResponseMapper.toJaxb(maintainMsgRespDomain);
 
             conn.commit();
 
