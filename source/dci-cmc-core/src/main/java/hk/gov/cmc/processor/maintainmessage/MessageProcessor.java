@@ -1,4 +1,4 @@
-package hk.gov.cmc.controller.maintainmessage;
+package hk.gov.cmc.processor.maintainmessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,9 +18,6 @@ import hk.gov.cmc.common.RecipientIDTypeConstant;
 import hk.gov.cmc.common.ResultCodes;
 import hk.gov.cmc.common.ResultMessages;
 import hk.gov.cmc.config.CmcEnvProperties;
-import hk.gov.cmc.controller.maintainmessage.application.IasApplicationController;
-import hk.gov.cmc.controller.maintainmessage.emessage.IasEMessageController;
-import hk.gov.cmc.controller.maintainmessage.todoitem.IasToDoItemController;
 import hk.gov.cmc.dao.maintainmessage.notification.IasUserNotiInfoDAO;
 import hk.gov.cmc.dao.maintainmessage.param.MessageParamDao;
 import hk.gov.cmc.dao.maintainmessage.template.CmcTemplateDao;
@@ -37,6 +34,9 @@ import hk.gov.cmc.model.maintainmessage.todoitem.ToDoItem;
 import hk.gov.cmc.model.maintainmessage.user.IasUser;
 import hk.gov.cmc.model.maintainmessage.user.IasUserWrapped;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
+import hk.gov.cmc.processor.maintainmessage.application.IasApplicationProcessor;
+import hk.gov.cmc.processor.maintainmessage.emessage.IasEMessageProcessor;
+import hk.gov.cmc.processor.maintainmessage.todoitem.IasToDoItemProcessor;
 import hk.gov.cmc.utils.common.EncUtils;
 import hk.gov.cmc.utils.common.EncryptionUtils;
 import hk.gov.cmc.utils.maintainmessage.MaintainMessageUtils;
@@ -393,9 +393,9 @@ public class MessageProcessor {
 
         logger.info("processor.processMessage - validatedIasUserWrappedMap.size: " + validatedIasUserWrappedMap.size());
 
-        IasEMessageController iasEMessageController = new IasEMessageController();
-        IasToDoItemController iasToDoItemController = new IasToDoItemController();
-        IasApplicationController iasApplicationController = new IasApplicationController();
+        IasEMessageProcessor iasEMessageProcessor = new IasEMessageProcessor();
+        IasToDoItemProcessor iasToDoItemProcessor = new IasToDoItemProcessor();
+        IasApplicationProcessor iasApplicationProcessor = new IasApplicationProcessor();
 
         // Loop through each recipient to process iAM Smart message
         String iasToDoItemId = "";
@@ -611,7 +611,7 @@ public class MessageProcessor {
                     logger.info("processor.processMessage - toDoItem: " + toDoItem);
                     if (toDoItem != null) {
                         try {
-                            processIasToDoItemResult = iasToDoItemController.processIasToDoItem(
+                            processIasToDoItemResult = iasToDoItemProcessor.processIasToDoItem(
                                     portalId, iasToDoItemId,
                                     recipient, validatedIasUserWrapped,
                                     toDoItemCutOffDay, impDtUpperLimit,
@@ -635,7 +635,7 @@ public class MessageProcessor {
                                             MsgTypeConstant.TO_DO_ITEM,
                                             ResultCodes.RESULT_CD_GENERAL_ERROR,
                                             ResultMessages.RESULT_MSG_GENERAL_ERROR));
-                            logger.info("processIasToDoItem - iasToDoItemController.processIasToDoItem failed"
+                            logger.info("processIasToDoItem - iasToDoItemProcessor.processIasToDoItem failed"
                                     + ". cmcTemplate.getClientId: " + cmcToDoItemTemplate.getClientId()
                                     + ", cmcTemplate.getTemplateId: " + cmcToDoItemTemplate.getTemplateId()
                                     + ", cmcTemplate.getTemplateVersion: " + cmcToDoItemTemplate.getTemplateVersion()
@@ -645,14 +645,14 @@ public class MessageProcessor {
                                     + ", TranResultCode: " + ResultCodes.RESULT_CD_GENERAL_ERROR
                                     + ", TranResultMessage: " + ResultMessages.RESULT_MSG_GENERAL_ERROR);
                             logger.info(
-                                    "processIasToDoItem - iasToDoItemController.processIasToDoItem exception: " + e);
+                                    "processIasToDoItem - iasToDoItemProcessor.processIasToDoItem exception: " + e);
                         }
                     }
 
                     logger.info("processor.processMessage - application: " + application);
                     if (application != null) {
                         try {
-                            processIasApplicationResult = iasApplicationController.processIasApplication(
+                            processIasApplicationResult = iasApplicationProcessor.processIasApplication(
                                     portalId, iasApplicationId,
                                     recipient, validatedIasUserWrapped,
                                     dataContentEn, dataContentTc, dataContentSc,
@@ -669,7 +669,7 @@ public class MessageProcessor {
                             }
                             iasApplicationId = processIasApplicationResult.getCreatedMsgId();
                         } catch (Exception e) {
-                            logger.info("processIasApplication - iasApplicationController.processIasApplication failed"
+                            logger.info("processIasApplication - iasApplicationProcessor.processIasApplication failed"
                                     + ". cmcTemplate.getClientId: " + cmcApplicationTemplate.getClientId()
                                     + ", cmcTemplate.getTemplateId: " + cmcApplicationTemplate.getTemplateId()
                                     + ", cmcTemplate.getTemplateVersion: " + cmcApplicationTemplate.getTemplateVersion()
@@ -680,7 +680,7 @@ public class MessageProcessor {
                                     + ", TranResultCode: " + ResultCodes.RESULT_CD_GENERAL_ERROR
                                     + ", TranResultMessage: " + ResultMessages.RESULT_MSG_GENERAL_ERROR);
                             logger.info(
-                                    "processIasApplication - iasApplicationController.processIasApplication exception: "
+                                    "processIasApplication - iasApplicationProcessor.processIasApplication exception: "
                                             + e);
                             response.addMessageResponse(
                                     MaintainMessageUtils.getMessageResponse(recipient.getTranId(), recipient.getIdpId(),

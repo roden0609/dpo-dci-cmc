@@ -1,4 +1,4 @@
-package hk.gov.cmc.controller.maintainmessage.todoitem;
+package hk.gov.cmc.processor.maintainmessage.todoitem;
 
 import java.util.List;
 import java.util.Map;
@@ -27,12 +27,12 @@ import hk.gov.cmc.utils.maintainmessage.ias.IasToDoItemUtils;
 import hk.gov.cmc.utils.maintainmessage.ias.IasUtils;
 import hk.gov.cmc.validator.IasToDoItemValidator;
 
-public class IasToDoItemController {
+public class IasToDoItemProcessor {
 
-    private static Log logger = LogFactory.getLog(IasToDoItemController.class);
+    private static Log logger = LogFactory.getLog(IasToDoItemProcessor.class);
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
 
-    public IasToDoItemController() {
+    public IasToDoItemProcessor() {
     }
 
     public SingleMaintainMsgResult processIasToDoItem(

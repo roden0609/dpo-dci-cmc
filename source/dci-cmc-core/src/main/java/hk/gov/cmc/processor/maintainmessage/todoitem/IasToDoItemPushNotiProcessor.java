@@ -1,4 +1,4 @@
-package hk.gov.cmc.controller.maintainmessage.todoitem;
+package hk.gov.cmc.processor.maintainmessage.todoitem;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,12 +28,12 @@ import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
 import hk.gov.cmc.persistence.ias.todoitem.IasUserToDoItem_;
 
-public class IasToDoItemPushNotiController {
+public class IasToDoItemPushNotiProcessor {
 
-    private static Log logger = LogFactory.getLog(IasToDoItemPushNotiController.class);
+    private static Log logger = LogFactory.getLog(IasToDoItemPushNotiProcessor.class);
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
 
-    public IasToDoItemPushNotiController() {
+    public IasToDoItemPushNotiProcessor() {
     }
 
     public void pushIasToDoItemToIAMSmart(HPFW_Connection conn, boolean isEIDUtilsInit,

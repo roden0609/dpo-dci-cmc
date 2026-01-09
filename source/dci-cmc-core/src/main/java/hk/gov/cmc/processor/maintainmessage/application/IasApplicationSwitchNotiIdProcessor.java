@@ -1,4 +1,4 @@
-package hk.gov.cmc.controller.maintainmessage.application;
+package hk.gov.cmc.processor.maintainmessage.application;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,12 +36,12 @@ import hk.gov.cmc.persistence.ias.notification.IasEsNotiMap_;
 import hk.gov.cmc.utils.common.EncUtils;
 
 
-public class IasApplicationSwitchNotiIdController {
+public class IasApplicationSwitchNotiIdProcessor {
 
-    private static Log logger = LogFactory.getLog(IasApplicationSwitchNotiIdController.class);
+    private static Log logger = LogFactory.getLog(IasApplicationSwitchNotiIdProcessor.class);
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
 
-    public IasApplicationSwitchNotiIdController() {
+    public IasApplicationSwitchNotiIdProcessor() {
     }
 
     public List<IasClientIdNotiIdPair> updateIasUserAppNotiIDByESHKID(HPFW_Connection conn, 

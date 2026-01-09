@@ -1,4 +1,4 @@
-package hk.gov.cmc.controller.maintainmessage.application;
+package hk.gov.cmc.processor.maintainmessage.application;
 
 import java.util.List;
 import java.util.Map;
@@ -27,12 +27,12 @@ import hk.gov.cmc.utils.maintainmessage.ias.IasApplicationUtils;
 import hk.gov.cmc.utils.maintainmessage.ias.IasUtils;
 import hk.gov.cmc.validator.IasApplicationValidator;
 
-public class IasApplicationController {
+public class IasApplicationProcessor {
 
-    private static Log logger = LogFactory.getLog(IasApplicationController.class);
+    private static Log logger = LogFactory.getLog(IasApplicationProcessor.class);
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
 
-    public IasApplicationController() {
+    public IasApplicationProcessor() {
     }
 
     public SingleMaintainMsgResult processIasApplication(

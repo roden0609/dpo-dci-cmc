@@ -1,4 +1,4 @@
-package hk.gov.cmc.controller.maintainmessage.application;
+package hk.gov.cmc.processor.maintainmessage.application;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +26,12 @@ import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
 import hk.gov.cmc.persistence.ias.application.IasUserApplication_;
 
-public class IasApplicationPushNotiController {
+public class IasApplicationPushNotiProcessor {
 
-    private static Log logger = LogFactory.getLog(IasApplicationPushNotiController.class);
+    private static Log logger = LogFactory.getLog(IasApplicationPushNotiProcessor.class);
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
 
-    public IasApplicationPushNotiController() {
+    public IasApplicationPushNotiProcessor() {
     }
 
     public void pushIasApplicationToIAMSmart(HPFW_Connection conn, boolean isEIDUtilsInit,

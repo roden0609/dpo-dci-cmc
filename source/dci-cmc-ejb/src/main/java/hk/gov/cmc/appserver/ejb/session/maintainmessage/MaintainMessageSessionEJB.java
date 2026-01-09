@@ -1,6 +1,7 @@
 
 package hk.gov.cmc.appserver.ejb.session.maintainmessage;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,12 +22,13 @@ import hk.gov.cmc.common.ResultCodes;
 import hk.gov.cmc.common.ResultMessages;
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.config.CmcSystemParam;
-import hk.gov.cmc.controller.maintainmessage.MaintainMessageController;
+import hk.gov.cmc.dao.asynmessage.AsynMessageDAO;
 import hk.gov.cmc.jaxb.maintainmessage.MaintainMessageRequest;
 import hk.gov.cmc.jaxb.maintainmessage.MaintainMessageResponse;
 import hk.gov.cmc.mapper.maintainmessage.MaintainMessageRequestMapper;
 import hk.gov.cmc.mapper.maintainmessage.MaintainMessageResponseMapper;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
+import hk.gov.cmc.processor.maintainmessage.MaintainMessageProcessor;
 import hk.gov.cmc.utils.common.EncryptionUtils;
 import hk.gov.cmc.utils.job.JobControlUtils;
 import hk.gov.gcis.rm.common.javaee.ejb.EJBBase;
@@ -74,10 +76,10 @@ public class MaintainMessageSessionEJB extends EJBBase
 
             logInfo("[MaintMsg]processMessage sendAppId=" + sendAppId + ", maintMsgReq=" + maintMsgReq.toString());
 
-            MaintainMessageController maintainMessageController = new MaintainMessageController();
+            MaintainMessageProcessor maintainMessageProcessor = new MaintainMessageProcessor();
             hk.gov.cmc.model.maintainmessage.request.MaintainMessageRequest maintMsgReqDomain = MaintainMessageRequestMapper
                     .fromJaxb(maintMsgReq);
-            hk.gov.cmc.model.maintainmessage.response.MaintainMessageResponse maintainMsgRespDomain = maintainMessageController
+            hk.gov.cmc.model.maintainmessage.response.MaintainMessageResponse maintainMsgRespDomain = maintainMessageProcessor
                     .processMessage(conn, sendAppId, maintMsgReqDomain);
             retrieveEventDetailResponse = MaintainMessageResponseMapper.toJaxb(maintainMsgRespDomain);
 
@@ -157,7 +159,8 @@ public class MaintainMessageSessionEJB extends EJBBase
             }
 
             // MaintainMessageDAO maintainMessageDAO = new MaintainMessageDAO();
-            // AsynMessageDAO asynMessageDAO = new AsynMessageDAO();
+            MaintainMessageProcessor maintainMessageProcessor = new MaintainMessageProcessor();
+            AsynMessageDAO asynMessageDAO = new AsynMessageDAO();
 
             for (int a = 0; a < sendAsynAppIdList.size(); a++) {
 
@@ -217,40 +220,39 @@ public class MaintainMessageSessionEJB extends EJBBase
 
                                     try {
 
-                                        // if (asynMessageDAO.isAsynMessageRetrievedBefore(conn, scopesMsgId)) {
-                                        // logWarn("[MaintMsg]processMessageByBatchPull asyn msg already retrieved: "
-                                        // + scopesMsgId);
-                                        // } else {
+                                        if (asynMessageDAO.isAsynMessageRetrievedBefore(conn, scopesMsgId)) {
+                                            logWarn("[MaintMsg]processMessageByBatchPull asyn msg already retrieved: "
+                                                    + scopesMsgId);
+                                        } else {
 
-                                        // conn.begin(null, null, HPFW_Connection.DIRECT_WITH_HISTORY);
+                                            conn.begin(null, null, HPFW_Connection.DIRECT_WITH_HISTORY);
 
-                                        // asynMessageDAO.createAsynMessageRecord(conn, scopesMsgId,
-                                        // maintMsgReqRecptAppId, maintMsgReqRecptAppType, null,
-                                        // CmcAppConstants.ASYN_MSG_STATUS_ACKNOWLEDGED);
+                                            asynMessageDAO.createAsynMessageRecord(conn, scopesMsgId,
+                                                    maintMsgReqRecptAppId, maintMsgReqRecptAppType, null,
+                                                    CmcAppConstants.ASYN_MSG_STATUS_ACKNOWLEDGED);
 
-                                        // try {
-                                        // conn.commit();
-                                        // createAsynSuccess = true;
-                                        // } catch (java.sql.SQLException sqlEx) {
-                                        // String errMessage = sqlEx.getMessage();
-                                        // if (errMessage.indexOf("ORA-00001") == -1) {
-                                        // logError("[MaintMsg]processMessageByBatchPull Error message: "
-                                        // + errMessage);
-                                        // } else {
-                                        // logWarn("[MaintMsg]processMessageByBatchPull corr_id exists in DB");
-                                        // }
-                                        // }
+                                            try {
+                                                conn.commit();
+                                                createAsynSuccess = true;
+                                            } catch (SQLException sqlEx) {
+                                                String errMessage = sqlEx.getMessage();
+                                                if (errMessage.indexOf("ORA-00001") == -1) {
+                                                    logError("[MaintMsg]processMessageByBatchPull Error message: "
+                                                            + errMessage);
+                                                } else {
+                                                    logWarn("[MaintMsg]processMessageByBatchPull corr_id exists in DB");
+                                                }
+                                            }
 
-                                        // if (!noConcurrentAppIdList.contains(getAsynSenderAppId)) {
-
-                                        // if (!releaseLock) {
-                                        // if (jobControlUtils != null) {
-                                        // jobControlUtils.releaseJobControl(jobControlName);
-                                        // releaseLock = true;
-                                        // }
-                                        // }
-                                        // }
-                                        // }
+                                            if (!noConcurrentAppIdList.contains(getAsynSenderAppId)) {
+                                                if (!releaseLock) {
+                                                    if (jobControlUtils != null) {
+                                                        jobControlUtils.releaseJobControl(jobControlName);
+                                                        releaseLock = true;
+                                                    }
+                                                }
+                                            }
+                                        }
 
                                         if (createAsynSuccess) {
 
@@ -268,10 +270,9 @@ public class MaintainMessageSessionEJB extends EJBBase
 
                                             } else {
 
-                                                SOAPElement body = SoapUtils.getFirstBodyElement(requestSoapMsg);
-
-                                                SOAPBody bod = (SOAPBody) requestSoapMsg.getSOAPBody();
-                                                Document bodyDoc = bod.extractContentAsDocument();
+                                                // SOAPElement body = SoapUtils.getFirstBodyElement(requestSoapMsg);
+                                                SOAPBody body = (SOAPBody) requestSoapMsg.getSOAPBody();
+                                                Document bodyDoc = body.extractContentAsDocument();
 
                                                 NodeList encryptedDataList = bodyDoc.getDocumentElement()
                                                         .getElementsByTagNameNS(EncryptionConstants.EncryptionSpecNS,
@@ -325,8 +326,11 @@ public class MaintainMessageSessionEJB extends EJBBase
                                                 conn.begin(null, null, HPFW_Connection.DIRECT_WITH_HISTORY);
 
                                                 if (maintMsgReq != null) {
-                                                    // maintMsgResponse = maintainMessageDAO.processMessage(conn,
-                                                    // sendAppId, maintMsgReq);
+                                                    // maintMsgResponse = maintainMessageDAO.processMessage(conn, sendAppId, maintMsgReq);
+                                                    maintMsgResponse = MaintainMessageResponseMapper
+                                                            .toJaxb(maintainMessageProcessor.processMessage(conn,
+                                                                    sendAppId, MaintainMessageRequestMapper
+                                                                            .fromJaxb(maintMsgReq)));
                                                 }
 
                                                 conn.commit();
@@ -410,12 +414,12 @@ public class MaintainMessageSessionEJB extends EJBBase
                                                 conn.begin(null, null, HPFW_Connection.DIRECT_WITH_HISTORY);
 
                                                 if (createAsynSuccess) {
-                                                    // asynMessageDAO.updateAsynMessageStatus(conn, scopesMsgId,
-                                                    // CmcAppConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
+                                                    asynMessageDAO.updateAsynMessageStatus(conn, scopesMsgId,
+                                                            CmcAppConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
                                                 } else {
-                                                    // asynMessageDAO.createAsynMessageRecord(conn, scopesMsgId,
-                                                    // maintMsgReqRecptAppId, maintMsgReqRecptAppType, null,
-                                                    // CmcAppConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
+                                                    asynMessageDAO.createAsynMessageRecord(conn, scopesMsgId,
+                                                            maintMsgReqRecptAppId, maintMsgReqRecptAppType, null,
+                                                            CmcAppConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
                                                 }
 
                                                 conn.commit();
@@ -428,8 +432,8 @@ public class MaintainMessageSessionEJB extends EJBBase
                                             logWarn("[MaintMsg]sendMsgResponseByAsyn send response msg failed. scopesMsgId="
                                                     + scopesMsgId);
 
-                                            // asynMessageDAO.updateAsynMessage(conn, scopesMsgId, responseSoapMsg,
-                                            // CmcAppConstants.ASYN_MSG_STATUS_ACKNOWLEDGED);
+                                            asynMessageDAO.updateAsynMessage(conn, scopesMsgId, responseSoapMsg,
+                                                    CmcAppConstants.ASYN_MSG_STATUS_ACKNOWLEDGED);
                                             conn.commit();
 
                                         }
@@ -482,44 +486,6 @@ public class MaintainMessageSessionEJB extends EJBBase
         }
 
         logInfo("[BATCH_JOB][MaintMsg]processMessageByBatchPull - END");
-    }
-
-    private SOAPMessage[] getMessageByBatchPull() throws EJBException {
-        logInfo("[MaintMsg]getMessageByBatchPull - START");
-
-        SOAPMessage[] responseMsgArray = null;
-
-        try {
-
-            Properties properties = cmcEnvProperties.getProperties();
-
-            MessagingClient msgClient = new MessagingClient(properties);
-
-            Map<String, String> inMap = new TreeMap<>();
-            inMap.put(IMessagingConstants.RECIPIENT_APP_ID,
-                    properties.getProperty(CmcAppPropertyNames.MAINT_MSG_REQ_RECIPIENT_APP_ID_PROPERTY_NAME));
-
-            SOAPMessage requestMsg = SoapUtils.emptyMessage();
-            msgClient.addBatchPullRequest(requestMsg, inMap,
-                    properties.getProperty(CmcAppPropertyNames.MAINT_MSG_REQ_SENDER_APP_TYPE_PROPERTY_NAME),
-                    properties.getProperty(CmcAppPropertyNames.MAINT_MSG_REQ_RECIPIENT_APP_TYPE_PROPERTY_NAME));
-
-            SOAPMessage responseMsg = msgClient.sendBatchPullRequest(requestMsg);
-
-            if (!responseMsg.getSOAPPart().getEnvelope().getBody().hasFault()) {
-
-                responseMsgArray = msgClient.getMsgsFromResponse(responseMsg);
-            }
-
-        } catch (RuntimeException e) {
-            logError("[MaintMsg]Runtime exception raised in getMessageByBatchPull", e);
-            throw e;
-        } catch (Exception e) {
-            logError("[MaintMsg]General exception raised in getMessageByBatchPull", e);
-            throw new EJBException(e);
-        }
-
-        return responseMsgArray;
     }
 
     private SOAPMessage getMessageBySinglePull(String senderAppId) throws EJBException {

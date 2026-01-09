@@ -1,16 +1,16 @@
-package hk.gov.cmc.controller.maintainmessage.emessage;
+package hk.gov.cmc.processor.maintainmessage.emessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import hk.gov.cmc.config.CmcEnvProperties;
 
-public class IasEMessageController {
+public class IasEMessageProcessor {
 
-    private static Log logger = LogFactory.getLog(IasEMessageController.class);
+    private static Log logger = LogFactory.getLog(IasEMessageProcessor.class);
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
 
-    public IasEMessageController() {
+    public IasEMessageProcessor() {
     }
 
 }

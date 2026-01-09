@@ -1,4 +1,4 @@
-package hk.gov.cmc.controller.maintainmessage;
+package hk.gov.cmc.processor.maintainmessage;
 
 import java.util.List;
 
@@ -17,11 +17,11 @@ import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.utils.maintainmessage.MaintainMessageUtils;
 import hk.gov.cmc.validator.MaintainMessageValidator;
 
-public class MaintainMessageController {
+public class MaintainMessageProcessor {
 
-    private static Log logger = LogFactory.getLog(MaintainMessageController.class);
+    private static Log logger = LogFactory.getLog(MaintainMessageProcessor.class);
 
-    public MaintainMessageController() {
+    public MaintainMessageProcessor() {
     }
 
     public MaintainMessageResponse processMessage(HPFW_Connection conn, String appId,
