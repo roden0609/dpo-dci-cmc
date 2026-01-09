@@ -75,7 +75,7 @@ public class IasToDoItemDAO {
             String clientId, String openId, String iasToDoItemId,
             String tranId, Date itemDate,
             String operationType, String iasUserNotiId) throws Exception {
-        logger.debug("createIasUserToDoItem - serviceProviderId: " + serviceProviderId
+        logger.debug("createIasUserToDoItemByOpenId - serviceProviderId: " + serviceProviderId
                 + ", clientId: " + clientId + ", openId: " + openId + ", iasToDoItemId: " + iasToDoItemId
                 + ", tranId: " + tranId + ", itemDate: " + itemDate
                 + ", operationType: " + operationType + ", iasUserNotiId: " + iasUserNotiId);
@@ -104,7 +104,7 @@ public class IasToDoItemDAO {
             String clientId, String hkidHashed, String iasToDoItemId,
             String tranId, Date itemDate,
             String operationType, String iasUserNotiId, String hkidEncrypted) throws Exception {
-        logger.debug("createIasUserToDoItem - serviceProviderId: " + serviceProviderId
+        logger.debug("createIasUserToDoItemByHKID - serviceProviderId: " + serviceProviderId
                 + ", clientId: " + clientId + ", hkidHashed: " + hkidHashed + ", hkidEncrypted: " + hkidEncrypted
                 + ", iasToDoItemId: " + iasToDoItemId
                 + ", tranId: " + tranId + ", itemDate: " + itemDate

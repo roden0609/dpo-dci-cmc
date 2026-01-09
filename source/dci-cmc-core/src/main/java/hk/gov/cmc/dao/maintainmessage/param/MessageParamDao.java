@@ -11,9 +11,9 @@ import hk.gov.cmc.model.maintainmessage.param.MessageParam;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
 
-public class MessageParamDao {
+public class MessageParamDAO {
 
-    private static Log logger = LogFactory.getLog(MessageParamDao.class);
+    private static Log logger = LogFactory.getLog(MessageParamDAO.class);
 
     public static List<MessageParam> getMsgParamByMsgType(HPFW_Connection conn, String msgType) throws Exception {
         logger.debug("getMsgParamByMsgType - start");

@@ -12,8 +12,8 @@ import hk.gov.cmc.common.ResultCodes;
 import hk.gov.cmc.common.ResultMessages;
 import hk.gov.cmc.common.StatusConstants;
 import hk.gov.cmc.config.CmcSystemParam;
-import hk.gov.cmc.dao.maintainmessage.CmcPortalServerDao;
-import hk.gov.cmc.dao.maintainmessage.template.CmcTemplateDao;
+import hk.gov.cmc.dao.maintainmessage.CmcPortalServerDAO;
+import hk.gov.cmc.dao.maintainmessage.template.CmcTemplateDAO;
 import hk.gov.cmc.model.maintainmessage.application.Application;
 import hk.gov.cmc.model.maintainmessage.emessage.EMessage;
 import hk.gov.cmc.model.maintainmessage.request.MaintainMessageRequest;
@@ -65,11 +65,11 @@ public class MaintainMessageValidator {
 
         String trustSpAppId = CmcSystemParam.getPara("TRUST_SP_APP_ID");
 
-        CmcPortalServerDao portalDao = new CmcPortalServerDao();
-        CmcTemplateDao cmcTemplateDao = new CmcTemplateDao();
+        CmcPortalServerDAO cmcPortalServerDAO = new CmcPortalServerDAO();
+        CmcTemplateDAO cmcTemplateDAO = new CmcTemplateDAO();
 
         for (MessageRequest msgReq : msgReqList) {
-            String portalStatus = portalDao.getPortalStatusByPortalId(conn, msgReq.getPortalId());
+            String portalStatus = cmcPortalServerDAO.getPortalStatusByPortalId(conn, msgReq.getPortalId());
             if (portalStatus == null || !StatusConstants.PORTAL_STATUS_ACTIVE.equals(portalStatus)) {
                 return MaintainMessageUtils.getMaintainMessageResponse(ResultCodes.RESULT_CD_PORTAL_ID_NOT_FOUND,
                         ResultMessages.RESULT_MSG_PORTAL_ID_NOT_FOUND);
@@ -84,7 +84,7 @@ public class MaintainMessageValidator {
             String applicationServiceProviderId = null;
 
             if (eMsg != null) {
-                CmcTemplate cmcTemplate = cmcTemplateDao.getTemplateByIdVersion(conn, eMsg.getTemplateId(),
+                CmcTemplate cmcTemplate = cmcTemplateDAO.getTemplateByIdVersion(conn, eMsg.getTemplateId(),
                         eMsg.getTemplateVersion(), CmcAppConstants.EMSG_TEMPLATE_TYPE);
 
                 if (cmcTemplate == null) {
@@ -125,7 +125,7 @@ public class MaintainMessageValidator {
 
             if (toDoItem != null) {
 
-                CmcTemplate cmcTemplate = cmcTemplateDao.getTemplateByIdVersion(conn, toDoItem.getTemplateId(),
+                CmcTemplate cmcTemplate = cmcTemplateDAO.getTemplateByIdVersion(conn, toDoItem.getTemplateId(),
                         toDoItem.getTemplateVersion(), CmcAppConstants.TO_DO_ITEM_TEMPLATE_TYPE);
 
                 if (cmcTemplate == null) {
@@ -158,7 +158,7 @@ public class MaintainMessageValidator {
 
             if (application != null) {
 
-                CmcTemplate cmcTemplate = cmcTemplateDao.getTemplateByIdVersion(conn, application.getTemplateId(),
+                CmcTemplate cmcTemplate = cmcTemplateDAO.getTemplateByIdVersion(conn, application.getTemplateId(),
                         application.getTemplateVersion(), CmcAppConstants.APPLICATION_TEMPLATE_TYPE);
 
                 if (cmcTemplate == null) {

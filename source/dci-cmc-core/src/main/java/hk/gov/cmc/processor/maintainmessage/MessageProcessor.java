@@ -19,10 +19,9 @@ import hk.gov.cmc.common.ResultCodes;
 import hk.gov.cmc.common.ResultMessages;
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.dao.maintainmessage.notification.IasUserNotiInfoDAO;
-import hk.gov.cmc.dao.maintainmessage.param.MessageParamDao;
-import hk.gov.cmc.dao.maintainmessage.template.CmcTemplateDao;
+import hk.gov.cmc.dao.maintainmessage.param.MessageParamDAO;
+import hk.gov.cmc.dao.maintainmessage.template.CmcTemplateDAO;
 import hk.gov.cmc.dto.maintainmessage.SingleMaintainMsgResult;
-import hk.gov.cmc.model.maintainmessage.action.Action;
 import hk.gov.cmc.model.maintainmessage.application.Application;
 import hk.gov.cmc.model.maintainmessage.emessage.EMessage;
 import hk.gov.cmc.model.maintainmessage.param.MessageParam;
@@ -35,7 +34,7 @@ import hk.gov.cmc.model.maintainmessage.user.IasUser;
 import hk.gov.cmc.model.maintainmessage.user.IasUserWrapped;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.processor.maintainmessage.application.IasApplicationProcessor;
-import hk.gov.cmc.processor.maintainmessage.emessage.IasEMessageProcessor;
+import hk.gov.cmc.processor.maintainmessage.message.IasMessageProcessor;
 import hk.gov.cmc.processor.maintainmessage.todoitem.IasToDoItemProcessor;
 import hk.gov.cmc.utils.common.EncUtils;
 import hk.gov.cmc.utils.common.EncryptionUtils;
@@ -56,6 +55,7 @@ public class MessageProcessor {
 
     // E-message
     CmcTemplate cmcEMsgTemplate;
+    boolean eMsgIasOptCheck = false;
 
     // Application
     boolean hasApplicationInRequest = false;
@@ -113,11 +113,6 @@ public class MessageProcessor {
             logger.info("processor.processMessage - recipients.size: " + recipients.size());
         }
 
-        int subjectSizeLimit = Integer
-                .parseInt(properties.getProperty(CmcAppPropertyNames.MAINT_MSG_SUBJ_SIZE_LIMIT_PROPERTY_NAME));
-        int contentSizeLimit = Integer
-                .parseInt(properties.getProperty(CmcAppPropertyNames.MAINT_MSG_CONTENT_SIZE_LIMIT_PROPERTY_NAME));
-
         // String messageId = "";
         // String toDoItemId = "";
         // String userInd = "";
@@ -164,19 +159,20 @@ public class MessageProcessor {
         // Map toDoItemTemlFieldMap = null;
         // Map<String, String> iasApplicationTemplateFieldMap = null;
 
-        CmcTemplateDao cmcTemplateDao = new CmcTemplateDao();
+        CmcTemplateDAO cmcTemplateDAO = new CmcTemplateDAO();
 
         // Validate eMsg template
         if (eMsg != null) {
-            cmcEMsgTemplate = cmcTemplateDao.getTemplateByIdVersion(conn, eMsg.getTemplateId(),
+            cmcEMsgTemplate = cmcTemplateDAO.getTemplateByIdVersion(conn, eMsg.getTemplateId(),
                     eMsg.getTemplateVersion(), CmcAppConstants.EMSG_TEMPLATE_TYPE);
             esClientId = cmcEMsgTemplate.getClientId();
             iasOptSpId = cmcEMsgTemplate.getIasOptSpId();
+            eMsgIasOptCheck = "Y".equals(cmcEMsgTemplate.getIasShowEsSetBtn());
         }
 
         // Validate to-do-item template
         if (toDoItem != null) {
-            cmcToDoItemTemplate = cmcTemplateDao.getTemplateByIdVersion(conn, toDoItem.getTemplateId(),
+            cmcToDoItemTemplate = cmcTemplateDAO.getTemplateByIdVersion(conn, toDoItem.getTemplateId(),
                     toDoItem.getTemplateVersion(), CmcAppConstants.TO_DO_ITEM_TEMPLATE_TYPE);
 
             esClientId = esClientId == null ? cmcToDoItemTemplate.getClientId() : esClientId;
@@ -195,7 +191,7 @@ public class MessageProcessor {
 
         // Validate application status template
         if (application != null) {
-            cmcApplicationTemplate = cmcTemplateDao.getTemplateByIdVersion(
+            cmcApplicationTemplate = cmcTemplateDAO.getTemplateByIdVersion(
                     conn, application.getTemplateId(), application.getTemplateVersion(),
                     CmcAppConstants.APPLICATION_TEMPLATE_TYPE);
 
@@ -211,18 +207,13 @@ public class MessageProcessor {
         int impDtUpperLimit = Integer.parseInt(
                 properties.getProperty(CmcAppPropertyNames.TTO_DO_ITEM_IMPORTANT_DT_UPPER_LIMIT_PROPERTY_NAME));
 
-        // MyGov6-C1-002 Enhance Maintain Message module to support iAM Smart message -- START
-        MessageResponse validateIasSizeErrorResp = null;
-        boolean iasMsgSizeInvalid = false;
-        // MyGov6-C1-002 Enhance Maintain Message module to support iAM Smart message -- END
-
-        List<MessageParam> cmcMsgParamAll = MessageParamDao.getMsgParamByMsgType(conn,
+        List<MessageParam> cmcMsgParamAll = MessageParamDAO.getMsgParamByMsgType(conn,
                 MessageParam.MESSAGE_TYPE_ALL_MSG);
-        List<MessageParam> cmcMsgParamIasMessage = MessageParamDao.getMsgParamByMsgType(conn,
+        List<MessageParam> cmcMsgParamIasMessage = MessageParamDAO.getMsgParamByMsgType(conn,
                 MessageParam.MESSAGE_TYPE_IAS_MSG);
-        List<MessageParam> cmcMsgParamIasToDoItem = MessageParamDao.getMsgParamByMsgType(conn,
+        List<MessageParam> cmcMsgParamIasToDoItem = MessageParamDAO.getMsgParamByMsgType(conn,
                 MessageParam.MESSAGE_TYPE_IAS_TO_DO_ITEM);
-        List<MessageParam> cmcMsgParamIasApplication = MessageParamDao.getMsgParamByMsgType(conn,
+        List<MessageParam> cmcMsgParamIasApplication = MessageParamDAO.getMsgParamByMsgType(conn,
                 MessageParam.MESSAGE_TYPE_IAS_APPLICATION);
 
         ParamUtils.updateStaticSystemParam(cmcMsgParamIasMessage);
@@ -237,9 +228,6 @@ public class MessageProcessor {
 
         Map<String, IasUserWrapped> validatedIasUserWrappedMap = new HashMap<String, IasUserWrapped>();
         List<String> iasMsgCreatedNotiIdList = new ArrayList<String>();
-        List<IasUser> iasUserList = new ArrayList<IasUser>();
-        List<IasUser> missingIasUserList = new ArrayList<IasUser>();
-        Map<String, Map<String, String>> validatedUserMap = new HashMap<String, Map<String, String>>();
 
         // Prepare validated iAM Smart user list (validatedIasUserWrappedMap) for sending iAM Smart message later
         for (Recipient recipient : recipients) {
@@ -393,11 +381,12 @@ public class MessageProcessor {
 
         logger.info("processor.processMessage - validatedIasUserWrappedMap.size: " + validatedIasUserWrappedMap.size());
 
-        IasEMessageProcessor iasEMessageProcessor = new IasEMessageProcessor();
+        IasMessageProcessor iasMessageProcessor = new IasMessageProcessor();
         IasToDoItemProcessor iasToDoItemProcessor = new IasToDoItemProcessor();
         IasApplicationProcessor iasApplicationProcessor = new IasApplicationProcessor();
 
         // Loop through each recipient to process iAM Smart message
+        String iasMsgId = "";
         String iasToDoItemId = "";
         String iasApplicationId = "";
         for (Recipient recipient : recipients) {
@@ -409,204 +398,241 @@ public class MessageProcessor {
 
             if (iasIdpId.equals(recipient.getIdpId())) {
 
-                Action action = Action.NEW;
-                if (recipient.getAction() != null) {
-                    action = recipient.getAction();
-                }
+                // Action action = Action.NEW;
+                // if (recipient.getAction() != null) {
+                // action = recipient.getAction();
+                // }
 
                 IasUserWrapped validatedIasUserWrapped = validatedIasUserWrappedMap.get(recipient.getRecipientId());
                 if (validatedIasUserWrapped != null) {
-                    IasUser validatedIasUser = validatedIasUserWrapped.getIasUser();
+                    // IasUser validatedIasUser = validatedIasUserWrapped.getIasUser();
 
+                    SingleMaintainMsgResult processIasMessageResult = null;
                     SingleMaintainMsgResult processIasToDoItemResult = null;
                     SingleMaintainMsgResult processIasApplicationResult = null;
 
-                    // if (eMsg != null) {
+                    if (eMsg != null) {
+                        try {
+                            processIasMessageResult = iasMessageProcessor.processIasMessage(
+                                    portalId, iasMsgId,
+                                    recipient, validatedIasUserWrapped,
+                                    eMsgIasOptCheck,
+                                    dataContentEn, dataContentTc, dataContentSc,
+                                    cmcToDoItemTemplate, cmcMsgParamIasToDoItem, conn,
+                                    response);
+                            if (processIasMessageResult.isSuccess()) {
+                                response.addMessageResponse(
+                                        MaintainMessageUtils.getMessageResponse(recipient.getTranId(),
+                                                recipient.getIdpId(),
+                                                recipient.getRecipientId(),
+                                                MsgTypeConstant.MESSAGE,
+                                                ResultCodes.RESULT_CD_TRAN_SUCCESS,
+                                                ResultMessages.RESULT_MSG_TRAN_SUCCESS));
+                            }
+                            iasMsgId = processIasMessageResult.getCreatedMsgId();
+                        } catch (Exception e) {
+                            response.addMessageResponse(
+                                    MaintainMessageUtils.getMessageResponse(recipient.getTranId(), recipient.getIdpId(),
+                                            recipient.getRecipientId(),
+                                            MsgTypeConstant.TO_DO_ITEM,
+                                            ResultCodes.RESULT_CD_GENERAL_ERROR,
+                                            ResultMessages.RESULT_MSG_GENERAL_ERROR));
+                            logger.info("processIasMessage - iasMessageProcessor.processIasMessage failed"
+                                    + ". cmcTemplate.getClientId: " + cmcToDoItemTemplate.getClientId()
+                                    + ", cmcTemplate.getTemplateId: " + cmcToDoItemTemplate.getTemplateId()
+                                    + ", cmcTemplate.getTemplateVersion: " + cmcToDoItemTemplate.getTemplateVersion()
+                                    + ", recipient.getTranId: " + recipient.getTranId()
+                                    + ", recipient.getIdpId: " + recipient.getIdpId()
+                                    + ", msgType: " + MsgTypeConstant.MESSAGE
+                                    + ", TranResultCode: " + ResultCodes.RESULT_CD_GENERAL_ERROR
+                                    + ", TranResultMessage: " + ResultMessages.RESULT_MSG_GENERAL_ERROR);
+                            logger.info(
+                                    "processIasMessage - iasMessageProcessor.processIasMessage exception: " + e);
+                        }
+                        // MessageResponse msgRsp = null;
+                        // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - END
 
-                    // MessageResponse msgRsp = null;
-                    // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - END
+                        // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - BEGIN
+                        // // processIasMsgResult = new SingleMaintainMsgResult(iasMsgId, false);
+                        // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - END
 
-                    // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - BEGIN
-                    // // processIasMsgResult = new SingleMaintainMsgResult(iasMsgId, false);
-                    // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - END
+                        // // iasMsgId = NULL indicates IAS_MESSAGE record is not created yet
+                        // if (iasMsgId == null || "".equals(iasMsgId)) {
 
-                    // // iasMsgId = NULL indicates IAS_MESSAGE record is not created yet
-                    // if (iasMsgId == null || "".equals(iasMsgId)) {
+                        // iasMsgId = IasUtils.getNextIasMsgId(serverId);
 
-                    // iasMsgId = IasUtils.getNextIasMsgId(serverId);
+                        // String mergedIasSubjectEn = null;
+                        // String mergedIasSubjectTc = null;
+                        // String mergedIasSubjectSc = null;
+                        // String mergedIasContentEn = null;
+                        // String mergedIasContentTc = null;
+                        // String mergedIasContentSc = null;
 
-                    // String mergedIasSubjectEn = null;
-                    // String mergedIasSubjectTc = null;
-                    // String mergedIasSubjectSc = null;
-                    // String mergedIasContentEn = null;
-                    // String mergedIasContentTc = null;
-                    // String mergedIasContentSc = null;
+                        // String templateSubjecEn = (String) eMsgTemlFieldMap.get("IAS_SUBJECT_EN");
+                        // String templateSubjecTc = (String) eMsgTemlFieldMap.get("IAS_SUBJECT_TC");
+                        // String templateSubjecSc = (String) eMsgTemlFieldMap.get("IAS_SUBJECT_SC");
 
-                    // String templateSubjecEn = (String) eMsgTemlFieldMap.get("IAS_SUBJECT_EN");
-                    // String templateSubjecTc = (String) eMsgTemlFieldMap.get("IAS_SUBJECT_TC");
-                    // String templateSubjecSc = (String) eMsgTemlFieldMap.get("IAS_SUBJECT_SC");
+                        // if (templateSubjecEn != null && templateSubjecEn.length() > 0) {
+                        // mergedIasSubjectEn = getMergedContent(eMsgTemlFieldMap, subjectEn, subjectTc, subjectSc,
+                        // "IAS_SUBJECT", LANGUAGE_EN, cmcMsgParamIasMessage, null, false);
+                        // mergedIasContentEn = getMergedContent(eMsgTemlFieldMap, contentEn, contentTc, contentSc,
+                        // "IAS_CONTENT", LANGUAGE_EN, cmcMsgParamIasMessage, null, false);
+                        // } else {
+                        // mergedIasSubjectEn = null;
+                        // mergedIasContentEn = null;
+                        // }
 
-                    // if (templateSubjecEn != null && templateSubjecEn.length() > 0) {
-                    // mergedIasSubjectEn = getMergedContent(eMsgTemlFieldMap, subjectEn, subjectTc, subjectSc,
-                    // "IAS_SUBJECT", LANGUAGE_EN, cmcMsgParamIasMessage, null, false);
-                    // mergedIasContentEn = getMergedContent(eMsgTemlFieldMap, contentEn, contentTc, contentSc,
-                    // "IAS_CONTENT", LANGUAGE_EN, cmcMsgParamIasMessage, null, false);
-                    // } else {
-                    // mergedIasSubjectEn = null;
-                    // mergedIasContentEn = null;
-                    // }
+                        // if (templateSubjecTc != null && templateSubjecTc.length() > 0) {
+                        // mergedIasSubjectTc = getMergedContent(eMsgTemlFieldMap, subjectEn, subjectTc, subjectSc,
+                        // "IAS_SUBJECT", LANGUAGE_TC, cmcMsgParamIasMessage, null, false);
+                        // mergedIasContentTc = getMergedContent(eMsgTemlFieldMap, contentEn, contentTc, contentSc,
+                        // "IAS_CONTENT", LANGUAGE_TC, cmcMsgParamIasMessage, null, false);
+                        // } else {
+                        // mergedIasSubjectTc = null;
+                        // mergedIasContentTc = null;
+                        // }
 
-                    // if (templateSubjecTc != null && templateSubjecTc.length() > 0) {
-                    // mergedIasSubjectTc = getMergedContent(eMsgTemlFieldMap, subjectEn, subjectTc, subjectSc,
-                    // "IAS_SUBJECT", LANGUAGE_TC, cmcMsgParamIasMessage, null, false);
-                    // mergedIasContentTc = getMergedContent(eMsgTemlFieldMap, contentEn, contentTc, contentSc,
-                    // "IAS_CONTENT", LANGUAGE_TC, cmcMsgParamIasMessage, null, false);
-                    // } else {
-                    // mergedIasSubjectTc = null;
-                    // mergedIasContentTc = null;
-                    // }
+                        // if (templateSubjecSc != null && templateSubjecSc.length() > 0) {
+                        // mergedIasSubjectSc = getMergedContent(eMsgTemlFieldMap, subjectEn, subjectTc, subjectSc,
+                        // "IAS_SUBJECT", LANGUAGE_SC, cmcMsgParamIasMessage, null, false);
+                        // mergedIasContentSc = getMergedContent(eMsgTemlFieldMap, contentEn, contentTc, contentSc,
+                        // "IAS_CONTENT", LANGUAGE_SC, cmcMsgParamIasMessage, null, false);
+                        // } else {
+                        // mergedIasSubjectSc = null;
+                        // mergedIasContentSc = null;
+                        // }
 
-                    // if (templateSubjecSc != null && templateSubjecSc.length() > 0) {
-                    // mergedIasSubjectSc = getMergedContent(eMsgTemlFieldMap, subjectEn, subjectTc, subjectSc,
-                    // "IAS_SUBJECT", LANGUAGE_SC, cmcMsgParamIasMessage, null, false);
-                    // mergedIasContentSc = getMergedContent(eMsgTemlFieldMap, contentEn, contentTc, contentSc,
-                    // "IAS_CONTENT", LANGUAGE_SC, cmcMsgParamIasMessage, null, false);
-                    // } else {
-                    // mergedIasSubjectSc = null;
-                    // mergedIasContentSc = null;
-                    // }
+                        // validateIasSizeErrorResp = validateIasMsgSize(eMsgTemlFieldMap, mergedIasSubjectEn,
+                        // mergedIasSubjectTc, mergedIasSubjectSc, mergedIasContentEn, mergedIasContentTc,
+                        // mergedIasContentSc, properties);
 
-                    // validateIasSizeErrorResp = validateIasMsgSize(eMsgTemlFieldMap, mergedIasSubjectEn,
-                    // mergedIasSubjectTc, mergedIasSubjectSc, mergedIasContentEn, mergedIasContentTc,
-                    // mergedIasContentSc, properties);
+                        // if (validateIasSizeErrorResp != null) {
+                        // iasMsgSizeInvalid = true;
+                        // response.addMessageResponse(
+                        // getRecipientInvalidResponse(recipient, validateIasSizeErrorResp));
+                        // } else {
 
-                    // if (validateIasSizeErrorResp != null) {
-                    // iasMsgSizeInvalid = true;
-                    // response.addMessageResponse(
-                    // getRecipientInvalidResponse(recipient, validateIasSizeErrorResp));
-                    // } else {
+                        // IasMessage_ iasMessage = new IasMessage_();
+                        // iasMessage.setIasMsgId(iasMsgId);
+                        // iasMessage.setPortalId(portalId);
+                        // iasMessage.setTemplateId(eMsg.getTemplateId());
+                        // iasMessage.setTemplateVersion(eMsg.getTemplateVersion());
+                        // iasMessage.setSubjectEn(mergedIasSubjectEn);
+                        // iasMessage.setSubjectTc(mergedIasSubjectTc);
+                        // iasMessage.setSubjectSc(mergedIasSubjectSc);
 
-                    // IasMessage_ iasMessage = new IasMessage_();
-                    // iasMessage.setIasMsgId(iasMsgId);
-                    // iasMessage.setPortalId(portalId);
-                    // iasMessage.setTemplateId(eMsg.getTemplateId());
-                    // iasMessage.setTemplateVersion(eMsg.getTemplateVersion());
-                    // iasMessage.setSubjectEn(mergedIasSubjectEn);
-                    // iasMessage.setSubjectTc(mergedIasSubjectTc);
-                    // iasMessage.setSubjectSc(mergedIasSubjectSc);
+                        // // MyGov6-C2-002: Enable at-rest encryption in all message content -- BEGIN
+                        // mergedIasContentEn = EncUtils.encrypt(mergedIasContentEn);
+                        // mergedIasContentTc = EncUtils.encrypt(mergedIasContentTc);
+                        // mergedIasContentSc = EncUtils.encrypt(mergedIasContentSc);
+                        // iasMessage.setEncInd(IntegrationConstants.ENC_IND_YES);
+                        // iasMessage.setEncKeyStoreId(encKeyStoreId);
+                        // // MyGov6-C2-002: Enable at-rest encryption in all message content -- END
 
-                    // // MyGov6-C2-002: Enable at-rest encryption in all message content -- BEGIN
-                    // mergedIasContentEn = EncUtils.encrypt(mergedIasContentEn);
-                    // mergedIasContentTc = EncUtils.encrypt(mergedIasContentTc);
-                    // mergedIasContentSc = EncUtils.encrypt(mergedIasContentSc);
-                    // iasMessage.setEncInd(IntegrationConstants.ENC_IND_YES);
-                    // iasMessage.setEncKeyStoreId(encKeyStoreId);
-                    // // MyGov6-C2-002: Enable at-rest encryption in all message content -- END
+                        // iasMessage.setContentEn(mergedIasContentEn);
+                        // iasMessage.setContentTc(mergedIasContentTc);
+                        // iasMessage.setContentSc(mergedIasContentSc);
 
-                    // iasMessage.setContentEn(mergedIasContentEn);
-                    // iasMessage.setContentTc(mergedIasContentTc);
-                    // iasMessage.setContentSc(mergedIasContentSc);
+                        // // CMC-2025-027: Apply suffix in template level in iAM Smart Message, iAM Smart To-Do Item, iAM Smart Application Status - BEGIN
+                        // // iasMessage.setIasEsAppSuffixEn(getNodeValueFromMetaData(contentEn, iasEsAppSuffixTagName));
+                        // // iasMessage.setIasEsAppSuffixTc(getNodeValueFromMetaData(contentTc, iasEsAppSuffixTagName));
+                        // // iasMessage.setIasEsAppSuffixSc(getNodeValueFromMetaData(contentSc, iasEsAppSuffixTagName));
+                        // iasMessage.setIasEsAppSuffixEn(cmcEMsgTemplate.getIasEsAppSuffixEn());
+                        // iasMessage.setIasEsAppSuffixTc(cmcEMsgTemplate.getIasEsAppSuffixTc());
+                        // iasMessage.setIasEsAppSuffixSc(cmcEMsgTemplate.getIasEsAppSuffixSc());
+                        // if (getNodeValueFromMetaData(contentEn, iasEsAppSuffixTagName) != null) {
+                        // iasMessage.setIasEsAppSuffixEn(
+                        // getNodeValueFromMetaData(contentEn, iasEsAppSuffixTagName));
+                        // }
+                        // if (getNodeValueFromMetaData(contentTc, iasEsAppSuffixTagName) != null) {
+                        // iasMessage.setIasEsAppSuffixTc(
+                        // getNodeValueFromMetaData(contentTc, iasEsAppSuffixTagName));
+                        // }
+                        // if (getNodeValueFromMetaData(contentSc, iasEsAppSuffixTagName) != null) {
+                        // iasMessage.setIasEsAppSuffixSc(
+                        // getNodeValueFromMetaData(contentSc, iasEsAppSuffixTagName));
+                        // }
+                        // // CMC-2025-027: Apply suffix in template level in iAM Smart Message, iAM Smart To-Do Item, iAM Smart Application Status - END
 
-                    // // CMC-2025-027: Apply suffix in template level in iAM Smart Message, iAM Smart To-Do Item, iAM Smart Application Status - BEGIN
-                    // // iasMessage.setIasEsAppSuffixEn(getNodeValueFromMetaData(contentEn, iasEsAppSuffixTagName));
-                    // // iasMessage.setIasEsAppSuffixTc(getNodeValueFromMetaData(contentTc, iasEsAppSuffixTagName));
-                    // // iasMessage.setIasEsAppSuffixSc(getNodeValueFromMetaData(contentSc, iasEsAppSuffixTagName));
-                    // iasMessage.setIasEsAppSuffixEn(cmcEMsgTemplate.getIasEsAppSuffixEn());
-                    // iasMessage.setIasEsAppSuffixTc(cmcEMsgTemplate.getIasEsAppSuffixTc());
-                    // iasMessage.setIasEsAppSuffixSc(cmcEMsgTemplate.getIasEsAppSuffixSc());
-                    // if (getNodeValueFromMetaData(contentEn, iasEsAppSuffixTagName) != null) {
-                    // iasMessage.setIasEsAppSuffixEn(
-                    // getNodeValueFromMetaData(contentEn, iasEsAppSuffixTagName));
-                    // }
-                    // if (getNodeValueFromMetaData(contentTc, iasEsAppSuffixTagName) != null) {
-                    // iasMessage.setIasEsAppSuffixTc(
-                    // getNodeValueFromMetaData(contentTc, iasEsAppSuffixTagName));
-                    // }
-                    // if (getNodeValueFromMetaData(contentSc, iasEsAppSuffixTagName) != null) {
-                    // iasMessage.setIasEsAppSuffixSc(
-                    // getNodeValueFromMetaData(contentSc, iasEsAppSuffixTagName));
-                    // }
-                    // // CMC-2025-027: Apply suffix in template level in iAM Smart Message, iAM Smart To-Do Item, iAM Smart Application Status - END
+                        // conn.begin(null, conn.getLastUpTime(), HPFW_Connection.DIRECT);
+                        // iasMessage.insert(conn);
+                        // conn.begin(null, conn.getLastUpTime(), HPFW_Connection.DIRECT_WITH_HISTORY);
+                        // }
+                        // }
 
-                    // conn.begin(null, conn.getLastUpTime(), HPFW_Connection.DIRECT);
-                    // iasMessage.insert(conn);
-                    // conn.begin(null, conn.getLastUpTime(), HPFW_Connection.DIRECT_WITH_HISTORY);
-                    // }
-                    // }
+                        // if (!iasMsgSizeInvalid) {
+                        // // CMC-2025-017: Block iAM Smart Message receive HKID as recipientId - BEGIN
+                        // msgRsp = IasMsgValidator.validateRecipientIdTypeOnlyEmptyOrOpenId(
+                        // cmcEMsgTemplate.getClientId(),
+                        // recipient.getIdpId(), recipient.getRecipientId(), recipient.getTranId(),
+                        // recipient.getRecipientIdType());
+                        // // CMC-2025-017: Block iAM Smart Message receive HKID as recipientId - END
+                        // if (msgRsp != null) {
+                        // response.addMessageResponse(msgRsp);
+                        // } else {
+                        // // CMC-2025-015: Fixed VIP iAM Smart Message cannot be sent to iAM Smart user - BEGIN
+                        // // msgRsp = IasMsgValidator.validateOptInStatus(cmcMsgTemplate.getClientId(), recipient.getIdpId(),
+                        // // recipient.getRecipientId(), recipient.getTranId(), iasOptCheck, validatedIasUser.getOptIn());
+                        // msgRsp = IasMsgValidator.validateOptInStatus(cmcEMsgTemplate.getClientId(),
+                        // recipient.getIdpId(),
+                        // recipient.getRecipientId(), recipient.getTranId(), eMsgIasOptCheck,
+                        // validatedIasUser.getOptIn());
+                        // // CMC-2025-015: Fixed VIP iAM Smart Message cannot be sent to iAM Smart user - END
 
-                    // if (!iasMsgSizeInvalid) {
-                    // // CMC-2025-017: Block iAM Smart Message receive HKID as recipientId - BEGIN
-                    // msgRsp = IasMsgValidator.validateRecipientIdTypeOnlyEmptyOrOpenId(
-                    // cmcEMsgTemplate.getClientId(),
-                    // recipient.getIdpId(), recipient.getRecipientId(), recipient.getTranId(),
-                    // recipient.getRecipientIdType());
-                    // // CMC-2025-017: Block iAM Smart Message receive HKID as recipientId - END
-                    // if (msgRsp != null) {
-                    // response.addMessageResponse(msgRsp);
-                    // } else {
-                    // // CMC-2025-015: Fixed VIP iAM Smart Message cannot be sent to iAM Smart user - BEGIN
-                    // // msgRsp = IasMsgValidator.validateOptInStatus(cmcMsgTemplate.getClientId(), recipient.getIdpId(),
-                    // // recipient.getRecipientId(), recipient.getTranId(), iasOptCheck, validatedIasUser.getOptIn());
-                    // msgRsp = IasMsgValidator.validateOptInStatus(cmcEMsgTemplate.getClientId(),
-                    // recipient.getIdpId(),
-                    // recipient.getRecipientId(), recipient.getTranId(), eMsgIasOptCheck,
-                    // validatedIasUser.getOptIn());
-                    // // CMC-2025-015: Fixed VIP iAM Smart Message cannot be sent to iAM Smart user - END
+                        // if (msgRsp != null) {
+                        // response.addMessageResponse(msgRsp);
+                        // } else {
 
-                    // if (msgRsp != null) {
-                    // response.addMessageResponse(msgRsp);
-                    // } else {
+                        // msgRsp = IasMsgValidator.validateAction(cmcEMsgTemplate.getClientId(),
+                        // recipient.getIdpId(),
+                        // recipient.getRecipientId(), recipient.getTranId(), action);
+                        // if (msgRsp != null) {
+                        // response.addMessageResponse(msgRsp);
+                        // } else {
+                        // // Create IAS_USER_MESSAGE
+                        // IasUserMessage_ iasUserMsg = new IasUserMessage_();
+                        // iasUserMsg.setClientId(esClientId);
+                        // iasUserMsg.setOpenId(recipient.getRecipientId());
+                        // iasUserMsg.setIasMsgId(iasMsgId);
+                        // iasUserMsg.setTranId(recipient.getTranId());
+                        // iasUserMsg.setReadInd(IntegrationConstants.READ_IND_UNREAD);
+                        // iasUserMsg.setDeleteInd(IntegrationConstants.DELETE_IND_NOT_DELETED);
+                        // iasUserMsg.setIasNotiStatus(IntegrationConstants.IAS_NOTI_STATUS_NEW);
 
-                    // msgRsp = IasMsgValidator.validateAction(cmcEMsgTemplate.getClientId(),
-                    // recipient.getIdpId(),
-                    // recipient.getRecipientId(), recipient.getTranId(), action);
-                    // if (msgRsp != null) {
-                    // response.addMessageResponse(msgRsp);
-                    // } else {
-                    // // Create IAS_USER_MESSAGE
-                    // IasUserMessage_ iasUserMsg = new IasUserMessage_();
-                    // iasUserMsg.setClientId(esClientId);
-                    // iasUserMsg.setOpenId(recipient.getRecipientId());
-                    // iasUserMsg.setIasMsgId(iasMsgId);
-                    // iasUserMsg.setTranId(recipient.getTranId());
-                    // iasUserMsg.setReadInd(IntegrationConstants.READ_IND_UNREAD);
-                    // iasUserMsg.setDeleteInd(IntegrationConstants.DELETE_IND_NOT_DELETED);
-                    // iasUserMsg.setIasNotiStatus(IntegrationConstants.IAS_NOTI_STATUS_NEW);
+                        // if ((validatedIasUser != null)
+                        // && (!IntegrationConstants.IAS_USER_STATUS_MISSING
+                        // .equals(validatedIasUser.getStatus()))
+                        // && (validatedIasUser.getNotiId() != null)
+                        // && (validatedIasUser.getNotiId().length() > 0)) {
+                        // iasUserMsg.setNotiId(validatedIasUser.getNotiId());
+                        // }
 
-                    // if ((validatedIasUser != null)
-                    // && (!IntegrationConstants.IAS_USER_STATUS_MISSING
-                    // .equals(validatedIasUser.getStatus()))
-                    // && (validatedIasUser.getNotiId() != null)
-                    // && (validatedIasUser.getNotiId().length() > 0)) {
-                    // iasUserMsg.setNotiId(validatedIasUser.getNotiId());
-                    // }
+                        // iasUserMsg.insert(conn);
 
-                    // iasUserMsg.insert(conn);
+                        // // Change Opt In from U to Y (For deregister user)
+                        // if ((validatedIasUser != null) && (validatedIasUser.getNotiId() != null)
+                        // && (IntegrationConstants.OPT_IN_U
+                        // .equals(validatedIasUser.getOptIn()))) {
+                        // IasEsNotiMap_ notiMap = new IasEsNotiMap_(conn,
+                        // validatedIasUser.getNotiId(), eMsgServiceProviderId);
+                        // notiMap.setOptIn(IntegrationConstants.OPT_IN_Y);
+                        // notiMap.update(conn);
+                        // }
 
-                    // // Change Opt In from U to Y (For deregister user)
-                    // if ((validatedIasUser != null) && (validatedIasUser.getNotiId() != null)
-                    // && (IntegrationConstants.OPT_IN_U
-                    // .equals(validatedIasUser.getOptIn()))) {
-                    // IasEsNotiMap_ notiMap = new IasEsNotiMap_(conn,
-                    // validatedIasUser.getNotiId(), eMsgServiceProviderId);
-                    // notiMap.setOptIn(IntegrationConstants.OPT_IN_Y);
-                    // notiMap.update(conn);
-                    // }
-
-                    // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - BEGIN
-                    // // processIasMsgResult.setSuccess(true);
-                    // response.addMessageResponse(MaintainMessageUtils.getMessageResponse(
-                    // recipient.getTranId(), recipient.getIdpId(), recipient.getRecipientId(),
-                    // MsgTypeConstant.MESSAGE, IntegrationConstants.RESULT_CD_TRAN_SUCCESS,
-                    // IntegrationConstants.RESULT_MSG_TRAN_SUCCESS));
-                    // // response.addMessageResponse(getMessageResponse(recipient.getTranId(), recipient.getIdpId(), recipient.getRecipientId(), IntegrationConstants.RESULT_CD_TRAN_SUCCESS, IntegrationConstants.RESULT_MSG_TRAN_SUCCESS));
-                    // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - END
-                    // }
-                    // }
-                    // }
-                    // }
-                    // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - BEGIN
-                    // }
+                        // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - BEGIN
+                        // // processIasMsgResult.setSuccess(true);
+                        // response.addMessageResponse(MaintainMessageUtils.getMessageResponse(
+                        // recipient.getTranId(), recipient.getIdpId(), recipient.getRecipientId(),
+                        // MsgTypeConstant.MESSAGE, IntegrationConstants.RESULT_CD_TRAN_SUCCESS,
+                        // IntegrationConstants.RESULT_MSG_TRAN_SUCCESS));
+                        // // response.addMessageResponse(getMessageResponse(recipient.getTranId(), recipient.getIdpId(), recipient.getRecipientId(), IntegrationConstants.RESULT_CD_TRAN_SUCCESS, IntegrationConstants.RESULT_MSG_TRAN_SUCCESS));
+                        // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - END
+                        // }
+                        // }
+                        // }
+                        // }
+                        // // CMC-2024-007 - Enhance Maintain Message Module to Support iAM Smart To-Do Item - BEGIN
+                    }
 
                     logger.info("processor.processMessage - toDoItem: " + toDoItem);
                     if (toDoItem != null) {

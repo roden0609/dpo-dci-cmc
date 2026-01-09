@@ -58,14 +58,9 @@ public class IasApplicationDAO {
         iasApplication.setDetailTc(encryptedMergedIasApplicationDetailTc);
         iasApplication.setDetailSc(encryptedMergedIasApplicationDetailSc);
 
-        // CMC-2025-027: Apply suffix in template level in iAM Smart Message, iAM Smart To-Do Item, iAM Smart Application Status - BEGIN
-        // iasApplication.setIasEsAppSuffixEn(TemplateUtils.getNodeValueFromMetaData(detailEn, iasEsAppSuffixTagName));
-        // iasApplication.setIasEsAppSuffixTc(TemplateUtils.getNodeValueFromMetaData(detailTc, iasEsAppSuffixTagName));
-        // iasApplication.setIasEsAppSuffixSc(TemplateUtils.getNodeValueFromMetaData(detailSc, iasEsAppSuffixTagName));
         iasApplication.setIasEsAppSuffixEn(iasEsAppSuffixEn);
         iasApplication.setIasEsAppSuffixTc(iasEsAppSuffixTc);
         iasApplication.setIasEsAppSuffixSc(iasEsAppSuffixSc);
-        // CMC-2025-027: Apply suffix in template level in iAM Smart Message, iAM Smart To-Do Item, iAM Smart Application Status - END
 
         conn.begin(null, conn.getLastUpTime(), HPFW_Connection.DIRECT);
         iasApplication.insert(conn);
@@ -78,7 +73,7 @@ public class IasApplicationDAO {
         String appRefNum, String appStatus, Timestamp statusUpdateDate, String contactNum,
         String contactEmail, String miscInfo, String operationType, String iasUserNotiId
     ) throws Exception {
-        logger.debug("createIasUserApplication - serviceProviderId: " + serviceProviderId
+        logger.debug("createIasUserApplicationByOpenId - serviceProviderId: " + serviceProviderId
             + ", clientId: " + clientId + ", openId: " + openId + ", iasApplicationId: " + iasApplicationId + ", tranId: " + tranId + ", appRefNum: " + appRefNum 
             + ", appStatus: " + appStatus + ", statusUpdateDate: " + statusUpdateDate + ", contactNum: " + contactNum + ", contactEmail: " + contactEmail 
             + ", miscInfo: " + miscInfo + ", operationType: " + operationType + ", iasUserNotiId: " + iasUserNotiId);
@@ -111,7 +106,7 @@ public class IasApplicationDAO {
         String appRefNum, String appStatus, Timestamp statusUpdateDate, String contactNum, String contactEmail, 
         String miscInfo, String operationType, String iasUserNotiId, String hkidEncrypted
     ) throws Exception {
-        logger.debug("createIasUserApplication - serviceProviderId: " + serviceProviderId
+        logger.debug("createIasUserApplicationByHKID - serviceProviderId: " + serviceProviderId
             + ", clientId: " + clientId + ", hkidHashed: " + hkidHashed + ", hkidEncrypted: " + hkidEncrypted + ", iasApplicationId: " + iasApplicationId 
             + ", tranId: " + tranId + ", appRefNum: " + appRefNum + ", appStatus: " + appStatus + ", statusUpdateDate: " + statusUpdateDate + ", contactNum: " + contactNum 
             + ", contactEmail: " + contactEmail + ", miscInfo: " + miscInfo + ", operationType: " + operationType + ", iasUserNotiId: " + iasUserNotiId);

@@ -216,8 +216,6 @@ public class IasToDoItemValidator {
         return null;
     }
 
-    // CMC-2025-016: Restrict iAM Smart To Do Item and Application subject max
-    // length (limited EN/TC/SC to 70/30/30 characters) - BEGIN
     private static int getMsgSize(String inStr) throws Exception {
         int result = 0;
         if (inStr != null) {
@@ -225,7 +223,5 @@ public class IasToDoItemValidator {
         }
         return result;
     }
-    // CMC-2025-016: Restrict iAM Smart To Do Item and Application subject max
-    // length (limited EN/TC/SC to 70/30/30 characters) - END
 
 }

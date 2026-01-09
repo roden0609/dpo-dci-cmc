@@ -45,8 +45,8 @@ public class IasToDoItemUtils {
                 + ", idpId: " + idpId + ", tranId: " + tranId + ", recipientId: " + recipientId
                 + ", cmcMessageParam: " + cmcMessageParam);
         logger.debug("mergeTemplateAndCreateIasToDoItem - cmcTemplate: " + cmcTemplate);
-        logger.debug("mergeTemplateAndCreateIasToDoItem - dataContentEn: " + dataContentEn + ", dataContentTc: "
-                + dataContentTc
+        logger.debug("mergeTemplateAndCreateIasToDoItem - dataContentEn: " + dataContentEn
+                + ", dataContentTc: " + dataContentTc
                 + ", dataContentSc: " + dataContentSc);
 
         MessageResponse msgRsp = null;

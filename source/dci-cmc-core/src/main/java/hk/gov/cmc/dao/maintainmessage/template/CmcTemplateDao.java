@@ -11,11 +11,11 @@ import hk.gov.cmc.model.maintainmessage.template.CmcTemplate;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
 
-public class CmcTemplateDao {
+public class CmcTemplateDAO {
 
-    private static Log logger = LogFactory.getLog(CmcTemplateDao.class);
+    private static Log logger = LogFactory.getLog(CmcTemplateDAO.class);
 
-    public CmcTemplateDao() {
+    public CmcTemplateDAO() {
     }
 
     public CmcTemplate getTemplateByIdVersion(HPFW_Connection conn, String templateId, String templateVersion,

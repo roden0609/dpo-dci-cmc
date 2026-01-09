@@ -10,10 +10,10 @@ import org.apache.commons.logging.LogFactory;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
 
-public class CmcPortalServerDao {
-    private static Log logger = LogFactory.getLog(CmcPortalServerDao.class);
+public class CmcPortalServerDAO {
+    private static Log logger = LogFactory.getLog(CmcPortalServerDAO.class);
 
-    public CmcPortalServerDao() {
+    public CmcPortalServerDAO() {
     }
 
     public String getPortalStatusByPortalId(HPFW_Connection conn, String portalId) throws Exception {
