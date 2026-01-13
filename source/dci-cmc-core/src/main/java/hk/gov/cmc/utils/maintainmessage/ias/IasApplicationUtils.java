@@ -142,9 +142,10 @@ public class IasApplicationUtils {
     }
 
     public static List<IasUserApplication_> getCorrelatedIasUserApplicationListByOpenIdOrHKID(HPFW_Connection conn,
-            IasApplicationDAO iasApplicationDAO,
             CmcTemplate cmcTemplate, Recipient recipient, IasUserWrapped iasUserWrapped, Properties properties)
             throws Exception {
+
+        IasApplicationDAO iasApplicationDAO = new IasApplicationDAO();
 
         List<IasUserApplication_> iasUserApplicationList = new ArrayList<IasUserApplication_>();
         if (RecipientIDTypeConstant.OPEN_ID.equals(recipient.getRecipientIdType())) {
@@ -173,10 +174,10 @@ public class IasApplicationUtils {
     }
 
     public static MessageResponse markDeleteIasUserApplicationByOpenIdOrHKIDAndCorrTranId(HPFW_Connection conn,
-            IasApplicationDAO iasApplicationDAO,
             CmcTemplate cmcTemplate, Recipient recipient, IasUser iasUser) throws Exception {
 
         MessageResponse msgRsp = null;
+        IasApplicationDAO iasApplicationDAO = new IasApplicationDAO();
 
         if (RecipientIDTypeConstant.OPEN_ID.equals(recipient.getRecipientIdType())) {
             iasApplicationDAO.markDeleteIasUserApplicationByCorrTranId(conn, cmcTemplate.getClientId(),
@@ -195,8 +196,7 @@ public class IasApplicationUtils {
     }
     // CMC-2025-022: Use TRAN_ID to correlate iAM Smart Application Status instead of APP_REF_NUM - END
 
-    public static MessageResponse createIasUserApplicationByOpenIdOrHKID(HPFW_Connection conn,
-            IasApplicationDAO iasApplicationDAO, CmcTemplate cmcTemplate,
+    public static MessageResponse createIasUserApplicationByOpenIdOrHKID(HPFW_Connection conn, CmcTemplate cmcTemplate,
             Recipient recipient, IasUser iasUser, String iasApplicationId, String operationType) throws Exception {
 
         logger.debug("createIasUserApplicationByOpenIdOrHKID - recipient: " + recipient + ", iasUser: " + iasUser
@@ -205,6 +205,7 @@ public class IasApplicationUtils {
                 + recipient.getRecipientIdType());
 
         MessageResponse msgRsp = null;
+        IasApplicationDAO iasApplicationDAO = new IasApplicationDAO();
 
         if (RecipientIDTypeConstant.OPEN_ID.equals(recipient.getRecipientIdType())) {
             iasApplicationDAO.createIasUserApplicationByOpenId(

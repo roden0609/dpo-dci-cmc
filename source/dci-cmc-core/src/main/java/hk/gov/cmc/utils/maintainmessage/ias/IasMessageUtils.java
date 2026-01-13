@@ -1,6 +1,5 @@
 package hk.gov.cmc.utils.maintainmessage.ias;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -12,7 +11,6 @@ import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.common.IntegrationConstants;
 import hk.gov.cmc.common.MsgTypeConstant;
 import hk.gov.cmc.dao.maintainmessage.message.IasMessageDAO;
-import hk.gov.cmc.dao.maintainmessage.todoitem.IasToDoItemDAO;
 import hk.gov.cmc.model.maintainmessage.param.MessageParam;
 import hk.gov.cmc.model.maintainmessage.request.Recipient;
 import hk.gov.cmc.model.maintainmessage.response.MessageResponse;

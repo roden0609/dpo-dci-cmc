@@ -1,16 +1,13 @@
 package hk.gov.cmc.processor.maintainmessage.message;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import hk.gov.cmc.common.CmcAppPropertyNames;
-import hk.gov.cmc.common.IasApplicationConstant;
 import hk.gov.cmc.config.CmcEnvProperties;
-import hk.gov.cmc.dao.maintainmessage.message.IasMessageDAO;
 import hk.gov.cmc.dto.maintainmessage.SingleMaintainMsgResult;
 import hk.gov.cmc.model.maintainmessage.param.MessageParam;
 import hk.gov.cmc.model.maintainmessage.request.Recipient;
@@ -21,7 +18,6 @@ import hk.gov.cmc.model.maintainmessage.user.IasUser;
 import hk.gov.cmc.model.maintainmessage.user.IasUserWrapped;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.utils.maintainmessage.ias.IasMessageUtils;
-import hk.gov.cmc.utils.maintainmessage.ias.IasToDoItemUtils;
 import hk.gov.cmc.utils.maintainmessage.ias.IasUtils;
 import hk.gov.cmc.validator.IasMessageValidator;
 

@@ -140,9 +140,10 @@ public class IasToDoItemUtils {
     }
 
     public static List<IasUserToDoItem_> getCorrelatedIasUserToDoItemListByOpenIdOrHKID(HPFW_Connection conn,
-            IasToDoItemDAO iasToDoItemDAO,
             CmcTemplate cmcTemplate, Recipient recipient, IasUserWrapped iasUserWrapped, Properties properties)
             throws Exception {
+
+        IasToDoItemDAO iasToDoItemDAO = new IasToDoItemDAO();
 
         List<IasUserToDoItem_> iasUserToDoItemList = new ArrayList<IasUserToDoItem_>();
         if (RecipientIDTypeConstant.OPEN_ID.equals(recipient.getRecipientIdType())) {
@@ -170,8 +171,7 @@ public class IasToDoItemUtils {
         return iasUserToDoItemList;
     }
 
-    public static MessageResponse createIasUserToDoItemByOpenIdOrHKID(HPFW_Connection conn,
-            IasToDoItemDAO iasToDoItemDAO, CmcTemplate cmcTemplate,
+    public static MessageResponse createIasUserToDoItemByOpenIdOrHKID(HPFW_Connection conn, CmcTemplate cmcTemplate,
             Recipient recipient, IasUser iasUser, String iasToDoItemId, String operationType) throws Exception {
 
         logger.debug("createIasUserToDoItemByOpenIdOrHKID - recipient: " + recipient + ", iasUser: " + iasUser
@@ -180,6 +180,7 @@ public class IasToDoItemUtils {
                 + recipient.getRecipientIdType());
 
         MessageResponse msgRsp = null;
+        IasToDoItemDAO iasToDoItemDAO = new IasToDoItemDAO();
 
         if (RecipientIDTypeConstant.OPEN_ID.equals(recipient.getRecipientIdType())) {
 
@@ -224,10 +225,10 @@ public class IasToDoItemUtils {
     }
 
     public static MessageResponse markDeleteIasUserToDoItemByOpenIdOrHKIDAndCorrTranId(HPFW_Connection conn,
-            IasToDoItemDAO iasToDoItemDAO,
             CmcTemplate cmcTemplate, Recipient recipient, IasUser iasUser) throws Exception {
 
         MessageResponse msgRsp = null;
+        IasToDoItemDAO iasToDoItemDAO = new IasToDoItemDAO();
 
         if (RecipientIDTypeConstant.OPEN_ID.equals(recipient.getRecipientIdType())) {
             iasToDoItemDAO.markDeleteIasUserToDoItemByCorrTranId(conn, cmcTemplate.getClientId(), iasUser.getOpenId(),
@@ -245,10 +246,11 @@ public class IasToDoItemUtils {
         return msgRsp;
     }
 
-    public static MessageResponse completeIasUserToDoItemByOpenIdOrHKID(HPFW_Connection conn,
-            IasToDoItemDAO iasToDoItemDAO, CmcTemplate cmcTemplate, Recipient recipient, IasUser iasUser)
-            throws Exception {
+    public static MessageResponse completeIasUserToDoItemByOpenIdOrHKID(HPFW_Connection conn, CmcTemplate cmcTemplate,
+            Recipient recipient, IasUser iasUser) throws Exception {
+
         MessageResponse msgRsp = null;
+        IasToDoItemDAO iasToDoItemDAO = new IasToDoItemDAO();
 
         if (RecipientIDTypeConstant.OPEN_ID.equals(recipient.getRecipientIdType())) {
             iasToDoItemDAO.completeIasUserToDoItem(conn, cmcTemplate.getClientId(), iasUser.getOpenId(),

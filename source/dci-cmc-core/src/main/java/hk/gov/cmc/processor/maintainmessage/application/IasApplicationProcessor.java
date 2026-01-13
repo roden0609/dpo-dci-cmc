@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.common.IasApplicationConstant;
 import hk.gov.cmc.config.CmcEnvProperties;
-import hk.gov.cmc.dao.maintainmessage.application.IasApplicationDAO;
 import hk.gov.cmc.dto.maintainmessage.SingleMaintainMsgResult;
 import hk.gov.cmc.model.maintainmessage.action.Action;
 import hk.gov.cmc.model.maintainmessage.param.MessageParam;
@@ -54,7 +53,6 @@ public class IasApplicationProcessor {
         logger.debug("processIasApplication - dataContentEn: " + dataContentEn + ", dataContentTc: " + dataContentTc
                 + ", dataContentSc: " + dataContentSc);
 
-        IasApplicationDAO iasApplicationDAO = new IasApplicationDAO();
         Properties properties = cmcEnvProperties.getProperties();
         MessageResponse msgRsp = null;
         SingleMaintainMsgResult singleMaintainMsgResult = new SingleMaintainMsgResult(iasApplicationId, false);
@@ -110,9 +108,8 @@ public class IasApplicationProcessor {
                     response.addMessageResponse(msgRsp);
                 } else {
                     // create the user application record in IAS_USER_APPLICATION related to the master record
-                    msgRsp = IasApplicationUtils.createIasUserApplicationByOpenIdOrHKID(conn, iasApplicationDAO,
-                            cmcTemplate, recipient, iasUser,
-                            iasApplicationId, IasApplicationConstant.OPERATION_TYPE_CREATE);
+                    msgRsp = IasApplicationUtils.createIasUserApplicationByOpenIdOrHKID(conn, cmcTemplate, recipient,
+                            iasUser, iasApplicationId, IasApplicationConstant.OPERATION_TYPE_CREATE);
                     if (msgRsp != null) {
                         response.addMessageResponse(msgRsp);
                     } else {
@@ -133,8 +130,8 @@ public class IasApplicationProcessor {
                         + ", recipient.getIdpId: " + recipient.getIdpId());
 
                 List<IasUserApplication_> existingIasUserApplicationList = IasApplicationUtils
-                        .getCorrelatedIasUserApplicationListByOpenIdOrHKID(
-                                conn, iasApplicationDAO, cmcTemplate, recipient, iasUserWrapped, properties);
+                        .getCorrelatedIasUserApplicationListByOpenIdOrHKID(conn, cmcTemplate, recipient, iasUserWrapped,
+                                properties);
                 msgRsp = IasApplicationValidator.validateApplicationIsExistedOrDeleted(
                         cmcTemplate.getClientId(), recipient.getIdpId(), recipient.getRecipientId(),
                         recipient.getTranId(), recipient.getCorrelatedTranId(),
@@ -197,7 +194,7 @@ public class IasApplicationProcessor {
 
                             // mark delete of the previous record, delayed the deletion to step 2 after the new record push noti is sent to iAM Smart
                             msgRsp = IasApplicationUtils.markDeleteIasUserApplicationByOpenIdOrHKIDAndCorrTranId(conn,
-                                    iasApplicationDAO, cmcTemplate, recipient, iasUser);
+                                    cmcTemplate, recipient, iasUser);
                             if (msgRsp != null) {
                                 logger.info(
                                         "processIasApplication - markDeleteIasUserApplicationByOpenIdOrHKIDAndCorrTranId failed"
@@ -212,8 +209,7 @@ public class IasApplicationProcessor {
                                 response.addMessageResponse(msgRsp);
                             } else {
                                 // create the user application record in IAS_USER_APPLICATION related to the master record
-                                msgRsp = IasApplicationUtils.createIasUserApplicationByOpenIdOrHKID(conn,
-                                        iasApplicationDAO, cmcTemplate,
+                                msgRsp = IasApplicationUtils.createIasUserApplicationByOpenIdOrHKID(conn, cmcTemplate,
                                         recipient, iasUser, iasApplicationId,
                                         IasApplicationConstant.OPERATION_TYPE_REPLACE);
                                 if (msgRsp != null) {
@@ -240,8 +236,8 @@ public class IasApplicationProcessor {
                         + ", recipient.getIdpId: " + recipient.getIdpId());
 
                 List<IasUserApplication_> existingIasUserApplicationList = IasApplicationUtils
-                        .getCorrelatedIasUserApplicationListByOpenIdOrHKID(
-                                conn, iasApplicationDAO, cmcTemplate, recipient, iasUserWrapped, properties);
+                        .getCorrelatedIasUserApplicationListByOpenIdOrHKID(conn, cmcTemplate, recipient, iasUserWrapped,
+                                properties);
                 msgRsp = IasApplicationValidator.validateApplicationIsExistedOrDeleted(
                         cmcTemplate.getClientId(), recipient.getIdpId(), recipient.getRecipientId(),
                         recipient.getTranId(), recipient.getCorrelatedTranId(),
@@ -262,7 +258,7 @@ public class IasApplicationProcessor {
                     // mark delete of the previous record, delayed the deletion to step 2 after the new record push noti is sent to iAM Smart
                     // add to history cache map for next message checking is it already existed in ACTION=NEW, REPLACE, UPDATE, DELETE
                     msgRsp = IasApplicationUtils.markDeleteIasUserApplicationByOpenIdOrHKIDAndCorrTranId(conn,
-                            iasApplicationDAO, cmcTemplate, recipient, iasUser);
+                            cmcTemplate, recipient, iasUser);
                     if (msgRsp != null) {
                         logger.info(
                                 "processIasApplication - markDeleteIasUserApplicationByOpenIdOrHKIDAndCorrTranId failed"
@@ -292,8 +288,8 @@ public class IasApplicationProcessor {
                         + ", recipient.getIdpId: " + recipient.getIdpId());
 
                 List<IasUserApplication_> existingIasUserApplicationList = IasApplicationUtils
-                        .getCorrelatedIasUserApplicationListByOpenIdOrHKID(
-                                conn, iasApplicationDAO, cmcTemplate, recipient, iasUserWrapped, properties);
+                        .getCorrelatedIasUserApplicationListByOpenIdOrHKID(conn, cmcTemplate, recipient, iasUserWrapped,
+                                properties);
                 msgRsp = IasApplicationValidator.validateApplicationIsExistedOrDeleted(
                         cmcTemplate.getClientId(), recipient.getIdpId(), recipient.getRecipientId(),
                         recipient.getTranId(), recipient.getCorrelatedTranId(),
@@ -328,7 +324,7 @@ public class IasApplicationProcessor {
                     } else {
                         // mark delete of the previous record, delayed the deletion to step 2 after the new record push noti is sent to iAM Smart
                         msgRsp = IasApplicationUtils.markDeleteIasUserApplicationByOpenIdOrHKIDAndCorrTranId(conn,
-                                iasApplicationDAO, cmcTemplate, recipient, iasUser);
+                                cmcTemplate, recipient, iasUser);
                         iasApplicationHandledCache.put(recipient.getTranId(), IasApplicationConstant.HISTORY_DELETE);
 
                         // Duplicate the previous master record to the new master record
@@ -346,8 +342,7 @@ public class IasApplicationProcessor {
                         conn.begin(null, conn.getLastUpTime(), HPFW_Connection.DIRECT_WITH_HISTORY);
 
                         // create the user application record in IAS_USER_APPLICATION related to the master record
-                        msgRsp = IasApplicationUtils.createIasUserApplicationByOpenIdOrHKID(conn, iasApplicationDAO,
-                                cmcTemplate,
+                        msgRsp = IasApplicationUtils.createIasUserApplicationByOpenIdOrHKID(conn, cmcTemplate,
                                 recipient, iasUser, newIasApplicationId, IasApplicationConstant.OPERATION_TYPE_UPDATE);
                         if (msgRsp != null) {
                             response.addMessageResponse(msgRsp);

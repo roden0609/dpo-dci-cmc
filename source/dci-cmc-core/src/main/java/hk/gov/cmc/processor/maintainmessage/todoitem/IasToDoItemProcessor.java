@@ -56,7 +56,6 @@ public class IasToDoItemProcessor {
         logger.debug("processIasToDoItem - dataContentEn: " + dataContentEn + ", dataContentTc: " + dataContentTc
                 + ", dataContentSc: " + dataContentSc);
 
-        IasToDoItemDAO iasToDoItemDAO = new IasToDoItemDAO();
         Properties properties = cmcEnvProperties.getProperties();
         MessageResponse msgRsp = null;
         SingleMaintainMsgResult singleMaintainMsgResult = new SingleMaintainMsgResult(iasToDoItemId, false);
@@ -112,8 +111,9 @@ public class IasToDoItemProcessor {
                     response.addMessageResponse(msgRsp);
                 } else {
                     // create the user to-do item record in IAS_USER_TO_DO_ITEM related to the master record
-                    msgRsp = IasToDoItemUtils.createIasUserToDoItemByOpenIdOrHKID(conn, iasToDoItemDAO, cmcTemplate,
-                            recipient, iasUser, iasToDoItemId, IasApplicationConstant.OPERATION_TYPE_CREATE);
+                    msgRsp = IasToDoItemUtils.createIasUserToDoItemByOpenIdOrHKID(conn,
+                            cmcTemplate, recipient, iasUser, iasToDoItemId,
+                            IasApplicationConstant.OPERATION_TYPE_CREATE);
                     if (msgRsp != null) {
                         logger.info(
                                 "processIasToDoItem - createIasUserToDoItemByOpenIdOrHKID failed. msgRsp.getTranId: "
@@ -155,7 +155,7 @@ public class IasToDoItemProcessor {
             } else {
                 List<IasUserToDoItem_> existingIasUserToDoItemList = IasToDoItemUtils
                         .getCorrelatedIasUserToDoItemListByOpenIdOrHKID(
-                                conn, iasToDoItemDAO, cmcTemplate, recipient, iasUserWrapped, properties);
+                                conn, cmcTemplate, recipient, iasUserWrapped, properties);
                 msgRsp = IasToDoItemValidator.validateToDoItemIsExistedOrDeletedOrCompleted(
                         cmcTemplate.getClientId(), recipient.getIdpId(), recipient.getRecipientId(),
                         recipient.getTranId(), recipient.getCorrelatedTranId(),
@@ -199,7 +199,7 @@ public class IasToDoItemProcessor {
                     } else {
                         // mark delete of the IAS_USER_TO_DO_ITEM record by recipient.getCorrelatedTranId, delayed the deletion to step 2 after the new record push noti is sent to iAM Smart
                         msgRsp = IasToDoItemUtils.markDeleteIasUserToDoItemByOpenIdOrHKIDAndCorrTranId(conn,
-                                iasToDoItemDAO, cmcTemplate, recipient, iasUser);
+                                cmcTemplate, recipient, iasUser);
 
                         if (msgRsp != null) {
                             logger.info(
@@ -214,7 +214,7 @@ public class IasToDoItemProcessor {
                             response.addMessageResponse(msgRsp);
                         } else {
                             // create the user to-do item record in IAS_USER_TO_DO_ITEM related to the master record
-                            msgRsp = IasToDoItemUtils.createIasUserToDoItemByOpenIdOrHKID(conn, iasToDoItemDAO,
+                            msgRsp = IasToDoItemUtils.createIasUserToDoItemByOpenIdOrHKID(conn,
                                     cmcTemplate, recipient, iasUser, iasToDoItemId,
                                     IasApplicationConstant.OPERATION_TYPE_REPLACE);
                             if (msgRsp != null) {
@@ -247,7 +247,7 @@ public class IasToDoItemProcessor {
                     + ", recipient.getIdpId: " + recipient.getIdpId());
 
             List<IasUserToDoItem_> existingIasUserToDoItemList = IasToDoItemUtils
-                    .getCorrelatedIasUserToDoItemListByOpenIdOrHKID(conn, iasToDoItemDAO, cmcTemplate, recipient,
+                    .getCorrelatedIasUserToDoItemListByOpenIdOrHKID(conn, cmcTemplate, recipient,
                             iasUserWrapped, properties);
             msgRsp = IasToDoItemValidator.validateToDoItemIsExistedOrDeletedOrCompleted(cmcTemplate.getClientId(),
                     recipient.getIdpId(),
@@ -266,8 +266,8 @@ public class IasToDoItemProcessor {
             } else {
 
                 // mark delete of the IAS_USER_TO_DO_ITEM record by recipient.getTranId, delayed the deletion to step 2 after the new record push noti is sent to iAM Smart
-                msgRsp = IasToDoItemUtils.markDeleteIasUserToDoItemByOpenIdOrHKIDAndCorrTranId(conn, iasToDoItemDAO,
-                        cmcTemplate, recipient, iasUser);
+                msgRsp = IasToDoItemUtils.markDeleteIasUserToDoItemByOpenIdOrHKIDAndCorrTranId(conn, cmcTemplate,
+                        recipient, iasUser);
 
                 if (msgRsp != null) {
                     logger.info("processIasToDoItem - markDeleteIasUserToDoItemByOpenIdOrHKIDAndTranId failed"
@@ -296,8 +296,8 @@ public class IasToDoItemProcessor {
                     + ", recipient.getIdpId: " + recipient.getIdpId());
 
             List<IasUserToDoItem_> existingIasUserToDoItemList = IasToDoItemUtils
-                    .getCorrelatedIasUserToDoItemListByOpenIdOrHKID(conn, iasToDoItemDAO, cmcTemplate, recipient,
-                            iasUserWrapped, properties);
+                    .getCorrelatedIasUserToDoItemListByOpenIdOrHKID(conn, cmcTemplate, recipient, iasUserWrapped,
+                            properties);
             msgRsp = IasToDoItemValidator.validateToDoItemIsExistedOrDeletedOrCompleted(cmcTemplate.getClientId(),
                     recipient.getIdpId(),
                     recipient.getRecipientId(), recipient.getTranId(), recipient.getCorrelatedTranId(),
@@ -315,7 +315,7 @@ public class IasToDoItemProcessor {
             } else {
 
                 // update the IAS_USER_TO_DO_ITEM record by recipient.getTranId
-                msgRsp = IasToDoItemUtils.completeIasUserToDoItemByOpenIdOrHKID(conn, iasToDoItemDAO, cmcTemplate,
+                msgRsp = IasToDoItemUtils.completeIasUserToDoItemByOpenIdOrHKID(conn, cmcTemplate,
                         recipient, iasUser);
                 if (msgRsp != null) {
                     logger.info("processIasToDoItem - completeIasUserToDoItemByOpenIdOrHKID failed"

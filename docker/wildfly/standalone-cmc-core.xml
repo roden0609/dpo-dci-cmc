@@ -514,12 +514,6 @@
                     path="credentials/credential-store.cs" create="true">
                     <credential-reference clear-text="store-password" />
                 </credential-store>
-                <!-- <credential-store name="credential-store"
-                    relative-to="jboss.server.data.dir"
-                    path="credentials/credential-store.cs"
-                    create="true">
-                    <credential-reference clear-text="store-password" />
-                </credential-store> -->
             </credential-stores>
         </subsystem>
         <subsystem xmlns="urn:wildfly:elytron-oidc-client:2.0" />
