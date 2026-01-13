@@ -65,9 +65,9 @@
         <gcis_rm_common.version>1.1.0</gcis_rm_common.version>
         <keyservice_common.version>1.1.0</keyservice_common.version>
         <keyservice_ejb.version>1.1.0</keyservice_ejb.version>
-        <!-- <keyservice_admin.version>1.1.0</keyservice_admin.version>
+        <keyservice_admin.version>1.1.0</keyservice_admin.version>
         <keyservice_web.version>1.1.0</keyservice_web.version>
-        <payment_common.version>1.1.0</payment_common.version>
+        <!-- <payment_common.version>1.1.0</payment_common.version>
         <paymentclient_ejb.version>1.1.0</paymentclient_ejb.version>
         <paymentclient_kit.version>1.1.0</paymentclient_kit.version>
         <paymentclient_web.version>1.1.0</paymentclient_web.version>
