@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>hk.gov.cmc</groupId>
+        <artifactId>dci-cmc</artifactId>
+        <version>3.0.0</version>
+    </parent>
+    <artifactId>dci-cmc-app</artifactId>
+    <packaging>ear</packaging>
+
+    <name>Common Middleware Components Application</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>hk.gov.cmc</groupId>
+            <artifactId>dci-cmc-wss</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>hk.gov.cmc</groupId>
+            <artifactId>dci-cmc-ejb</artifactId>
+            <version>${project.version}</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>hk.gov.gcis.rm</groupId>
+            <artifactId>gcis_rm_keyservice_ejb</artifactId>
+            <version>${keyservice_ejb.version}</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>hk.gov.gcis.rm</groupId>
+            <artifactId>gcis_rm_keyservice_admin_war</artifactId>
+            <version>${keyservice_admin.version}</version>
+            <type>war</type>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm-commons</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>asm-tree</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>pfl-tf</artifactId>
+                    <groupId>org.glassfish.pfl</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>asm-util</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>pfl-dynamic</artifactId>
+                    <groupId>org.glassfish.pfl</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <configuration>
+                    <!-- Off for docker deployment -->
+                    <skinnyWars>true</skinnyWars>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <earSourceIncludes>META-INF/*</earSourceIncludes>
+                    <outputFileNameMapping>${ear.output.file.name.pattern}</outputFileNameMapping>
+                    <modules>
+                        <!-- <jarModule>
+                            <groupId>hk.gov.cmc</groupId>
+                            <artifactId>dci-cmc-core</artifactId>
+                        </jarModule> -->
+                        <webModule>
+                            <groupId>hk.gov.cmc</groupId>
+                            <artifactId>dci-cmc-wss</artifactId>
+                            <context-root>/dci-cmc-wss</context-root>
+                        </webModule>
+                        <ejbModule>
+                            <groupId>hk.gov.cmc</groupId>
+                            <artifactId>dci-cmc-ejb</artifactId>
+                        </ejbModule>
+                        <ejbModule>
+                            <groupId>hk.gov.gcis.rm</groupId>
+                            <artifactId>gcis_rm_keyservice_ejb</artifactId>
+                        </ejbModule>
+                    </modules>
+                    <applicationName>dci-cmc-app</applicationName>
+                    <displayName>Common Middleware Components Application</displayName>
+                    <generateApplicationXml>true</generateApplicationXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
