@@ -7,7 +7,7 @@ services:
       - "9990:9990"
     volumes:
       - ./source/dci-cmc-app/target/dci-cmc-app-3.0.0.ear:/opt/jboss/wildfly/standalone/deployments/dci-cmc-app-3.0.0.ear
-      - ./docker/wildfly/standalone-cmc-core.xml:/opt/jboss/wildfly/standalone/configuration/standalone.xml
+      - ./docker/wildfly/local/standalone-cmc-core.xml:/opt/jboss/wildfly/standalone/configuration/standalone.xml
       - ./secrets/credential-store.cs:/opt/jboss/wildfly/standalone/data/credentials/credential-store.cs:ro
       - ./config:/bd-ogcmr/uat/cmc/cmc-core/config:ro
       - ./cert:/bd-ogcmr/uat/cmc/cmc-core/cert:ro
