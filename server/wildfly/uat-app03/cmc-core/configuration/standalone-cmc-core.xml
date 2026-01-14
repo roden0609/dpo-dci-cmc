@@ -473,7 +473,7 @@
                 <jacc-policy/>
             </policy>
             <credential-stores>
-                <credential-store name="credential-store" relative-to="jboss.server.data.dir"
+                <credential-store name="credential-store" relative-to="jboss.server.base.dir"
                     path="credentials/credential-store.cs" create="true">
                     <credential-reference clear-text="store-password" />
                 </credential-store>

@@ -1,8 +1,8 @@
 FROM quay.io/wildfly/wildfly:32.0.1.Final-jdk17
 
 # Ensure data dirs exist and owned by jboss
-RUN mkdir -p /opt/jboss/wildfly/standalone/data/credentials \
- && chown -R jboss:jboss /opt/jboss/wildfly/standalone/data
+RUN mkdir -p /opt/jboss/wildfly/standalone/credentials \
+ && chown -R jboss:jboss /opt/jboss/wildfly/standalone/credentials
 
 # Install MySQL module
 RUN mkdir -p /opt/jboss/wildfly/modules/com/mysql/main
