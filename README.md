@@ -4,7 +4,6 @@ mvn install:install-file -DgroupId=hk.gov.gcis.rm -DartifactId=gcis_rm_common -D
 mvn install:install-file -DgroupId=hk.gov.gcis.rm -DartifactId=gcis_rm_keyservice_ejb -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_rm_keyservice_ejb-1.1.0.jar
 mvn install:install-file -DgroupId=hk.gov.gcis.rm -DartifactId=gcis_rm_keyservice_persistence -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_rm_keyservice_persistence-1.1.0.jar
 mvn install:install-file -DgroupId=hk.gov.gcis.rm -DartifactId=gcis_rm_keyservice_common -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_rm_keyservice_common-1.1.0.jar
-mvn install:install-file -DgroupId=hk.gov.gcis.rm -DartifactId=gcis_rm_keyservice_admin_war -Dversion=1.1.0 -Dpackaging=war -Dfile=lib/gcis_rm3/gcis_rm_keyservice_admin_war-1.1.0.war
 
 mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_common -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_common-1.1.0.jar
 mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_msg_soap_client -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_msg_soap_client-1.1.0.jar

@@ -6,9 +6,9 @@ RUN mkdir -p /opt/jboss/wildfly/standalone/credentials \
 
 # Install MySQL module
 RUN mkdir -p /opt/jboss/wildfly/modules/com/mysql/main
-COPY docker/wildfly/mysql/mysql-connector-j-8.4.0.jar \
+COPY server/wildfly/mysql/mysql-connector-j-8.4.0.jar \
      /opt/jboss/wildfly/modules/com/mysql/main/
-COPY docker/wildfly/mysql/module.xml \
+COPY server/wildfly/mysql/module.xml \
      /opt/jboss/wildfly/modules/com/mysql/main/
 
 # Deploy EAR

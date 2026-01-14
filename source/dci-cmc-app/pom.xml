@@ -37,34 +37,6 @@
             <version>${keyservice_ejb.version}</version>
             <type>ejb</type>
         </dependency>
-        <dependency>
-            <groupId>hk.gov.gcis.rm</groupId>
-            <artifactId>gcis_rm_keyservice_admin_war</artifactId>
-            <version>${keyservice_admin.version}</version>
-            <type>war</type>
-            <exclusions>
-                <exclusion>
-                    <artifactId>asm-commons</artifactId>
-                    <groupId>org.ow2.asm</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>asm-tree</artifactId>
-                    <groupId>org.ow2.asm</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>pfl-tf</artifactId>
-                    <groupId>org.glassfish.pfl</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>asm-util</artifactId>
-                    <groupId>org.ow2.asm</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>pfl-dynamic</artifactId>
-                    <groupId>org.glassfish.pfl</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
     </dependencies>
 
     <build>
