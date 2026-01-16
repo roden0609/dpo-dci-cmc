@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 
-<server xmlns="urn:jboss:domain:20.0">
+<server xmlns="urn:jboss:domain:16.0">
     <extensions>
         <extension module="org.jboss.as.clustering.infinispan"/>
         <extension module="org.jboss.as.connector"/>
@@ -18,48 +18,92 @@
         <extension module="org.jboss.as.pojo"/>
         <extension module="org.jboss.as.remoting"/>
         <extension module="org.jboss.as.sar"/>
+        <extension module="org.jboss.as.security"/>
         <extension module="org.jboss.as.transactions"/>
         <extension module="org.jboss.as.webservices"/>
         <extension module="org.jboss.as.weld"/>
         <extension module="org.wildfly.extension.batch.jberet"/>
         <extension module="org.wildfly.extension.bean-validation"/>
-        <extension module="org.wildfly.extension.clustering.ejb"/>
         <extension module="org.wildfly.extension.clustering.web"/>
         <extension module="org.wildfly.extension.core-management"/>
         <extension module="org.wildfly.extension.discovery"/>
         <extension module="org.wildfly.extension.ee-security"/>
         <extension module="org.wildfly.extension.elytron"/>
-        <extension module="org.wildfly.extension.elytron-oidc-client"/>
         <extension module="org.wildfly.extension.health"/>
         <extension module="org.wildfly.extension.io"/>
         <extension module="org.wildfly.extension.messaging-activemq"/>
         <extension module="org.wildfly.extension.metrics"/>
         <extension module="org.wildfly.extension.microprofile.config-smallrye"/>
         <extension module="org.wildfly.extension.microprofile.jwt-smallrye"/>
+        <extension module="org.wildfly.extension.microprofile.opentracing-smallrye"/>
         <extension module="org.wildfly.extension.request-controller"/>
         <extension module="org.wildfly.extension.security.manager"/>
         <extension module="org.wildfly.extension.undertow"/>
-        <!-- <extension module="org.wildfly.iiop-openjdk"/> -->
     </extensions>
     <system-properties>
-        <property name="java.net.preferIPv4Stack" value="true" />
-        <property name="org.apache.catalina.connector.URI_ENCODING" value="UTF-8" />
-        <property name="jvmRoute" value="node1" />
-        <property name="UseJK" value="true" />
-        <property name="jboss.node.name" value="node1" />
-        <property name="org.apache.jasper.compiler.Parser.STRICT_QUOTE_ESCAPING" value="false" />
-        <property name="file.encoding" value="UTF-8" />
-        <property name="java.awt.headless" value="true" />
-        <property name="hk.gov.gcis.rm.common.PROPERTIES_FILEPATH" value="/bd-ogcmr/uat/cmc/cmc-core" />
-        <property name="org.jboss.resolver.warning" value="true" />
-        <property name="sun.rmi.dgc.client.gcInterval" value="3600000" />
-        <property name="sun.rmi.dgc.server.gcInterval" value="3600000" />
-        <property name="sun.lang.ClassLoader.allowArraySyntax" value="true" />
+        <property name="java.net.preferIPv4Stack" value="true"/>
+        <property name="org.apache.catalina.connector.URI_ENCODING" value="UTF-8"/>
+        <property name="jvmRoute" value="node2"/>
+        <property name="UseJK" value="true"/>
+        <property name="jboss.node.name" value="node2"/>
+        <property name="org.apache.jasper.compiler.Parser.STRICT_QUOTE_ESCAPING" value="false"/>
+        <property name="file.encoding" value="UTF-8"/>
+        <property name="java.awt.headless" value="true"/>
+        <property name="hk.gov.ogcio.egis.rm.common.PROPERTIES_FILEPATH" value="/home/ogcmr151/app/uat/"/>
+        <property name="hk.gov.spica_scopes.common.PROPERTIES_FILEPATH" value="/home/ogcmr151/app/uat/"/>
+        <property name="org.jboss.resolver.warning" value="true"/>
+        <property name="sun.rmi.dgc.client.gcInterval" value="3600000"/>
+        <property name="sun.rmi.dgc.server.gcInterval" value="3600000"/>
+        <property name="sun.lang.ClassLoader.allowArraySyntax" value="true"/>
+        <property name="jboss.truststore.location" value="/home/ogcmr151/app/uat/cert/"/>
     </system-properties>
     <paths>
-        <path name="jboss.keystore.location" path="/bd-ogcmr/uat/cmc/cmc-core/cert" />
+        <path name="jboss.keystore.location" path="/home/ogcmr151/app/uat/cert/"/>
     </paths>
+    <vault>
+        <vault-option name="KEYSTORE_URL" value="${jboss.server.config.dir}/vault.cmc.keystore"/>
+        <vault-option name="KEYSTORE_PASSWORD" value="MASK-3NVVfMTwiDMWJqP7VZ442o"/>
+        <vault-option name="KEYSTORE_ALIAS" value="vault"/>
+        <vault-option name="SALT" value="MarsDev1"/>
+        <vault-option name="ITERATION_COUNT" value="55"/>
+        <vault-option name="ENC_FILE_DIR" value="${jboss.server.config.dir}"/>
+    </vault>
     <management>
+        <security-realms>
+            <security-realm name="ManagementRealm">
+                <authentication>
+                    <local default-user="$local" skip-group-loading="true"/>
+                    <properties path="mgmt-users.properties" relative-to="jboss.server.config.dir"/>
+                </authentication>
+                <authorization map-groups-to-roles="false">
+                    <properties path="mgmt-groups.properties" relative-to="jboss.server.config.dir"/>
+                </authorization>
+            </security-realm>
+            <security-realm name="ApplicationRealm">
+                <server-identities>
+                    <ssl>
+                        <keystore path="application.keystore" relative-to="jboss.server.config.dir" keystore-password="password" alias="server" key-password="password" generate-self-signed-certificate-host="localhost"/>
+                    </ssl>
+                </server-identities>
+                <authentication>
+                    <local default-user="$local" allowed-users="*" skip-group-loading="true"/>
+                    <properties path="application-users.properties" relative-to="jboss.server.config.dir"/>
+                </authentication>
+                <authorization>
+                    <properties path="application-roles.properties" relative-to="jboss.server.config.dir"/>
+                </authorization>
+            </security-realm>
+            <security-realm name="jbossweb-migration-security-realm1">
+                <server-identities>
+                    <ssl>
+                        <keystore path="server.keystore.p12" relative-to="jboss.keystore.location" keystore-password="${VAULT::ssl::password::1}" alias="is1-ip.marsdctr.hksarg"/>
+                    </ssl>
+                </server-identities>
+                <authentication>
+                    <truststore path="be_uat.cmcdctr.hksarg.truststore" relative-to="jboss.keystore.location" keystore-password="${VAULT::trust::password::1}"/>
+                </authentication>
+            </security-realm>
+        </security-realms>
         <audit-log>
             <formatters>
                 <json-formatter name="json-formatter"/>
@@ -74,8 +118,8 @@
             </logger>
         </audit-log>
         <management-interfaces>
-            <http-interface http-authentication-factory="management-http-authentication">
-                <http-upgrade enabled="true" sasl-authentication-factory="management-sasl-authentication"/>
+            <http-interface security-realm="ManagementRealm">
+                <http-upgrade enabled="true"/>
                 <socket-binding http="management-http"/>
             </http-interface>
         </management-interfaces>
@@ -91,6 +135,7 @@
     </management>
     <profile>
         <subsystem xmlns="urn:jboss:domain:logging:8.0">
+            <use-deployment-logging-config value="false"/>
             <console-handler name="CONSOLE">
                 <level name="INFO"/>
                 <formatter>
@@ -105,10 +150,15 @@
                 <suffix value=".yyyy-MM-dd"/>
                 <append value="true"/>
             </periodic-rotating-file-handler>
+            <periodic-rotating-file-handler name="undertow" autoflush="true">
+                <formatter>
+                    <named-formatter name="PATTERN"/>
+                </formatter>
+                <file relative-to="jboss.server.log.dir" path="undertow.log"/>
+                <suffix value=".yyyy-MM-dd"/>
+                <append value="true"/>
+            </periodic-rotating-file-handler>
             <logger category="com.arjuna">
-                <level name="WARN"/>
-            </logger>
-            <logger category="com.networknt.schema">
                 <level name="WARN"/>
             </logger>
             <logger category="io.jaegertracing.Configuration">
@@ -120,6 +170,33 @@
             <logger category="sun.rmi">
                 <level name="WARN"/>
             </logger>
+            <logger category="jacorb">
+                <level name="WARN"/>
+            </logger>
+            <logger category="jacorb.config">
+                <level name="ERROR"/>
+            </logger>
+            <logger category="com.arjuna.ats.internal.arjuna.recovery">
+                <level name="ERROR"/>
+            </logger>
+            <logger category="org.jboss.jca.core.connectionmanager.listener.TxConnectionListener">
+                <level name="WARN"/>
+            </logger>
+            <logger category="io.undertow.request" use-parent-handlers="false">
+                <level name="ERROR"/>
+                <handlers>
+                    <handler name="undertow"/>
+                </handlers>
+            </logger>
+            <logger category="org.wildfly.security">
+                <level name="INFO"/>
+            </logger>
+            <logger category="org.jboss.security">
+                <level name="INFO"/>
+            </logger>
+            <logger category="org.jboss.as.ejb3.security">
+                <level name="INFO"/>
+            </logger>
             <root-logger>
                 <level name="INFO"/>
                 <handlers>
@@ -128,16 +205,15 @@
                 </handlers>
             </root-logger>
             <formatter name="PATTERN">
-                <pattern-formatter pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"/>
+                <pattern-formatter pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} [%p] [%c] (%t) %s%e%n"/>
             </formatter>
             <formatter name="COLOR-PATTERN">
-                <pattern-formatter pattern="%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"/>
+                <pattern-formatter pattern="%K{level}%d{HH:mm:ss,SSS} [%p] [%c] (%t) %s%e%n"/>
             </formatter>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:batch-jberet:3.0">
+        <subsystem xmlns="urn:jboss:domain:batch-jberet:2.0">
             <default-job-repository name="in-memory"/>
             <default-thread-pool name="batch"/>
-            <security-domain name="ApplicationDomain"/>
             <job-repository name="in-memory">
                 <in-memory/>
             </job-repository>
@@ -148,71 +224,46 @@
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:bean-validation:1.0"/>
         <subsystem xmlns="urn:jboss:domain:core-management:1.0"/>
-        <subsystem xmlns="urn:jboss:domain:datasources:7.1">
+        <subsystem xmlns="urn:jboss:domain:datasources:6.0">
             <datasources>
-                <!-- <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS"
-                enabled="true" use-java-context="true"
-                statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
-                <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=${wildfly.h2.compatibility.mode:REGULAR}</connection-url>
-                    <driver>h2</driver>
-                    <security user-name="sa" password="sa"/>
-                </datasource>
-                <drivers>
-                    <driver name="h2" module="com.h2database.h2">
-                        <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
-                    </driver>
-                </drivers> -->
-                <datasource jta="true" jndi-name="java:jboss/jdbc/RMDataSource"
-                    pool-name="RMDataSource" enabled="true" use-ccm="false">
-                    <connection-url>
-                        jdbc:mysql://172.16.69.11:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false&amp;allowPublicKeyRetrieval=true
-                    </connection-url>
-                    <driver>com.mysql</driver>
-                    <security user-name="ogcmrceu11">
-                        <credential-reference store="credential-store" alias="db-password" />
-                    </security>
-                    <validation>
-                        <validate-on-match>false</validate-on-match>
-                        <background-validation>false</background-validation>
-                    </validation>
-                    <statement>
-                        <share-prepared-statements>false</share-prepared-statements>
-                    </statement>
-                </datasource>
-                <datasource jta="true" jndi-name="java:jboss/jdbc/CMCDataSource"
-                    pool-name="CMCDataSource" enabled="true" use-ccm="false">
-                    <connection-url>
+                <xa-datasource jndi-name="java:/XAOracleDS_WC" pool-name="XAOracleDS_WC" enabled="true" use-ccm="true">
+                    <xa-datasource-property name="URL">
                         jdbc:mysql://172.16.69.11:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false
-                    </connection-url>
-                    <driver>com.mysql</driver>
-                    <security user-name="ogcmrceu11">
-                        <credential-reference store="credential-store" alias="db-password" />
+                    </xa-datasource-property>
+                    <driver>mysql</driver>
+                    <new-connection-sql>select 1</new-connection-sql>
+                    <xa-pool>
+                        <min-pool-size>1</min-pool-size>
+                        <max-pool-size>100</max-pool-size>
+                        <prefill>true</prefill>
+                        <is-same-rm-override>false</is-same-rm-override>
+                        <interleaving>false</interleaving>
+                        <pad-xid>false</pad-xid>
+                        <wrap-xa-resource>false</wrap-xa-resource>
+                    </xa-pool>
+                    <security>
+                        <security-domain>EncryptDBPassword_CMC-CORE</security-domain>
                     </security>
                     <validation>
-                        <validate-on-match>false</validate-on-match>
+                        <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
+                        <validate-on-match>true</validate-on-match>
                         <background-validation>false</background-validation>
+                        <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"/>
                     </validation>
+                    <timeout>
+                        <blocking-timeout-millis>10000</blocking-timeout-millis>
+                        <idle-timeout-minutes>5</idle-timeout-minutes>
+                        <query-timeout>7200</query-timeout>
+                    </timeout>
                     <statement>
-                        <share-prepared-statements>false</share-prepared-statements>
+                        <track-statements>nowarn</track-statements>
+                        <prepared-statement-cache-size>20</prepared-statement-cache-size>
+                        <share-prepared-statements>true</share-prepared-statements>
                     </statement>
-                </datasource>
-                <!-- <datasource jta="false" jndi-name="java:jboss/jdbc/nonManagedTXDS"
-                    pool-name="nonManagedTXDS" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:mysql://127.0.0.1:xxxxx/rm_portal_uat?useUnicode=true&amp;</connection-url>
-                    <driver>com.mysql</driver>
-                    <security>
-                        <user-name>{database_username}</user-name>
-                        <credential-reference store="{credential-store-name}"
-                            alias="{database_password_alias}" />
-                    </security>
-                </datasource> -->
+                </xa-datasource>
                 <drivers>
-                    <driver name="com.mysql" module="com.mysql">
-                        <driver-class>com.mysql.cj.jdbc.Driver</driver-class>
+                    <driver name="mysql" module="com.mysql">
                         <xa-datasource-class>com.mysql.cj.jdbc.MysqlXADataSource</xa-datasource-class>
-                    </driver>
-                    <driver name="h2" module="com.h2database.h2">
-                        <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
                     </driver>
                 </drivers>
             </datasources>
@@ -221,13 +272,7 @@
             <deployment-scanner path="deployments" relative-to="jboss.server.base.dir" scan-interval="5000" runtime-failure-causes-rollback="${jboss.deployment.scanner.rollback.on.failure:false}"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:discovery:1.0"/>
-        <subsystem xmlns="urn:jboss:domain:distributable-ejb:1.0" default-bean-management="default">
-            <infinispan-bean-management name="default" max-active-beans="10000" cache-container="ejb" cache="passivation"/>
-            <local-client-mappings-registry/>
-            <infinispan-timer-management name="persistent" cache-container="ejb" cache="persistent" max-active-timers="10000"/>
-            <infinispan-timer-management name="transient" cache-container="ejb" cache="transient" max-active-timers="10000"/>
-        </subsystem>
-        <subsystem xmlns="urn:jboss:domain:distributable-web:4.0" default-session-management="default" default-single-sign-on-management="default">
+        <subsystem xmlns="urn:jboss:domain:distributable-web:2.0" default-session-management="default" default-single-sign-on-management="default">
             <infinispan-session-management name="default" cache-container="web" granularity="SESSION">
                 <local-affinity/>
             </infinispan-session-management>
@@ -235,10 +280,13 @@
             <local-routing/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:ee:6.0">
+            <global-modules>
+                <module name="org.bouncycastle" slot="main"/>
+            </global-modules>
             <spec-descriptor-property-replacement>false</spec-descriptor-property-replacement>
             <concurrent>
                 <context-services>
-                    <context-service name="default" jndi-name="java:jboss/ee/concurrency/context/default"/>
+                    <context-service name="default" jndi-name="java:jboss/ee/concurrency/context/default" use-transaction-setup-provider="true"/>
                 </context-services>
                 <managed-thread-factories>
                     <managed-thread-factory name="default" jndi-name="java:jboss/ee/concurrency/factory/default" context-service="default"/>
@@ -250,19 +298,10 @@
                     <managed-scheduled-executor-service name="default" jndi-name="java:jboss/ee/concurrency/scheduler/default" context-service="default" hung-task-termination-period="0" hung-task-threshold="60000" keepalive-time="3000"/>
                 </managed-scheduled-executor-services>
             </concurrent>
-            <!-- <default-bindings context-service="java:jboss/ee/concurrency/context/default"
-                datasource="java:jboss/datasources/ExampleDS"
-                managed-executor-service="java:jboss/ee/concurrency/executor/default"
-                managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default"
-                managed-thread-factory="java:jboss/ee/concurrency/factory/default" /> -->
-            <default-bindings context-service="java:jboss/ee/concurrency/context/default"
-                datasource="java:jboss/jdbc/RMDataSource"
-                managed-executor-service="java:jboss/ee/concurrency/executor/default"
-                managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default"
-                managed-thread-factory="java:jboss/ee/concurrency/factory/default" />
+            <default-bindings context-service="java:jboss/ee/concurrency/context/default" datasource="java:jboss/jdbc/RMDataSource" jms-connection-factory="java:jboss/DefaultJMSConnectionFactory" managed-executor-service="java:jboss/ee/concurrency/executor/default" managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default" managed-thread-factory="java:jboss/ee/concurrency/factory/default"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:ee-security:1.0"/>
-        <subsystem xmlns="urn:jboss:domain:ejb3:10.0">
+        <subsystem xmlns="urn:jboss:domain:ejb3:9.0">
             <session-bean>
                 <stateless>
                     <bean-instance-pool-ref pool-name="slsb-strict-max-pool"/>
@@ -281,9 +320,12 @@
                 </bean-instance-pools>
             </pools>
             <caches>
-                <simple-cache name="simple"/>
-                <distributable-cache name="distributable"/>
+                <cache name="simple" aliases="NoPassivationCache"/>
+                <cache name="distributable" passivation-store-ref="infinispan" aliases="passivating clustered"/>
             </caches>
+            <passivation-stores>
+                <passivation-store name="infinispan" cache-container="ejb" max-size="10000"/>
+            </passivation-stores>
             <async thread-pool-name="default"/>
             <timer-service thread-pool-name="default" default-data-store="default-file-store">
                 <data-stores>
@@ -302,16 +344,12 @@
                     <keepalive-time time="100" unit="milliseconds"/>
                 </thread-pool>
             </thread-pools>
-            <!-- <iiop enable-by-default="false" use-qualified-name="false"/> -->
-            <default-security-domain value="other"/>
-            <application-security-domains>
-                <application-security-domain name="other" security-domain="ApplicationDomain"/>
-            </application-security-domains>
-            <default-missing-method-permissions-deny-access value="true"/>
+            <in-vm-remote-interface-invocation pass-by-value="false"/>
+            <default-missing-method-permissions-deny-access value="false"/>
             <statistics enabled="${wildfly.ejb3.statistics-enabled:${wildfly.statistics-enabled:false}}"/>
             <log-system-exceptions value="true"/>
         </subsystem>
-        <subsystem xmlns="urn:wildfly:elytron:community:18.0" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
+        <subsystem xmlns="urn:wildfly:elytron:13.0" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
             <providers>
                 <aggregate-providers name="combined-providers">
                     <providers name="elytron"/>
@@ -366,19 +404,12 @@
                     <permission class-name="org.wildfly.security.auth.permission.LoginPermission"/>
                 </permission-set>
                 <permission-set name="default-permissions">
+                    <permission class-name="org.wildfly.extension.batch.jberet.deployment.BatchPermission" module="org.wildfly.extension.batch.jberet" target-name="*"/>
                     <permission class-name="org.wildfly.transaction.client.RemoteTransactionPermission" module="org.wildfly.transaction.client"/>
                     <permission class-name="org.jboss.ejb.client.RemoteEJBPermission" module="org.jboss.ejb-client"/>
-                    <permission class-name="org.wildfly.extension.batch.jberet.deployment.BatchPermission" module="org.wildfly.extension.batch.jberet" target-name="*"/>
                 </permission-set>
             </permission-sets>
             <http>
-                <http-authentication-factory name="application-http-authentication" security-domain="ApplicationDomain" http-server-mechanism-factory="global">
-                    <mechanism-configuration>
-                        <mechanism mechanism-name="BASIC">
-                            <mechanism-realm realm-name="ApplicationRealm"/>
-                        </mechanism>
-                    </mechanism-configuration>
-                </http-authentication-factory>
                 <http-authentication-factory name="management-http-authentication" security-domain="ManagementDomain" http-server-mechanism-factory="global">
                     <mechanism-configuration>
                         <mechanism mechanism-name="DIGEST">
@@ -408,7 +439,6 @@
                 <configurable-sasl-server-factory name="configured" sasl-server-factory="elytron">
                     <properties>
                         <property name="wildfly.sasl.local-user.default-user" value="$local"/>
-                        <property name="wildfly.sasl.local-user.challenge-path" value="${jboss.server.temp.dir}/auth"/>
                     </properties>
                 </configurable-sasl-server-factory>
                 <mechanism-provider-filtering-sasl-server-factory name="elytron" sasl-server-factory="global">
@@ -435,57 +465,10 @@
                     <server-ssl-context name="applicationSSC" key-manager="applicationKM"/>
                 </server-ssl-contexts>
             </tls>
-            <!-- <tls>
-                <key-stores>
-                    <key-store name="cmcServerKS">
-                        <credential-reference store="credential-store" alias="keystore-password" />
-                        <implementation type="PKCS12" />
-                        <file path="server.keystore.p12" relative-to="jboss.keystore.location" />
-                    </key-store>
-
-                    <key-store name="cmcTrustKS">
-                        <credential-reference store="credential-store" alias="truststore-password" />
-                        <implementation type="JKS" />
-                        <file path="be_uat.cmcdctr.hksarg.truststore" relative-to="jboss.keystore.location" />
-                    </key-store>
-                </key-stores>
-
-                <key-managers>
-                    <key-manager name="cmcKeyManager" key-store="cmcServerKS">
-                        <credential-reference store="credential-store" alias="keystore-password" />
-                    </key-manager>
-                </key-managers>
-
-                <trust-managers>
-                    <trust-manager name="cmcTrustManager" key-store="cmcTrustKS" />
-                </trust-managers>
-
-                <server-ssl-contexts>
-                    <server-ssl-context name="cmcSSLContext"
-                        key-manager="cmcKeyManager"
-                        trust-manager="cmcTrustManager"
-                        protocols="TLSv1.2,TLSv1.3" />
-                </server-ssl-contexts>
-            </tls> -->
-            <policy name="jacc">
-                <jacc-policy/>
-            </policy>
-            <credential-stores>
-                <credential-store name="credential-store" relative-to="jboss.server.base.dir"
-                    path="credentials/credential-store.cs" create="true">
-                    <credential-reference clear-text="store-password" />
-                </credential-store>
-            </credential-stores>
         </subsystem>
-        <subsystem xmlns="urn:wildfly:elytron-oidc-client:2.0"/>
         <subsystem xmlns="urn:wildfly:health:1.0" security-enabled="false"/>
-        <!-- <subsystem xmlns="urn:jboss:domain:iiop-openjdk:3.0">
-            <orb socket-binding="iiop"/>
-            <initializers security="elytron" transactions="spec"/>
-            <security server-requires-ssl="false" client-requires-ssl="false"/>
-        </subsystem> -->
-        <subsystem xmlns="urn:jboss:domain:infinispan:14.0">
-            <cache-container name="hibernate" marshaller="JBOSS" modules="org.infinispan.hibernate-cache">
+        <subsystem xmlns="urn:jboss:domain:infinispan:12.0">
+            <cache-container name="hibernate" modules="org.infinispan.hibernate-cache">
                 <local-cache name="entity">
                     <heap-memory size="10000"/>
                     <expiration max-idle="100000"/>
@@ -494,46 +477,32 @@
                     <heap-memory size="10000"/>
                     <expiration max-idle="100000"/>
                 </local-cache>
-                <local-cache name="timestamps">
-                    <expiration interval="0"/>
-                </local-cache>
+                <local-cache name="timestamps"/>
                 <local-cache name="pending-puts">
                     <expiration max-idle="60000"/>
                 </local-cache>
             </cache-container>
-            <cache-container name="ejb" default-cache="passivation" marshaller="PROTOSTREAM" aliases="sfsb" modules="org.wildfly.clustering.ejb.infinispan">
+            <cache-container name="ejb" default-cache="passivation" aliases="sfsb" modules="org.wildfly.clustering.ejb.infinispan">
                 <local-cache name="passivation">
-                    <expiration interval="0"/>
-                    <file-store passivation="true"/>
-                </local-cache>
-                <local-cache name="persistent">
-                    <locking isolation="REPEATABLE_READ"/>
-                    <transaction mode="BATCH"/>
-                    <expiration interval="0"/>
-                    <file-store preload="true"/>
-                </local-cache>
-                <local-cache name="transient">
-                    <locking isolation="REPEATABLE_READ"/>
-                    <transaction mode="BATCH"/>
-                    <expiration interval="0"/>
-                    <file-store passivation="true" purge="true"/>
+                    <file-store passivation="true" purge="false"/>
                 </local-cache>
             </cache-container>
-            <cache-container name="web" default-cache="passivation" marshaller="PROTOSTREAM" modules="org.wildfly.clustering.web.infinispan">
+            <cache-container name="web" default-cache="passivation" modules="org.wildfly.clustering.web.infinispan">
                 <local-cache name="passivation">
-                    <expiration interval="0"/>
-                    <file-store passivation="true"/>
+                    <file-store passivation="true" purge="false"/>
                 </local-cache>
-                <local-cache name="sso">
-                    <expiration interval="0"/>
-                </local-cache>
+                <local-cache name="sso"/>
+            </cache-container>
+            <cache-container name="server" default-cache="default" modules="org.wildfly.clustering.server">
+                <local-cache name="default"/>
             </cache-container>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:io:4.0" default-worker="default">
+        <subsystem xmlns="urn:jboss:domain:io:3.0">
             <worker name="default"/>
+            <buffer-pool name="default"/>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:jaxrs:3.0"/>
-        <subsystem xmlns="urn:jboss:domain:jca:6.0">
+        <subsystem xmlns="urn:jboss:domain:jaxrs:2.0"/>
+        <subsystem xmlns="urn:jboss:domain:jca:5.0">
             <archive-validation enabled="true" fail-on-error="true" fail-on-warn="false"/>
             <bean-validation enabled="true"/>
             <default-workmanager>
@@ -567,9 +536,8 @@
                 <smtp-server outbound-socket-binding-ref="mail-smtp"/>
             </mail-session>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:messaging-activemq:16.0">
+        <subsystem xmlns="urn:jboss:domain:messaging-activemq:13.0">
             <server name="default">
-                <security elytron-domain="ApplicationDomain"/>
                 <statistics enabled="${wildfly.messaging-activemq.statistics-enabled:${wildfly.statistics-enabled:false}}"/>
                 <security-setting name="#">
                     <role name="guest" send="true" consume="true" create-non-durable-queue="true" delete-non-durable-queue="true"/>
@@ -598,20 +566,80 @@
             </server>
         </subsystem>
         <subsystem xmlns="urn:wildfly:metrics:1.0" security-enabled="false" exposed-subsystems="*" prefix="${wildfly.metrics.prefix:wildfly}"/>
-        <subsystem xmlns="urn:wildfly:microprofile-config-smallrye:2.0"/>
+        <subsystem xmlns="urn:wildfly:microprofile-config-smallrye:1.0"/>
         <subsystem xmlns="urn:wildfly:microprofile-jwt-smallrye:1.0"/>
+        <subsystem xmlns="urn:wildfly:microprofile-opentracing-smallrye:3.0" default-tracer="jaeger">
+            <jaeger-tracer name="jaeger">
+                <sampler-configuration sampler-type="const" sampler-param="1.0"/>
+            </jaeger-tracer>
+        </subsystem>
         <subsystem xmlns="urn:jboss:domain:naming:2.0">
+            <bindings>
+                <simple name="java:/COMMON_PROPERTIES_FILENAME" value="/config/common_web.properties"/>
+                <simple name="java:/APP_PROPERTIES_FILENAME" value="/config/common_app.properties"/>
+                <lookup name="java:jboss/jdbc/RMDataSource" lookup="java:/XAOracleDS_WC"/>
+                <lookup name="java:/XAOracleDS_TW" lookup="java:/XAOracleDS_WC"/>
+            </bindings>
             <remote-naming/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:pojo:1.0"/>
-        <subsystem xmlns="urn:jboss:domain:remoting:7.0">
-            <endpoint worker="default"/>
-            <http-connector name="http-remoting-connector" connector-ref="default" sasl-authentication-factory="application-sasl-authentication"/>
-            <http-connector name="remoting-connector" connector-ref="remoting" sasl-authentication-factory="application-sasl-authentication"/>
+        <subsystem xmlns="urn:jboss:domain:remoting:4.0">
+            <http-connector name="http-remoting-connector" connector-ref="default" security-realm="ApplicationRealm"/>
+            <http-connector name="remoting-connector" connector-ref="remoting"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:request-controller:1.0"/>
-        <subsystem xmlns="urn:jboss:domain:resource-adapters:7.1"/>
+        <subsystem xmlns="urn:jboss:domain:resource-adapters:6.0"/>
         <subsystem xmlns="urn:jboss:domain:sar:1.0"/>
+        <subsystem xmlns="urn:jboss:domain:security:2.0">
+            <security-domains>
+                <security-domain name="other" cache-type="default">
+                    <authentication>
+                        <login-module code="Remoting" flag="optional">
+                            <module-option name="password-stacking" value="useFirstPass"/>
+                        </login-module>
+                        <login-module code="RealmDirect" flag="required">
+                            <module-option name="password-stacking" value="useFirstPass"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
+                <security-domain name="jboss-web-policy" cache-type="default">
+                    <authorization>
+                        <policy-module code="Delegating" flag="required"/>
+                    </authorization>
+                </security-domain>
+                <security-domain name="jaspitest" cache-type="default">
+                    <authentication-jaspi>
+                        <login-module-stack name="dummy">
+                            <login-module code="Dummy" flag="optional"/>
+                        </login-module-stack>
+                        <auth-module code="Dummy"/>
+                    </authentication-jaspi>
+                </security-domain>
+                <security-domain name="jboss-ejb-policy" cache-type="default">
+                    <authorization>
+                        <policy-module code="Delegating" flag="required"/>
+                    </authorization>
+                </security-domain>
+                <security-domain name="EncryptDBPassword_CMC-CORE" cache-type="default">
+                    <authentication>
+                        <login-module code="org.picketbox.datasource.security.SecureIdentityLoginModule" flag="required">
+                            <module-option name="username" value="ogcmrceu11"/>
+                            <module-option name="password" value="586a0741b772c913df8592078de921bc"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
+                <security-domain name="RequireCertificateDomain">
+                    <authentication>
+                        <login-module code="CertificateRoles" flag="required">
+                            <module-option name="securityDomain" value="RequireCertificateDomain"/>
+                            <module-option name="verifier" value="org.jboss.security.auth.certs.AnyCertVerifier"/>
+                            <module-option name="rolesProperties" value="file:${jboss.server.config.dir}/application-roles.properties"/>
+                        </login-module>
+                    </authentication>
+                    <jsse truststore-password="${VAULT::trust::password::1}" truststore-url="file:${jboss.truststore.location}/be_uat.cmcdctr.hksarg.truststore"/>
+                </security-domain>
+            </security-domains>
+        </subsystem>
         <subsystem xmlns="urn:jboss:domain:security-manager:1.0">
             <deployment-permissions>
                 <maximum-set>
@@ -629,16 +657,17 @@
             <coordinator-environment statistics-enabled="${wildfly.transactions.statistics-enabled:${wildfly.statistics-enabled:false}}"/>
             <object-store path="tx-object-store" relative-to="jboss.server.data.dir"/>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:undertow:14.0" default-virtual-host="default-host" default-servlet-container="default" default-server="default-server" statistics-enabled="${wildfly.undertow.statistics-enabled:${wildfly.statistics-enabled:false}}" default-security-domain="other">
-            <byte-buffer-pool name="default"/>
+        <subsystem xmlns="urn:jboss:domain:undertow:12.0" default-server="default-server" default-virtual-host="default-host" default-servlet-container="default" default-security-domain="other" statistics-enabled="${wildfly.undertow.statistics-enabled:${wildfly.statistics-enabled:false}}">
             <buffer-cache name="default"/>
             <server name="default-server">
+                <ajp-listener name="ajp" max-connections="500" socket-binding="ajp" record-request-start-time="true"/>
                 <http-listener name="default" socket-binding="http" record-request-start-time="true" redirect-socket="https" enable-http2="false"/>
                 <http-listener name="remoting" socket-binding="remoting" enable-http2="false"/>
-                <https-listener name="https" socket-binding="https" ssl-context="applicationSSC" enable-http2="false"/>
+                <https-listener name="https" max-connections="1000" socket-binding="https" max-buffered-request-size="1048576" record-request-start-time="true" no-request-timeout="300000" secure="true" security-realm="jbossweb-migration-security-realm1" enabled-cipher-suites="AES128-SHA:AES256-SHA:AES128-SHA256:AES256-SHA256" enabled-protocols="TLSv1,TLSv1.1,TLSv1.2" enable-http2="false"/>
                 <host name="default-host" alias="localhost">
                     <location name="/" handler="welcome-content"/>
-                    <http-invoker http-authentication-factory="application-http-authentication"/>
+                    <access-log pattern="%h %S %l %u %t %r %s %b %D" directory="./default-host" relative-to="jboss.server.log.dir"/>
+                    <http-invoker security-realm="ApplicationRealm"/>
                 </host>
             </server>
             <servlet-container name="default">
@@ -649,9 +678,6 @@
             <handlers>
                 <file name="welcome-content" path="${jboss.home.dir}/welcome-content"/>
             </handlers>
-            <application-security-domains>
-                <application-security-domain name="other" security-domain="ApplicationDomain"/>
-            </application-security-domains>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:webservices:2.0" statistics-enabled="${wildfly.webservices.statistics-enabled:${wildfly.statistics-enabled:false}}">
             <wsdl-host>${jboss.bind.address:127.0.0.1}</wsdl-host>
@@ -663,7 +689,7 @@
             </endpoint-config>
             <client-config name="Standard-Client-Config"/>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:weld:5.0"/>
+        <subsystem xmlns="urn:jboss:domain:weld:4.0"/>
     </profile>
     <interfaces>
         <interface name="management">
@@ -680,15 +706,13 @@
         <socket-binding name="ajp" port="8034"/>
         <socket-binding name="http" port="19680"/>
         <socket-binding name="https" port="9080"/>
-        <!-- <socket-binding name="iiop" interface="unsecure" port="3528"/> -->
-        <!-- <socket-binding name="iiop-ssl" interface="unsecure" port="3529"/> -->
         <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:46990}"/>
         <socket-binding name="management-https" interface="management" port="${jboss.management.https.port:46993}"/>
         <socket-binding name="remoting" port="4928"/>
         <socket-binding name="txn-recovery-environment" port="5283"/>
         <socket-binding name="txn-status-manager" port="5284"/>
         <outbound-socket-binding name="mail-smtp">
-            <remote-destination host="${jboss.mail.server.host:localhost}" port="${jboss.mail.server.port:25}"/>
+            <remote-destination host="localhost" port="25"/>
         </outbound-socket-binding>
     </socket-binding-group>
 </server>

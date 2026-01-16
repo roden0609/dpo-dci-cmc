@@ -13,7 +13,7 @@ echo `date '+%F %H:%M:%S'` $0 ' Start --'
 
 BATCH_CLASS=hk.gov.cmc.batchjob.MaintainMessageBackgroundService
 
-${JAVA_HOME}/bin/java -Djboss.ejb.client.properties.file.path=${PROPERTIES_FILE} -Dlog4j.configuration=file:${CONFIG}/log4j.properties -cp ${CLASSPATH} ${BATCH_CLASS} ${PROPERTIES_FILE} $1 $2
+${JAVA_HOME}/bin/java -Djboss.ejb.client.properties.file.path=${PROPERTIES_FILE} -Dlog4j2.configurationFile=file:${CONFIG}/log4j2.properties -cp ${CLASSPATH} ${BATCH_CLASS} ${PROPERTIES_FILE} $1 $2
 
 rc=$?
 
