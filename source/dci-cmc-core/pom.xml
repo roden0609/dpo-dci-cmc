@@ -8,6 +8,7 @@
         <artifactId>dci-cmc</artifactId>
         <version>3.0.0</version>
     </parent>
+
     <artifactId>dci-cmc-core</artifactId>
     <packaging>jar</packaging>
 

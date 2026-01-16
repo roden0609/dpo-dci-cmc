@@ -23,6 +23,7 @@
         <module>dci-cmc-ejb-client-rm3</module>
         <module>dci-cmc-app</module>
         <module>dci-cmc-app-testclient</module>
+        <module>dci-cmc-batch</module>
     </modules>
 
     <properties>
