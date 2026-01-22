@@ -165,7 +165,7 @@
                 <datasource jta="true" jndi-name="java:jboss/jdbc/RMDataSource"
                     pool-name="RMDataSource" enabled="true" use-ccm="false">
                     <connection-url>
-                        jdbc:mysql://172.16.69.11:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false&amp;allowPublicKeyRetrieval=true
+                        jdbc:mysql://172.16.69.14:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false&amp;allowPublicKeyRetrieval=true
                     </connection-url>
                     <driver>com.mysql</driver>
                     <security user-name="ogcmrceu11">
@@ -182,7 +182,7 @@
                 <datasource jta="true" jndi-name="java:jboss/jdbc/CMCDataSource"
                     pool-name="CMCDataSource" enabled="true" use-ccm="false">
                     <connection-url>
-                        jdbc:mysql://172.16.69.11:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false
+                        jdbc:mysql://172.16.69.14:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false
                     </connection-url>
                     <driver>com.mysql</driver>
                     <security user-name="ogcmrceu11">

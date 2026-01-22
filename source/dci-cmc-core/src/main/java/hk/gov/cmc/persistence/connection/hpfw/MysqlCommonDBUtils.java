@@ -186,7 +186,7 @@ public class MysqlCommonDBUtils implements Serializable {
         ResultSet rs = null;
         ResultSet rs2 = null;
         try {
-            logger.info("acquireBatchLock: Start : " + name);
+            logger.debug("acquireBatchLock: Start : " + name);
 
             conn.setAutoCommit(false);
 
@@ -197,7 +197,7 @@ public class MysqlCommonDBUtils implements Serializable {
                 throw new SQLException("Unexpected Error: no row return for checking lock");
             }
             String checkResult = rs2.getString(1);
-            logger.info("acquireBatchLock: check lock result=" + checkResult);
+            logger.debug("acquireBatchLock: check lock result=" + checkResult);
             if (checkResult == null) {
                 ps = conn.prepareStatement(SQL_ACQUIRE_LOCK);
                 ps.setString(1, name);
@@ -206,18 +206,18 @@ public class MysqlCommonDBUtils implements Serializable {
                     throw new SQLException("Unexpected Error: no row return for acquiring lock");
                 }
                 int result = rs.getInt(1);
-                logger.info("acquireBatchLock: acquire lock result=" + result);
+                logger.debug("acquireBatchLock: acquire lock result=" + result);
                 conn.commit();
                 if (result == 1) {
                     logger.debug("AcquireBatchLock: successfully to acquire lock, name = " + name);
                     return true;
                 } else {
-                    logger.info("AcquireBatchLock: fail to acquire lock, name= " + name);
+                    logger.debug("AcquireBatchLock: fail to acquire lock, name= " + name);
                     return false;
                 }
 
             } else {
-                logger.info("acquireBatchLock: fail to acquire lock due to IS_USED_LOCK result");
+                logger.debug("acquireBatchLock: fail to acquire lock due to IS_USED_LOCK result");
                 return false;
             }
 
@@ -236,7 +236,7 @@ public class MysqlCommonDBUtils implements Serializable {
             throws SQLException {
         PreparedStatement ps = null;
         ResultSet rs = null;
-        logger.info("releaseBatchLock - Start : " + name);
+        logger.debug("releaseBatchLock - Start : " + name);
         try {
             conn.setAutoCommit(false);
             ps = conn.prepareStatement(SQL_RELEASE_LOCK);
@@ -246,7 +246,7 @@ public class MysqlCommonDBUtils implements Serializable {
                 throw new SQLException("Fail to release Exclusive Batch Lock: " + name);
             }
             String result = rs.getString(1);
-            logger.info("releaseBatchLock: release lock result=" + result);
+            logger.debug("releaseBatchLock: release lock result=" + result);
 
             conn.commit();
         } catch (Exception e) {

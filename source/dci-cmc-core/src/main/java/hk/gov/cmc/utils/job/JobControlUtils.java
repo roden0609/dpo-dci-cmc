@@ -54,10 +54,10 @@ public class JobControlUtils {
             if (con == null || con.isClosed())
                 return false;
 
-            logger.debug("lockJobControl acquireBatchLock: Start : " + jobName);
+            logger.debug("lockJobControl - acquireBatchLock jobName: " + jobName);
 
             if (!MysqlCommonDBUtils.acquireNamedLock(con, jobName)) {
-                logger.info("[JobControlUtils]Resource busy during lockJobControl " + jobName);
+                logger.info("lockJobControl - resource busy during lockJobControl jobName: " + jobName);
                 return false;
             }
 
@@ -70,6 +70,8 @@ public class JobControlUtils {
                 Timestamp lastLockTime = rs.getTimestamp("lock_time");
                 long lockedTime = lastLockTime == null ? 0 : ((new Date()).getTime() - lastLockTime.getTime());
 
+                logger.info("lockJobControl - jobName: " + jobName + ", currentLckServer: " + currentLckServer
+                        + ", lastLockTime: " + lastLockTime + ", lockedTime(ms): " + lockedTime);
                 if ("N".equals(currentLckServer) || (timeoutCheckNeeded && lockedTime > (timeoutInMins * 60 * 1000))) {
 
                     ps2 = con.prepareStatement(
@@ -79,53 +81,54 @@ public class JobControlUtils {
                     ps2.setString(2, jobName);
                     ps2.execute();
                     con.commit();
+                    logger.info("lockJobControl - jobName: " + jobName + ", locked by this server: " + serverId);
                     return true;
                 }
 
-                logger.info("[JobControlUtils]lockJobControl " + jobName + " , other process is locking this job.");
+                logger.info("lockJobControl - jobName: " + jobName + ", other process is locking this job.");
                 return false;
-            } else
+            } else 
                 return false;
         } catch (SQLException e) {
 
-            logger.error("[JobControlUtils][lockJobControl " + jobName + "] SQLException " + e.getMessage());
+            logger.error("lockJobControl - jobName: " + jobName + ", SQLException: " + e.getMessage());
 
             return false;
         } catch (Exception se) {
 
-            logger.error("[JobControlUtils][lockJobControl " + jobName + "] Exception " + se.getMessage());
+            logger.error("lockJobControl - jobName: " + jobName + ", Exception: " + se.getMessage());
             return false;
         } finally {
 
             try {
                 MysqlCommonDBUtils.releaseNamedLock(con, jobName);
             } catch (Exception ex) {
-                logger.error("releaseNamedLock failed", ex);
+                logger.error("lockJobControl - releaseNamedLock failed", ex);
             }
 
             if (rs != null)
                 try {
                     rs.close();
                 } catch (SQLException ex) {
-                    logger.warn("rs close failed", ex);
+                    logger.warn("lockJobControl - rs close failed", ex);
                 }
             if (ps != null)
                 try {
                     ps.close();
                 } catch (SQLException ex) {
-                    logger.warn("rs close failed", ex);
+                    logger.warn("lockJobControl - ps close failed", ex);
                 }
             if (ps2 != null)
                 try {
                     ps2.close();
                 } catch (SQLException ex) {
-                    logger.warn("rs close failed", ex);
+                    logger.warn("lockJobControl - ps2 close failed", ex);
                 }
             if (priCon != null)
                 try {
                     HPFW_Connection.close(priCon);
                 } catch (Exception ex) {
-                    logger.warn("con close failed", ex);
+                    logger.warn("lockJobControl - con close failed", ex);
                 }
         }
     }
@@ -156,20 +159,20 @@ public class JobControlUtils {
             con.commit();
             return true;
         } catch (Exception se) {
-            logger.error("[JobControlUtils][releaseJobControl " + jobName + "] " + se.getMessage());
+            logger.error("releaseJobControl - jobName: " + jobName + ", Exception: " + se.getMessage());
             return false;
         } finally {
             if (ps != null)
                 try {
                     ps.close();
                 } catch (SQLException ex) {
-                    logger.warn("rs close failed", ex);
+                    logger.warn("releaseJobControl - ps close failed", ex);
                 }
             if (priCon != null)
                 try {
                     HPFW_Connection.close(priCon);
                 } catch (Exception ex) {
-                    logger.warn("con close failed", ex);
+                    logger.warn("releaseJobControl - con close failed", ex);
                 }
         }
     }

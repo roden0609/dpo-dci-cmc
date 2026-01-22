@@ -1,5 +1,6 @@
 package hk.gov.cmc.model.maintainmessage.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MaintainMessageResponse {
@@ -7,6 +8,10 @@ public class MaintainMessageResponse {
     private String resultCode;
     private String resultMessage;
     private List<MessageResponse> messageResponses;
+
+    public MaintainMessageResponse() {
+        this.messageResponses = new ArrayList<MessageResponse>();
+    }
 
     public String getResultCode() {
         return resultCode;

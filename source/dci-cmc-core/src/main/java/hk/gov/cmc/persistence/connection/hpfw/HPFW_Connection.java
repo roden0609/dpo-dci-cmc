@@ -592,7 +592,7 @@ public class HPFW_Connection implements Serializable {
 
         if (needRollback) {
             try {
-                logger.info("run autoRollBack()");
+                logger.debug("run autoRollBack()");
                 c.rollback();
             } catch (Exception ignore) {
             }
@@ -612,7 +612,7 @@ public class HPFW_Connection implements Serializable {
     }
 
     public static void initPool(Properties properties) throws Exception {
-        logger.debug("initPool()");
+        logger.info("initPool");
         String dsname1 = properties.getProperty(DB_CONNECTION_DS_NAME_1_PROPERTY_NAME);
         String dsname2 = properties.getProperty(DB_CONNECTION_DS_NAME_2_PROPERTY_NAME);
         String sec_dsname1 = properties.getProperty(DB_CONNECTION_SECONDARY_DS_NAME_1_PROPERTY_NAME);
@@ -729,7 +729,7 @@ public class HPFW_Connection implements Serializable {
     }
 
     private static Connection getConnection(final String mode, boolean isConnectionManaged) {
-        logger.info("getConnection(mode=" + mode + ", isConnectionManaged=" + isConnectionManaged + ")");
+        logger.debug("getConnection(mode=" + mode + ", isConnectionManaged=" + isConnectionManaged + ")");
         try {
             return getConnection(
                     PRI.equals(mode) ? pri_ds : SEC.equals(mode) ? sec_ds : MASTER.equals(mode) ? ds1 : ds2,
@@ -808,14 +808,14 @@ public class HPFW_Connection implements Serializable {
     }
 
     public static HPFW_Connection getHPFW_Connection(boolean sameConPerThread, boolean isContainerManaged) {
-        logger.info("getHPFW_Connection(sameConPerThread=" + sameConPerThread + ", isContainerManaged="
+        logger.debug("getHPFW_Connection(sameConPerThread=" + sameConPerThread + ", isContainerManaged="
                 + isContainerManaged + ")");
         Connection conn = getConnection(sameConPerThread, isContainerManaged);
         return globalMapping.get(conn);
     }
 
     public static HPFW_Connection getHPFW_Connection() {
-        logger.info("getHPFW_Connection()");
+        logger.debug("getHPFW_Connection");
         return getHPFW_Connection(false, false);
     }
 
