@@ -69,6 +69,8 @@ public class MessageProcessor {
     HashMap<String, String> iasApplicationHandledCache;
 
     public MessageProcessor() {
+        iasToDoItemHandledCache = new HashMap<String, String>();
+        iasApplicationHandledCache = new HashMap<String, String>();
     }
 
     public void processMessage(MaintainMessageResponse response,
