@@ -50,8 +50,7 @@
         <property name="org.apache.jasper.compiler.Parser.STRICT_QUOTE_ESCAPING" value="false" />
         <property name="file.encoding" value="UTF-8" />
         <property name="java.awt.headless" value="true" />
-        <property name="hk.gov.gcis.rm.common.PROPERTIES_FILEPATH"
-            value="/bd-ogcmr/uat/cmc/cmc-core" />
+        <property name="hk.gov.gcis.rm.common.PROPERTIES_FILEPATH" value="/bd-ogcmr/uat/cmc/cmc-core" />
         <property name="org.jboss.resolver.warning" value="true" />
         <property name="sun.rmi.dgc.client.gcInterval" value="3600000" />
         <property name="sun.rmi.dgc.server.gcInterval" value="3600000" />

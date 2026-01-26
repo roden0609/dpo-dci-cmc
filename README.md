@@ -27,5 +27,7 @@ docker compose up --build
 <!-- Generate credential-store.cs -->
 docker exec -it dci-cmc-wildfly /opt/jboss/wildfly/bin/jboss-cli.sh --connect
 /subsystem=elytron/credential-store=credential-store:add-alias(alias=db-password,secret-value="fAy=2Pet")
-/subsystem=elytron/credential-store=credential-store:add-alias(alias=keystore-password,secret-value="changeit")
+/subsystem=elytron/credential-store=credential-store:add-alias(alias=keystore-password,secret-value="password")
 /subsystem=elytron/credential-store=credential-store:add-alias(alias=truststore-password,secret-value="changeit")
+
+<!-- /subsystem=elytron/credential-store=credential-store:remove-alias(alias=keystore-password) -->

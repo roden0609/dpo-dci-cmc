@@ -303,11 +303,12 @@
                 </thread-pool>
             </thread-pools>
             <!-- <iiop enable-by-default="false" use-qualified-name="false"/> -->
-            <default-security-domain value="other"/>
-            <application-security-domains>
+            <!-- <default-security-domain value="other"/> -->
+            <!-- <application-security-domains>
                 <application-security-domain name="other" security-domain="ApplicationDomain"/>
-            </application-security-domains>
-            <default-missing-method-permissions-deny-access value="true"/>
+            </application-security-domains> -->
+            <in-vm-remote-interface-invocation pass-by-value="false"/>
+            <default-missing-method-permissions-deny-access value="false"/>
             <statistics enabled="${wildfly.ejb3.statistics-enabled:${wildfly.statistics-enabled:false}}"/>
             <log-system-exceptions value="true"/>
         </subsystem>
@@ -425,48 +426,33 @@
                         <implementation type="JKS"/>
                         <file path="application.keystore" relative-to="jboss.server.config.dir"/>
                     </key-store>
-                </key-stores>
-                <key-managers>
-                    <key-manager name="applicationKM" key-store="applicationKS" generate-self-signed-certificate-host="localhost">
-                        <credential-reference clear-text="password"/>
-                    </key-manager>
-                </key-managers>
-                <server-ssl-contexts>
-                    <server-ssl-context name="applicationSSC" key-manager="applicationKM"/>
-                </server-ssl-contexts>
-            </tls>
-            <!-- <tls>
-                <key-stores>
                     <key-store name="cmcServerKS">
                         <credential-reference store="credential-store" alias="keystore-password" />
                         <implementation type="PKCS12" />
                         <file path="server.keystore.p12" relative-to="jboss.keystore.location" />
                     </key-store>
-
                     <key-store name="cmcTrustKS">
                         <credential-reference store="credential-store" alias="truststore-password" />
                         <implementation type="JKS" />
                         <file path="be_uat.cmcdctr.hksarg.truststore" relative-to="jboss.keystore.location" />
                     </key-store>
                 </key-stores>
-
                 <key-managers>
+                    <key-manager name="applicationKM" key-store="applicationKS" generate-self-signed-certificate-host="localhost">
+                        <credential-reference clear-text="password"/>
+                    </key-manager>
                     <key-manager name="cmcKeyManager" key-store="cmcServerKS">
                         <credential-reference store="credential-store" alias="keystore-password" />
                     </key-manager>
                 </key-managers>
-
                 <trust-managers>
                     <trust-manager name="cmcTrustManager" key-store="cmcTrustKS" />
                 </trust-managers>
-
                 <server-ssl-contexts>
-                    <server-ssl-context name="cmcSSLContext"
-                        key-manager="cmcKeyManager"
-                        trust-manager="cmcTrustManager"
-                        protocols="TLSv1.2,TLSv1.3" />
+                    <server-ssl-context name="applicationSSC" key-manager="applicationKM"/>
+                    <server-ssl-context name="cmcSSLContext" key-manager="cmcKeyManager" trust-manager="cmcTrustManager" protocols="TLSv1.2 TLSv1.3" />
                 </server-ssl-contexts>
-            </tls> -->
+            </tls>
             <policy name="jacc">
                 <jacc-policy/>
             </policy>
@@ -635,7 +621,7 @@
             <server name="default-server">
                 <http-listener name="default" socket-binding="http" record-request-start-time="true" redirect-socket="https" enable-http2="false"/>
                 <http-listener name="remoting" socket-binding="remoting" enable-http2="false"/>
-                <https-listener name="https" socket-binding="https" ssl-context="applicationSSC" enable-http2="false"/>
+                <https-listener name="https" socket-binding="https" ssl-context="cmcSSLContext" enable-http2="false"/>
                 <host name="default-host" alias="localhost">
                     <location name="/" handler="welcome-content"/>
                     <http-invoker http-authentication-factory="application-http-authentication"/>

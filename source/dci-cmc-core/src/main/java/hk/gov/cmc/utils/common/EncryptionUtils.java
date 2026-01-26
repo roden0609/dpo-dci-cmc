@@ -51,7 +51,7 @@ import hk.gov.gcis.rm.common.utils.encoder.BASE64Coder;
 
 public class EncryptionUtils {
 
-    public static final Log log = LogFactory.getLog(EncryptionUtils.class);
+    public static final Log logger = LogFactory.getLog(EncryptionUtils.class);
 
     public static String DEFAULT_TRANSFORMATION = "RSA/ECB/Pkcs1Padding";
     public static String DEFAULT_PROVIDER = "BC";
@@ -224,9 +224,13 @@ public class EncryptionUtils {
             keyExist = true;
         }
 
-        if (!keyExist)
-            log.warn("No private key has been found for issuer name [" + issuerName + "], serial no ["
+        if (!keyExist) {
+            logger.warn("No private key has been found for issuer name [" + issuerName + "], serial no ["
                     + serialNo.toString() + "] in KMU.");
+        } else {
+            logger.info("Private key has been found for issuer name [" + issuerName + "], serial no ["
+                    + serialNo.toString() + "] in KMU.");
+        }
 
         return keyExist;
 
