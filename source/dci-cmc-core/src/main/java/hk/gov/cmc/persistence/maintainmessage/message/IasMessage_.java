@@ -1,4 +1,4 @@
-package hk.gov.cmc.persistence.ias.application;
+package hk.gov.cmc.persistence.maintainmessage.message;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -11,67 +11,76 @@ import hk.gov.cmc.persistence.connection.hpfw.CommonDBUtils;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
 
-public class IasApplication_ implements Serializable {
-    private static final long serialVersionUID = 1L;
-    protected boolean initialized = false;
+public class IasMessage_ implements Serializable {
 
-    private final static String thisTableName = "IAS_APPLICATION";
+    private static final long serialVersionUID = 1L;
+    private boolean initialized = false;
+
+    private final static String thisTableName = "IAS_MESSAGE";
     private final static String thisTableHistName = "_H";
     private boolean forUpdate = false;
-    protected String iasApplicationId = null;
-    protected String portalId = null;
-    protected String templateId = null;
-    protected String templateVersion = null;
-    protected String titleEn = null;
-    protected String titleTc = null;
-    protected String titleSc = null;
-    protected String detailEn = null;
-    protected String detailTc = null;
-    protected String detailSc = null;
-    protected String iasEsAppSuffixEn = null;
-    protected String iasEsAppSuffixTc = null;
-    protected String iasEsAppSuffixSc = null;
-    protected Timestamp createDt = null;
-    protected Timestamp lastModifyDt = null;
-    protected String createBy = null;
-    protected String lastModifyBy = null;
-    protected String encInd = null;
-    protected String encKeyStoreId = null;
 
-    protected boolean dirty_iasApplicationId = false;
-    protected boolean dirty_portalId = false;
-    protected boolean dirty_templateId = false;
-    protected boolean dirty_templateVersion = false;
-    protected boolean dirty_titleEn = false;
-    protected boolean dirty_titleTc = false;
-    protected boolean dirty_titleSc = false;
-    protected boolean dirty_detailEn = false;
-    protected boolean dirty_detailTc = false;
-    protected boolean dirty_detailSc = false;
-    protected boolean dirty_iasEsAppSuffixEn = false;
-    protected boolean dirty_iasEsAppSuffixTc = false;
-    protected boolean dirty_iasEsAppSuffixSc = false;
-    protected boolean dirty_createDt = false;
-    protected boolean dirty_lastModifyDt = false;
-    protected boolean dirty_createBy = false;
-    protected boolean dirty_lastModifyBy = false;
-    protected boolean dirty_encInd = false;
-    protected boolean dirty_encKeyStoreId = false;
+    private String iasMsgId = null;
+    private String portalId = null;
+    private String templateId = null;
+    private String templateVersion = null;
+    private String refId = null;
+    private String subjectEn = null;
+    private String contentEn = null;
+    private String subjectTc = null;
+    private String contentTc = null;
+    private String subjectSc = null;
+    private String contentSc = null;
+    private String iasEsAppSuffixEn = null;
+    private String iasEsAppSuffixTc = null;
+    private String iasEsAppSuffixSc = null;
+    private Timestamp createDt = null;
+    private Timestamp lastModifyDt = null;
+    private String createBy = null;
+    private String lastModifyBy = null;
+    private String encInd = null;
+    private String encKeyStoreId = null;
 
-    public IasApplication_() {
+    private boolean dirty_iasMsgId = false;
+    private boolean dirty_portalId = false;
+    private boolean dirty_templateId = false;
+    private boolean dirty_templateVersion = false;
+    private boolean dirty_refId = false;
+    private boolean dirty_subjectEn = false;
+    private boolean dirty_contentEn = false;
+    private boolean dirty_subjectTc = false;
+    private boolean dirty_contentTc = false;
+    private boolean dirty_subjectSc = false;
+    private boolean dirty_contentSc = false;
+    private boolean dirty_iasEsAppSuffixEn = false;
+    private boolean dirty_iasEsAppSuffixTc = false;
+    private boolean dirty_iasEsAppSuffixSc = false;
+    private boolean dirty_createDt = false;
+    private boolean dirty_lastModifyDt = false;
+    private boolean dirty_createBy = false;
+    private boolean dirty_lastModifyBy = false;
+    private boolean dirty_encInd = false;
+    private boolean dirty_encKeyStoreId = false;
+
+    /**
+     * IasMessage_ Contructor
+     */
+    public IasMessage_() {
         super();
     }
 
-    public IasApplication_(HPFW_Connection countCon, String inIasApplicationId)
-            throws SQLException, NullPointerException {
+    /**
+     * IasMessage_ Constructor with specify PK
+     */
+    public IasMessage_(HPFW_Connection countCon, String iniasMsgId) throws SQLException, NullPointerException {
         this();
-        init(countCon, inIasApplicationId, false);
+        init(countCon, iniasMsgId, false);
     }
 
-    public IasApplication_(HPFW_Connection countCon, String inIasApplicationId, boolean forUpdate)
+    public IasMessage_(HPFW_Connection countCon, String iniasMsgId, boolean forUpdate)
             throws SQLException, NullPointerException {
         this();
-        init(countCon, inIasApplicationId, forUpdate);
+        init(countCon, iniasMsgId, forUpdate);
     }
 
     static public void delete(HPFW_Connection countCon, String whereCluase, ArrayList<Parameter> paraL)
@@ -90,7 +99,7 @@ public class IasApplication_ implements Serializable {
             ResultSet rs = null;
 
             try {
-                String sql = "select ias_application_id from " + thisTableName + " " + whereCluase;
+                String sql = "select ias_msg_id from " + thisTableName + " " + whereCluase;
                 stmt = countCon.getConnectionPtr().prepareStatement(sql);
                 CommonDBUtils.setStatement(stmt, paraL);
                 rs = stmt.executeQuery();
@@ -98,7 +107,7 @@ public class IasApplication_ implements Serializable {
                 while (rs.next()) {
                     String histsql = "insert into ";
                     histsql += thisTableName + thisTableHistName;
-                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,last_modify_by,last_modify_dt,create_by,create_dt,ias_application_id";
+                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,last_modify_by,last_modify_dt,create_by,create_dt,ias_msg_id";
                     histsql += ") values (?,?,?,?,?,?,?,?,?,?";
                     // perpare where ...
                     histsql += ",?";
@@ -147,12 +156,12 @@ public class IasApplication_ implements Serializable {
                 || HPFW_Connection.DIRECT_WITH_HISTORY.equals(countCon.getUpdateMode())) {
             String sql = "delete from ";
             sql += thisTableName;
-            sql += " where 1=1 and ias_application_id = ? ";
+            sql += " where 1=1 and ias_msg_id = ? ";
 
             ArrayList<Parameter> paraList = new ArrayList<Parameter>();
 
             // perpare where ...
-            paraList.add(new Parameter(Parameter.String, this.iasApplicationId));
+            paraList.add(new Parameter(Parameter.String, this.iasMsgId));
             countCon.executeStatement(sql, paraList);
         }
 
@@ -161,7 +170,7 @@ public class IasApplication_ implements Serializable {
             String histsql = "insert into ";
             histsql += thisTableName + thisTableHistName;
             histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,last_modify_by,last_modify_dt,create_by,create_dt";
-            histsql += ",ias_application_id";
+            histsql += ",IasMsgId";
             histsql += ") values (?,?,?,?,?,?,?,?,?";
             // perpare where ...
             histsql += ",?";
@@ -181,7 +190,7 @@ public class IasApplication_ implements Serializable {
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
             // perpare where ...
-            histParaList.add(new Parameter(Parameter.String, this.iasApplicationId));
+            histParaList.add(new Parameter(Parameter.String, this.iasMsgId));
             countCon.executeStatement(histsql, histParaList, true);
         }
     }
@@ -196,26 +205,28 @@ public class IasApplication_ implements Serializable {
             sql += " (";
 
             // perpare set ...
-            if (iasApplicationId != null)
-                sql += "ias_application_id,";
+            if (iasMsgId != null)
+                sql += "ias_msg_id,";
             if (portalId != null)
                 sql += "portal_id,";
             if (templateId != null)
                 sql += "template_id,";
             if (templateVersion != null)
                 sql += "template_version,";
-            if (titleEn != null)
-                sql += "title_en,";
-            if (titleTc != null)
-                sql += "title_tc,";
-            if (titleSc != null)
-                sql += "title_sc,";
-            if (detailEn != null)
-                sql += "detail_en,";
-            if (detailTc != null)
-                sql += "detail_tc,";
-            if (detailSc != null)
-                sql += "detail_sc,";
+            if (refId != null)
+                sql += "ref_id,";
+            if (subjectEn != null)
+                sql += "subject_en,";
+            if (contentEn != null)
+                sql += "content_en,";
+            if (subjectTc != null)
+                sql += "subject_tc,";
+            if (contentTc != null)
+                sql += "content_tc,";
+            if (subjectSc != null)
+                sql += "subject_sc,";
+            if (contentSc != null)
+                sql += "content_sc,";
             if (iasEsAppSuffixEn != null)
                 sql += "ias_es_app_suffix_en,";
             if (iasEsAppSuffixTc != null)
@@ -229,7 +240,7 @@ public class IasApplication_ implements Serializable {
             sql += "create_by,last_modify_by,create_dt,last_modify_dt) values (";
 
             // perpare set ...
-            if (iasApplicationId != null)
+            if (iasMsgId != null)
                 sql += "?,";
             if (portalId != null)
                 sql += "?,";
@@ -237,17 +248,19 @@ public class IasApplication_ implements Serializable {
                 sql += "?,";
             if (templateVersion != null)
                 sql += "?,";
-            if (titleEn != null)
+            if (refId != null)
                 sql += "?,";
-            if (titleTc != null)
+            if (subjectEn != null)
                 sql += "?,";
-            if (titleSc != null)
+            if (contentEn != null)
                 sql += "?,";
-            if (detailEn != null)
+            if (subjectTc != null)
                 sql += "?,";
-            if (detailTc != null)
+            if (contentTc != null)
                 sql += "?,";
-            if (detailSc != null)
+            if (subjectSc != null)
+                sql += "?,";
+            if (contentSc != null)
                 sql += "?,";
             if (iasEsAppSuffixEn != null)
                 sql += "?,";
@@ -262,26 +275,28 @@ public class IasApplication_ implements Serializable {
             sql += "?,?,?,?) ";
 
             // perpare set ...
-            if (iasApplicationId != null)
-                paraList.add(new Parameter(Parameter.String, this.iasApplicationId));
+            if (iasMsgId != null)
+                paraList.add(new Parameter(Parameter.String, this.iasMsgId));
             if (portalId != null)
                 paraList.add(new Parameter(Parameter.String, this.portalId));
             if (templateId != null)
                 paraList.add(new Parameter(Parameter.String, this.templateId));
             if (templateVersion != null)
                 paraList.add(new Parameter(Parameter.String, this.templateVersion));
-            if (titleEn != null)
-                paraList.add(new Parameter(Parameter.String, this.titleEn));
-            if (titleTc != null)
-                paraList.add(new Parameter(Parameter.String, this.titleTc));
-            if (titleSc != null)
-                paraList.add(new Parameter(Parameter.String, this.titleSc));
-            if (detailEn != null)
-                paraList.add(new Parameter(Parameter.String, this.detailEn));
-            if (detailTc != null)
-                paraList.add(new Parameter(Parameter.String, this.detailTc));
-            if (detailSc != null)
-                paraList.add(new Parameter(Parameter.String, this.detailSc));
+            if (refId != null)
+                paraList.add(new Parameter(Parameter.String, this.refId));
+            if (subjectEn != null)
+                paraList.add(new Parameter(Parameter.String, this.subjectEn));
+            if (contentEn != null)
+                paraList.add(new Parameter(Parameter.String, this.contentEn));
+            if (subjectTc != null)
+                paraList.add(new Parameter(Parameter.String, this.subjectTc));
+            if (contentTc != null)
+                paraList.add(new Parameter(Parameter.String, this.contentTc));
+            if (subjectSc != null)
+                paraList.add(new Parameter(Parameter.String, this.subjectSc));
+            if (contentSc != null)
+                paraList.add(new Parameter(Parameter.String, this.contentSc));
             if (iasEsAppSuffixEn != null)
                 paraList.add(new Parameter(Parameter.String, this.iasEsAppSuffixEn));
             if (iasEsAppSuffixTc != null)
@@ -308,26 +323,28 @@ public class IasApplication_ implements Serializable {
             hist_sql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,";
 
             // perpare set ...
-            if (iasApplicationId != null)
-                hist_sql += "ias_application_id,";
+            if (iasMsgId != null)
+                hist_sql += "ias_msg_id,";
             if (portalId != null)
                 hist_sql += "portal_id,";
             if (templateId != null)
                 hist_sql += "template_id,";
             if (templateVersion != null)
                 hist_sql += "template_version,";
-            if (titleEn != null)
-                hist_sql += "title_en,";
-            if (titleTc != null)
-                hist_sql += "title_tc,";
-            if (titleSc != null)
-                hist_sql += "title_sc,";
-            if (detailEn != null)
-                hist_sql += "detail_en,";
-            if (detailTc != null)
-                hist_sql += "detail_tc,";
-            if (detailSc != null)
-                hist_sql += "detail_sc,";
+            if (refId != null)
+                hist_sql += "ref_id,";
+            if (subjectEn != null)
+                hist_sql += "subject_en,";
+            if (contentEn != null)
+                hist_sql += "content_en,";
+            if (subjectTc != null)
+                hist_sql += "subject_tc,";
+            if (contentTc != null)
+                hist_sql += "content_tc,";
+            if (subjectSc != null)
+                hist_sql += "subject_sc,";
+            if (contentSc != null)
+                hist_sql += "content_sc,";
             if (iasEsAppSuffixEn != null)
                 hist_sql += "ias_es_app_suffix_en,";
             if (iasEsAppSuffixTc != null)
@@ -341,7 +358,7 @@ public class IasApplication_ implements Serializable {
             hist_sql += "create_by,last_modify_by,create_dt,last_modify_dt) values (?,?,?,?,?,";
 
             // perpare set ...
-            if (iasApplicationId != null)
+            if (iasMsgId != null)
                 hist_sql += "?,";
             if (portalId != null)
                 hist_sql += "?,";
@@ -349,17 +366,19 @@ public class IasApplication_ implements Serializable {
                 hist_sql += "?,";
             if (templateVersion != null)
                 hist_sql += "?,";
-            if (titleEn != null)
+            if (refId != null)
                 hist_sql += "?,";
-            if (titleTc != null)
+            if (subjectEn != null)
                 hist_sql += "?,";
-            if (titleSc != null)
+            if (contentEn != null)
                 hist_sql += "?,";
-            if (detailEn != null)
+            if (subjectTc != null)
                 hist_sql += "?,";
-            if (detailTc != null)
+            if (contentTc != null)
                 hist_sql += "?,";
-            if (detailSc != null)
+            if (subjectSc != null)
+                hist_sql += "?,";
+            if (contentSc != null)
                 hist_sql += "?,";
             if (iasEsAppSuffixEn != null)
                 hist_sql += "?,";
@@ -383,26 +402,28 @@ public class IasApplication_ implements Serializable {
             histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
 
             // perpare set ...
-            if (iasApplicationId != null)
-                histParaList.add(new Parameter(Parameter.String, this.iasApplicationId));
+            if (iasMsgId != null)
+                histParaList.add(new Parameter(Parameter.String, this.iasMsgId));
             if (portalId != null)
                 histParaList.add(new Parameter(Parameter.String, this.portalId));
             if (templateId != null)
                 histParaList.add(new Parameter(Parameter.String, this.templateId));
             if (templateVersion != null)
                 histParaList.add(new Parameter(Parameter.String, this.templateVersion));
-            if (titleEn != null)
-                histParaList.add(new Parameter(Parameter.String, this.titleEn));
-            if (titleTc != null)
-                histParaList.add(new Parameter(Parameter.String, this.titleTc));
-            if (titleSc != null)
-                histParaList.add(new Parameter(Parameter.String, this.titleSc));
-            if (detailEn != null)
-                histParaList.add(new Parameter(Parameter.String, this.detailEn));
-            if (detailTc != null)
-                histParaList.add(new Parameter(Parameter.String, this.detailTc));
-            if (detailSc != null)
-                histParaList.add(new Parameter(Parameter.String, this.detailSc));
+            if (refId != null)
+                histParaList.add(new Parameter(Parameter.String, this.refId));
+            if (subjectEn != null)
+                histParaList.add(new Parameter(Parameter.String, this.subjectEn));
+            if (contentEn != null)
+                histParaList.add(new Parameter(Parameter.String, this.contentEn));
+            if (subjectTc != null)
+                histParaList.add(new Parameter(Parameter.String, this.subjectTc));
+            if (contentTc != null)
+                histParaList.add(new Parameter(Parameter.String, this.contentTc));
+            if (subjectSc != null)
+                histParaList.add(new Parameter(Parameter.String, this.subjectSc));
+            if (contentSc != null)
+                histParaList.add(new Parameter(Parameter.String, this.contentSc));
             if (iasEsAppSuffixEn != null)
                 histParaList.add(new Parameter(Parameter.String, this.iasEsAppSuffixEn));
             if (iasEsAppSuffixTc != null)
@@ -452,7 +473,7 @@ public class IasApplication_ implements Serializable {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select ias_application_id from " + thisTableName + " " + whereClause;
+                String sql = "select ias_msg_id from " + thisTableName + " " + whereClause;
                 stmt = countCon.getConnectionPtr().prepareStatement(sql);
                 CommonDBUtils.setStatement(stmt, whereParaL);
                 rs = stmt.executeQuery();
@@ -460,7 +481,7 @@ public class IasApplication_ implements Serializable {
                 while (rs.next()) {
                     String histsql = "insert into ";
                     histsql += thisTableName + thisTableHistName;
-                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,last_modify_by,last_modify_dt,create_by,create_dt,ias_application_id,"
+                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,last_modify_by,last_modify_dt,create_by,create_dt,ias_msg_id,"
                             + selectString;
                     histsql += ") values (?,?,?,?,?,?,?,?,?,?";
                     for (int i = 0; i < selectStringArray.length; i++)
@@ -532,18 +553,20 @@ public class IasApplication_ implements Serializable {
                 sql += "template_id = ?,";
             if (dirty_templateVersion)
                 sql += "template_version = ?,";
-            if (dirty_titleEn)
-                sql += "title_en = ?,";
-            if (dirty_titleTc)
-                sql += "title_tc = ?,";
-            if (dirty_titleSc)
-                sql += "title_sc = ?,";
-            if (dirty_detailEn)
-                sql += "detail_en = ?,";
-            if (dirty_detailTc)
-                sql += "detail_tc = ?,";
-            if (dirty_detailSc)
-                sql += "detail_sc = ?,";
+            if (dirty_refId)
+                sql += "ref_id = ?,";
+            if (dirty_subjectEn)
+                sql += "subject_en = ?,";
+            if (dirty_contentEn)
+                sql += "content_en = ?,";
+            if (dirty_subjectTc)
+                sql += "subject_tc = ?,";
+            if (dirty_contentTc)
+                sql += "content_tc = ?,";
+            if (dirty_subjectSc)
+                sql += "subject_sc = ?,";
+            if (dirty_contentSc)
+                sql += "content_sc = ?,";
             if (dirty_iasEsAppSuffixEn)
                 sql += "ias_es_app_suffix_en = ?,";
             if (dirty_iasEsAppSuffixTc)
@@ -555,7 +578,7 @@ public class IasApplication_ implements Serializable {
             if (dirty_encKeyStoreId)
                 sql += "enc_key_store_id = ?,";
 
-            sql += " last_modify_by = ?,last_modify_dt = ? where 1=1 and ias_application_id = ? ";
+            sql += " last_modify_by = ?,last_modify_dt = ? where 1=1 and ias_msg_id = ? ";
             // perpare set ...
             if (dirty_portalId)
                 paraList.add(new Parameter(Parameter.String, this.portalId));
@@ -563,18 +586,20 @@ public class IasApplication_ implements Serializable {
                 paraList.add(new Parameter(Parameter.String, this.templateId));
             if (dirty_templateVersion)
                 paraList.add(new Parameter(Parameter.String, this.templateVersion));
-            if (dirty_titleEn)
-                paraList.add(new Parameter(Parameter.String, this.titleEn));
-            if (dirty_titleTc)
-                paraList.add(new Parameter(Parameter.String, this.titleTc));
-            if (dirty_titleSc)
-                paraList.add(new Parameter(Parameter.String, this.titleSc));
-            if (dirty_detailEn)
-                paraList.add(new Parameter(Parameter.String, this.detailEn));
-            if (dirty_detailTc)
-                paraList.add(new Parameter(Parameter.String, this.detailTc));
-            if (dirty_detailSc)
-                paraList.add(new Parameter(Parameter.String, this.detailSc));
+            if (dirty_refId)
+                paraList.add(new Parameter(Parameter.String, this.refId));
+            if (dirty_subjectEn)
+                paraList.add(new Parameter(Parameter.String, this.subjectEn));
+            if (dirty_contentEn)
+                paraList.add(new Parameter(Parameter.String, this.contentEn));
+            if (dirty_subjectTc)
+                paraList.add(new Parameter(Parameter.String, this.subjectTc));
+            if (dirty_contentTc)
+                paraList.add(new Parameter(Parameter.String, this.contentTc));
+            if (dirty_subjectSc)
+                paraList.add(new Parameter(Parameter.String, this.subjectSc));
+            if (dirty_contentSc)
+                paraList.add(new Parameter(Parameter.String, this.contentSc));
             if (dirty_iasEsAppSuffixEn)
                 paraList.add(new Parameter(Parameter.String, this.iasEsAppSuffixEn));
             if (dirty_iasEsAppSuffixTc)
@@ -588,7 +613,7 @@ public class IasApplication_ implements Serializable {
             paraList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             paraList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
             // perpare where ...
-            paraList.add(new Parameter(Parameter.String, this.iasApplicationId));
+            paraList.add(new Parameter(Parameter.String, this.iasMsgId));
             countCon.executeStatement(sql, paraList);
         }
 
@@ -601,25 +626,27 @@ public class IasApplication_ implements Serializable {
             hist_sql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,";
 
             // perpare set ...
-            hist_sql += "ias_application_id,";
+            hist_sql += "ias_msg_id,";
             if (dirty_portalId)
                 hist_sql += "portal_id,";
             if (dirty_templateId)
                 hist_sql += "template_id,";
             if (dirty_templateVersion)
                 hist_sql += "template_version,";
-            if (dirty_titleEn)
-                hist_sql += "title_en,";
-            if (dirty_titleTc)
-                hist_sql += "title_tc,";
-            if (dirty_titleSc)
-                hist_sql += "title_sc,";
-            if (dirty_detailEn)
-                hist_sql += "detail_en,";
-            if (dirty_detailTc)
-                hist_sql += "detail_tc,";
-            if (dirty_detailSc)
-                hist_sql += "detail_sc,";
+            if (dirty_refId)
+                hist_sql += "ref_id,";
+            if (dirty_subjectEn)
+                hist_sql += "subject_en,";
+            if (dirty_contentEn)
+                hist_sql += "content_en,";
+            if (dirty_subjectTc)
+                hist_sql += "subject_tc,";
+            if (dirty_contentTc)
+                hist_sql += "content_tc,";
+            if (dirty_subjectSc)
+                hist_sql += "subject_sc,";
+            if (dirty_contentSc)
+                hist_sql += "content_sc,";
             if (dirty_iasEsAppSuffixEn)
                 hist_sql += "ias_es_app_suffix_en,";
             if (dirty_iasEsAppSuffixTc)
@@ -640,17 +667,19 @@ public class IasApplication_ implements Serializable {
                 hist_sql += "?,";
             if (dirty_templateVersion)
                 hist_sql += "?,";
-            if (dirty_titleEn)
+            if (dirty_refId)
                 hist_sql += "?,";
-            if (dirty_titleTc)
+            if (dirty_subjectEn)
                 hist_sql += "?,";
-            if (dirty_titleSc)
+            if (dirty_contentEn)
                 hist_sql += "?,";
-            if (dirty_detailEn)
+            if (dirty_subjectTc)
                 hist_sql += "?,";
-            if (dirty_detailTc)
+            if (dirty_contentTc)
                 hist_sql += "?,";
-            if (dirty_detailSc)
+            if (dirty_subjectSc)
+                hist_sql += "?,";
+            if (dirty_contentSc)
                 hist_sql += "?,";
             if (dirty_iasEsAppSuffixEn)
                 hist_sql += "?,";
@@ -674,25 +703,27 @@ public class IasApplication_ implements Serializable {
             histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
 
             // perpare set ...
-            histParaList.add(new Parameter(Parameter.String, this.iasApplicationId));
+            histParaList.add(new Parameter(Parameter.String, this.iasMsgId));
             if (dirty_portalId)
                 histParaList.add(new Parameter(Parameter.String, this.portalId));
             if (dirty_templateId)
                 histParaList.add(new Parameter(Parameter.String, this.templateId));
             if (dirty_templateVersion)
                 histParaList.add(new Parameter(Parameter.String, this.templateVersion));
-            if (dirty_titleEn)
-                histParaList.add(new Parameter(Parameter.String, this.titleEn));
-            if (dirty_titleTc)
-                histParaList.add(new Parameter(Parameter.String, this.titleTc));
-            if (dirty_titleSc)
-                histParaList.add(new Parameter(Parameter.String, this.titleSc));
-            if (dirty_detailEn)
-                histParaList.add(new Parameter(Parameter.String, this.detailEn));
-            if (dirty_detailTc)
-                histParaList.add(new Parameter(Parameter.String, this.detailTc));
-            if (dirty_detailSc)
-                histParaList.add(new Parameter(Parameter.String, this.detailSc));
+            if (dirty_refId)
+                histParaList.add(new Parameter(Parameter.String, this.refId));
+            if (dirty_subjectEn)
+                histParaList.add(new Parameter(Parameter.String, this.subjectEn));
+            if (dirty_contentEn)
+                histParaList.add(new Parameter(Parameter.String, this.contentEn));
+            if (dirty_subjectTc)
+                histParaList.add(new Parameter(Parameter.String, this.subjectTc));
+            if (dirty_contentTc)
+                histParaList.add(new Parameter(Parameter.String, this.contentTc));
+            if (dirty_subjectSc)
+                histParaList.add(new Parameter(Parameter.String, this.subjectSc));
+            if (dirty_contentSc)
+                histParaList.add(new Parameter(Parameter.String, this.contentSc));
             if (dirty_iasEsAppSuffixEn)
                 histParaList.add(new Parameter(Parameter.String, this.iasEsAppSuffixEn));
             if (dirty_iasEsAppSuffixTc)
@@ -712,12 +743,12 @@ public class IasApplication_ implements Serializable {
         this.forUpdate = false;
     }
 
-    public static ArrayList<IasApplication_> getResultList(HPFW_Connection countCon, String whereCluase,
+    public static ArrayList<IasMessage_> getResultList(HPFW_Connection countCon, String whereCluase,
             ArrayList<Parameter> paraL) throws SQLException {
         boolean needClose = countCon == null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ArrayList<IasApplication_> result = new ArrayList<IasApplication_>();
+        ArrayList<IasMessage_> result = new ArrayList<IasMessage_>();
         String sql = "select " + thisTableName + ".* from ";
         try {
             sql += thisTableName + " ";
@@ -730,17 +761,18 @@ public class IasApplication_ implements Serializable {
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                IasApplication_ obj = new IasApplication_();
-                obj.iasApplicationId = rs.getString("ias_application_id"); // String
+                IasMessage_ obj = new IasMessage_();
+                obj.iasMsgId = rs.getString("ias_msg_id"); // String
                 obj.portalId = rs.getString("portal_id"); // String
                 obj.templateId = rs.getString("template_id"); // String
                 obj.templateVersion = rs.getString("template_version"); // String
-                obj.titleEn = rs.getString("title_en"); // String
-                obj.titleTc = rs.getString("title_tc"); // String
-                obj.titleSc = rs.getString("title_sc"); // String
-                obj.detailEn = rs.getString("detail_en"); // String
-                obj.detailTc = rs.getString("detail_tc"); // String
-                obj.detailSc = rs.getString("detail_sc"); // String
+                obj.refId = rs.getString("ref_id"); // String
+                obj.subjectEn = rs.getString("subject_en"); // String
+                obj.contentEn = rs.getString("content_en"); // String
+                obj.subjectTc = rs.getString("subject_tc"); // String
+                obj.contentTc = rs.getString("content_tc"); // String
+                obj.subjectSc = rs.getString("subject_sc"); // String
+                obj.contentSc = rs.getString("content_sc"); // String
                 obj.iasEsAppSuffixEn = rs.getString("ias_es_app_suffix_en"); // String
                 obj.iasEsAppSuffixTc = rs.getString("ias_es_app_suffix_tc"); // String
                 obj.iasEsAppSuffixSc = rs.getString("ias_es_app_suffix_sc"); // String
@@ -787,33 +819,34 @@ public class IasApplication_ implements Serializable {
         this.initialized = initialized;
     }
 
-    public void init(HPFW_Connection countCon, final String inIasApplicationId, boolean forUpdate)
+    public void init(HPFW_Connection countCon, final String iniasMsgId, boolean forUpdate)
             throws SQLException, NullPointerException {
         this.forUpdate = forUpdate;
         boolean needClose = countCon == null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            String sql = "select * from " + thisTableName + " where 1=1 and ias_application_id = ? ";
+            String sql = "select * from " + thisTableName + " where 1=1 and ias_msg_id = ? ";
             if (forUpdate)
                 sql += "for update";
             if (countCon == null)
                 countCon = HPFW_Connection.getHPFW_Connection();
             stmt = countCon.getConnectionPtr().prepareStatement(sql);
-            stmt.setString(1, inIasApplicationId);
+            stmt.setString(1, iniasMsgId);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                iasApplicationId = rs.getString("ias_application_id"); // String
+                iasMsgId = rs.getString("ias_msg_id"); // String
                 portalId = rs.getString("portal_id"); // String
                 templateId = rs.getString("template_id"); // String
                 templateVersion = rs.getString("template_version"); // String
-                titleEn = rs.getString("title_en"); // String
-                titleTc = rs.getString("title_tc"); // String
-                titleSc = rs.getString("title_sc"); // String
-                detailEn = rs.getString("detail_en"); // String
-                detailTc = rs.getString("detail_tc"); // String
-                detailSc = rs.getString("detail_sc"); // String
+                refId = rs.getString("ref_id"); // String
+                subjectEn = rs.getString("subject_en"); // String
+                contentEn = rs.getString("content_en"); // String
+                subjectTc = rs.getString("subject_tc"); // String
+                contentTc = rs.getString("content_tc"); // String
+                subjectSc = rs.getString("subject_sc"); // String
+                contentSc = rs.getString("content_sc"); // String
                 iasEsAppSuffixEn = rs.getString("ias_es_app_suffix_en"); // String
                 iasEsAppSuffixTc = rs.getString("ias_es_app_suffix_tc"); // String
                 iasEsAppSuffixSc = rs.getString("ias_es_app_suffix_sc"); // String
@@ -853,173 +886,329 @@ public class IasApplication_ implements Serializable {
             }
         }
     }
+    // }INIT
 
-    public String getIasApplicationId() {
-        return iasApplicationId == null ? "" : iasApplicationId;
+    /**
+     * IasMessage_ Destroyer
+     */
+    protected void finalize() throws Throwable {
+        iasMsgId = null;
+        portalId = null;
+        templateId = null;
+        templateVersion = null;
+        refId = null;
+        subjectEn = null;
+        contentEn = null;
+        subjectTc = null;
+        contentTc = null;
+        subjectSc = null;
+        contentSc = null;
+        iasEsAppSuffixEn = null;
+        iasEsAppSuffixTc = null;
+        iasEsAppSuffixSc = null;
+        createDt = null;
+        lastModifyDt = null;
+        createBy = null;
+        lastModifyBy = null;
+        encInd = null;
+        encKeyStoreId = null;
     }
 
-    public void setIasApplicationId(final String inIasApplicationId) {
-        iasApplicationId = inIasApplicationId;
-        dirty_iasApplicationId = true;
+    /**
+     * Get ias_msg_id
+     */
+    public String getIasMsgId() {
+        return iasMsgId == null ? "" : iasMsgId;
     }
 
+    /**
+     * Set ias_msg_id
+     */
+    public void setIasMsgId(final String inIasMsgId) {
+        iasMsgId = inIasMsgId;
+        dirty_iasMsgId = true;
+    }
+
+    /**
+     * Get portal_id
+     */
     public String getPortalId() {
-        return portalId;
+        return portalId == null ? "" : portalId;
     }
 
+    /**
+     * Set portal_id
+     */
     public void setPortalId(final String inPortalId) {
         portalId = inPortalId;
         dirty_portalId = true;
     }
 
+    /**
+     * Get template_id
+     */
     public String getTemplateId() {
-        return templateId;
+        return templateId == null ? "" : templateId;
     }
 
+    /**
+     * Set template_id
+     */
     public void setTemplateId(final String inTemplateId) {
         templateId = inTemplateId;
         dirty_templateId = true;
     }
 
+    /**
+     * Get template_version
+     */
     public String getTemplateVersion() {
-        return templateVersion;
+        return templateVersion == null ? "" : templateVersion;
     }
 
+    /**
+     * Set template_version
+     */
     public void setTemplateVersion(final String inTemplateVersion) {
         templateVersion = inTemplateVersion;
         dirty_templateVersion = true;
     }
 
-    public String getTitleEn() {
-        return titleEn;
+    /**
+     * Get ref_id
+     */
+    public String getRefId() {
+        return refId == null ? "" : refId;
     }
 
-    public void setTitleEn(final String inTitleEn) {
-        titleEn = inTitleEn;
-        dirty_titleEn = true;
+    /**
+     * Set ref_id
+     */
+    public void setRefId(final String inRefId) {
+        refId = inRefId;
+        dirty_refId = true;
     }
 
-    public String getTitleTc() {
-        return titleTc;
+    /**
+     * Get subject_en
+     */
+    public String getSubjectEn() {
+        return subjectEn == null ? "" : subjectEn;
     }
 
-    public void setTitleTc(final String inTitleTc) {
-        titleTc = inTitleTc;
-        dirty_titleTc = true;
+    /**
+     * Set subject_en
+     */
+    public void setSubjectEn(final String inSubjectEn) {
+        subjectEn = inSubjectEn;
+        dirty_subjectEn = true;
     }
 
-    public String getTitleSc() {
-        return titleSc;
+    /**
+     * Get content_en
+     */
+    public String getContentEn() {
+        return contentEn == null ? "" : contentEn;
     }
 
-    public void setTitleSc(final String inTitleSc) {
-        titleSc = inTitleSc;
-        dirty_titleSc = true;
+    /**
+     * Set content_en
+     */
+    public void setContentEn(final String inContentEn) {
+        contentEn = inContentEn;
+        dirty_contentEn = true;
     }
 
-    public String getDetailEn() {
-        return detailEn;
+    /**
+     * Get subject_tc
+     */
+    public String getSubjectTc() {
+        return subjectTc == null ? "" : subjectTc;
     }
 
-    public void setDetailEn(final String inDetailEn) {
-        detailEn = inDetailEn;
-        dirty_detailEn = true;
+    /**
+     * Set subject_tc
+     */
+    public void setSubjectTc(final String inSubjectTc) {
+        subjectTc = inSubjectTc;
+        dirty_subjectTc = true;
     }
 
-    public String getDetailTc() {
-        return detailTc;
+    /**
+     * Get content_tc
+     */
+    public String getContentTc() {
+        return contentTc == null ? "" : contentTc;
     }
 
-    public void setDetailTc(final String inDetailTc) {
-        detailTc = inDetailTc;
-        dirty_detailTc = true;
+    /**
+     * Set content_tc
+     */
+    public void setContentTc(final String inContentTc) {
+        contentTc = inContentTc;
+        dirty_contentTc = true;
     }
 
-    public String getDetailSc() {
-        return detailSc;
+    /**
+     * Get subject_sc
+     */
+    public String getSubjectSc() {
+        return subjectSc == null ? "" : subjectSc;
     }
 
-    public void setDetailSc(final String inDetailSc) {
-        detailSc = inDetailSc;
-        dirty_detailSc = true;
+    /**
+     * Set subject_sc
+     */
+    public void setSubjectSc(final String inSubjectSc) {
+        subjectSc = inSubjectSc;
+        dirty_subjectSc = true;
     }
 
+    /**
+     * Get content_sc
+     */
+    public String getContentSc() {
+        return contentSc == null ? "" : contentSc;
+    }
+
+    /**
+     * Set content_sc
+     */
+    public void setContentSc(final String inContentSc) {
+        contentSc = inContentSc;
+        dirty_contentSc = true;
+    }
+
+    /**
+     * Get ias_es_app_suffix_en
+     */
     public String getIasEsAppSuffixEn() {
-        return iasEsAppSuffixEn;
+        return iasEsAppSuffixEn == null ? "" : iasEsAppSuffixEn;
     }
 
+    /**
+     * Set ias_es_app_suffix_en
+     */
     public void setIasEsAppSuffixEn(final String inIasEsAppSuffixEn) {
         iasEsAppSuffixEn = inIasEsAppSuffixEn;
         dirty_iasEsAppSuffixEn = true;
     }
 
+    /**
+     * Get ias_es_app_suffix_tc
+     */
     public String getIasEsAppSuffixTc() {
         return iasEsAppSuffixTc == null ? "" : iasEsAppSuffixTc;
     }
 
+    /**
+     * Set ias_es_app_suffix_tc
+     */
     public void setIasEsAppSuffixTc(final String inIasEsAppSuffixTc) {
         iasEsAppSuffixTc = inIasEsAppSuffixTc;
         dirty_iasEsAppSuffixTc = true;
     }
 
+    /**
+     * Get ias_es_app_suffix_sc
+     */
     public String getIasEsAppSuffixSc() {
-        return iasEsAppSuffixSc;
+        return iasEsAppSuffixSc == null ? "" : iasEsAppSuffixSc;
     }
 
+    /**
+     * Set ias_es_app_suffix_sc
+     */
     public void setIasEsAppSuffixSc(final String inIasEsAppSuffixSc) {
         iasEsAppSuffixSc = inIasEsAppSuffixSc;
         dirty_iasEsAppSuffixSc = true;
     }
 
+    /**
+     * Get create_dt
+     */
     public Timestamp getCreateDt() {
         return createDt;
     }
 
+    /**
+     * Set create_dt
+     */
     public void setCreateDt(final Timestamp inCreateDt) {
         createDt = inCreateDt;
         dirty_createDt = true;
     }
 
+    /**
+     * Get last_modify_dt
+     */
     public Timestamp getLastModifyDt() {
         return lastModifyDt;
     }
 
+    /**
+     * Set last_modify_dt
+     */
     public void setLastModifyDt(final Timestamp inLastModifyDt) {
         lastModifyDt = inLastModifyDt;
         dirty_lastModifyDt = true;
     }
 
+    /**
+     * Get create_by
+     */
     public String getCreateBy() {
-        return createBy;
+        return createBy == null ? "" : createBy;
     }
 
+    /**
+     * Set create_by
+     */
     public void setCreateBy(final String inCreateBy) {
         createBy = inCreateBy;
         dirty_createBy = true;
     }
 
+    /**
+     * Get last_modify_by
+     */
     public String getLastModifyBy() {
-        return lastModifyBy;
+        return lastModifyBy == null ? "" : lastModifyBy;
     }
 
+    /**
+     * Set last_modify_by
+     */
     public void setLastModifyBy(final String inLastModifyBy) {
         lastModifyBy = inLastModifyBy;
         dirty_lastModifyBy = true;
     }
 
+    /**
+     * Get enc_ind
+     */
     public String getEncInd() {
-        return encInd;
+        return encInd == null ? "" : encInd;
     }
 
+    /**
+     * Set enc_ind
+     */
     public void setEncInd(final String inEncInd) {
         encInd = inEncInd;
         dirty_encInd = true;
     }
 
+    /**
+     * Get enc_key_store_id
+     */
     public String getEncKeyStoreId() {
-        return encKeyStoreId;
+        return encKeyStoreId == null ? "" : encKeyStoreId;
     }
 
+    /**
+     * Set enc_key_store_id
+     */
     public void setEncKeyStoreId(final String inEncKeyStoreId) {
         encKeyStoreId = inEncKeyStoreId;
         dirty_encKeyStoreId = true;

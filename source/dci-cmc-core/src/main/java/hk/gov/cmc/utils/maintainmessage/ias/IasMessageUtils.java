@@ -17,7 +17,7 @@ import hk.gov.cmc.model.maintainmessage.response.MessageResponse;
 import hk.gov.cmc.model.maintainmessage.template.CmcTemplate;
 import hk.gov.cmc.model.maintainmessage.user.IasUser;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
-import hk.gov.cmc.persistence.ias.notification.IasEsNotiMap_;
+import hk.gov.cmc.persistence.maintainmessage.notification.IasEsNotiMap_;
 import hk.gov.cmc.utils.maintainmessage.template.TemplateUtils;
 import hk.gov.cmc.validator.IasMessageValidator;
 

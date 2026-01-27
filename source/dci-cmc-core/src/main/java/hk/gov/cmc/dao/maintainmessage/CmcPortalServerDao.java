@@ -2,7 +2,6 @@ package hk.gov.cmc.dao.maintainmessage;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,7 +16,7 @@ public class CmcPortalServerDAO {
     }
 
     public String getPortalStatusByPortalId(HPFW_Connection conn, String portalId) throws Exception {
-        logger.debug("[MaintMsg]getPortalStatusByPortalId - START");
+        logger.debug("getPortalStatusByPortalId - START");
 
         String result = "";
         ResultSet rs = null;
@@ -34,19 +33,19 @@ public class CmcPortalServerDAO {
                 result = rs.getString("STATUS");
             }
 
-            logger.debug("[MaintMsg]getPortalStatusByPortalId - END");
+            logger.debug("getPortalStatusByPortalId - END");
 
             return result;
 
         } catch (Exception ex) {
-            logger.error("[MaintMsg]General exception caught in getPortalStatusByPortalId", ex);
+            logger.error("General exception caught in getPortalStatusByPortalId", ex);
             throw ex;
         } finally {
             try {
                 if (rs != null)
                     HPFW_Connection.close(rs);
             } catch (Exception ex) {
-                logger.error("[MaintMsg]General exception caught in getPortalStatusByPortalId - rs.close();", ex);
+                logger.error("General exception caught in getPortalStatusByPortalId - rs.close();", ex);
             }
         }
     }

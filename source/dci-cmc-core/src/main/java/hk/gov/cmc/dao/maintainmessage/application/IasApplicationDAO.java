@@ -14,8 +14,8 @@ import hk.gov.cmc.common.RecipientIDTypeConstant;
 import hk.gov.cmc.common.StatusConstants;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
-import hk.gov.cmc.persistence.ias.application.IasApplication_;
-import hk.gov.cmc.persistence.ias.application.IasUserApplication_;
+import hk.gov.cmc.persistence.maintainmessage.application.IasApplication_;
+import hk.gov.cmc.persistence.maintainmessage.application.IasUserApplication_;
 import hk.gov.cmc.utils.common.EncUtils;
 
 public class IasApplicationDAO {

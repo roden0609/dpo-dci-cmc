@@ -8,9 +8,47 @@
     <enterprise-beans>
         <session>
             <ejb-name>MaintainMessageSessionEJB</ejb-name>
-            <business-local>hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMLocal</business-local>
-            <business-remote>hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMRemote</business-remote>
+            <business-local>
+                hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMLocal</business-local>
+            <business-remote>
+                hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMRemote</business-remote>
             <ejb-class>hk.gov.cmc.appserver.ejb.session.maintainmessage.MaintainMessageSessionEJB</ejb-class>
+            <env-entry>
+                <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value><![CDATA[/config/common_app.properties]]></env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>APP_PROPERTIES_FILENAME</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value><![CDATA[/config/cmc/cmc_app.properties]]></env-entry-value>
+            </env-entry>
+        </session>
+        <session>
+            <ejb-name>AsynMessageSessionEJB</ejb-name>
+            <business-local>hk.gov.cmc.appserver.ejb.session.asynmessage.IAsynMessageSessionBMLocal</business-local>
+            <business-remote>
+                hk.gov.cmc.appserver.ejb.session.asynmessage.IAsynMessageSessionBMRemote</business-remote>
+            <ejb-class>hk.gov.cmc.appserver.ejb.session.asynmessage.AsynMessageSessionEJB</ejb-class>
+            <env-entry>
+                <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value><![CDATA[/config/common_app.properties]]></env-entry-value>
+            </env-entry>
+            <env-entry>
+                <env-entry-name>APP_PROPERTIES_FILENAME</env-entry-name>
+                <env-entry-type>java.lang.String</env-entry-type>
+                <env-entry-value><![CDATA[/config/cmc/cmc_app.properties]]></env-entry-value>
+            </env-entry>
+        </session>
+        <session>
+            <ejb-name>IasMsgSettingSessionEJB</ejb-name>
+            <business-local>
+                hk.gov.cmc.appserver.ejb.session.iasmessage.IIasMsgSettingSessionBMLocal</business-local>
+            <business-remote>
+                hk.gov.cmc.appserver.ejb.session.iasmessage.IIasMsgSettingSessionBMRemote</business-remote>
+            <ejb-class>
+                hk.gov.cmc.appserver.ejb.session.iasmessage.IasMsgSettingSessionEJB</ejb-class>
             <env-entry>
                 <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
@@ -24,9 +62,9 @@
         </session>
         <!-- <session>
             <ejb-name>GenerateAdminReportSessionEJB</ejb-name>
-            <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.adminreport.IGenerateAdminReportSessionBMLocal</business-local>
-            <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.adminreport.IGenerateAdminReportSessionBMRemote</business-remote>
-            <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.adminreport.GenerateAdminReportSessionEJB</ejb-class>
+        <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.adminreport.IGenerateAdminReportSessionBMLocal</business-local>
+        <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.adminreport.IGenerateAdminReportSessionBMRemote</business-remote>
+        <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.adminreport.GenerateAdminReportSessionEJB</ejb-class>
             <env-entry>
                 <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
@@ -40,9 +78,9 @@
         </session> -->
         <!-- <session>
             <ejb-name>HouseKeepingSessionEJB</ejb-name>
-            <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeeping.IHouseKeepingSessionBMLocal</business-local>
-            <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeeping.IHouseKeepingSessionBMRemote</business-remote>
-            <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeeping.HouseKeepingSessionEJB</ejb-class>
+        <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeeping.IHouseKeepingSessionBMLocal</business-local>
+        <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeeping.IHouseKeepingSessionBMRemote</business-remote>
+        <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeeping.HouseKeepingSessionEJB</ejb-class>
             <env-entry>
                 <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
@@ -56,25 +94,9 @@
         </session> -->
         <!-- <session>
             <ejb-name>HouseKeepingRecordSessionEJB</ejb-name>
-            <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeepingrecord.IHouseKeepingRecordSessionBMLocal</business-local>
-            <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeepingrecord.IHouseKeepingRecordSessionBMRemote</business-remote>
-            <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeepingrecord.HouseKeepingRecordSessionEJB</ejb-class>
-            <env-entry>
-                <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value><![CDATA[/config/common_app.properties]]></env-entry-value>
-            </env-entry>
-            <env-entry>
-                <env-entry-name>APP_PROPERTIES_FILENAME</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value><![CDATA[/config/cmc/cmc_app.properties]]></env-entry-value>
-            </env-entry>
-        </session> -->
-        <!-- <session>
-            <ejb-name>IasMsgSettingSessionEJB</ejb-name>
-            <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.iasmessage.IIasMsgSettingSessionBMLocal</business-local>
-            <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.iasmessage.IIasMsgSettingSessionBMRemote</business-remote>
-            <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.iasmessage.IasMsgSettingSessionEJB</ejb-class>
+        <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeepingrecord.IHouseKeepingRecordSessionBMLocal</business-local>
+        <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeepingrecord.IHouseKeepingRecordSessionBMRemote</business-remote>
+        <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.housekeepingrecord.HouseKeepingRecordSessionEJB</ejb-class>
             <env-entry>
                 <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
@@ -88,9 +110,9 @@
         </session> -->
         <!-- <session>
             <ejb-name>MaintainTemplateSessionEJB</ejb-name>
-            <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.maintaintemplate.IMaintainTemplateSessionBMLocal</business-local>
-            <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.maintaintemplate.IMaintainTemplateSessionBMRemote</business-remote>
-            <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.maintaintemplate.MaintainTemplateSessionEJB</ejb-class>
+        <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.maintaintemplate.IMaintainTemplateSessionBMLocal</business-local>
+        <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.maintaintemplate.IMaintainTemplateSessionBMRemote</business-remote>
+        <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.maintaintemplate.MaintainTemplateSessionEJB</ejb-class>
             <env-entry>
                 <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
@@ -104,9 +126,9 @@
         </session> -->
         <!-- <session>
             <ejb-name>RetrieveCmcTemplateSessionEJB</ejb-name>
-            <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.retrievecmctemplate.IRetrieveCmcTemplateSessionBMLocal</business-local>
-            <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.retrievecmctemplate.IRetrieveCmcTemplateSessionBMRemote</business-remote>
-            <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.retrievecmctemplate.RetrieveCmcTemplateSessionEJB</ejb-class>
+        <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.retrievecmctemplate.IRetrieveCmcTemplateSessionBMLocal</business-local>
+        <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.retrievecmctemplate.IRetrieveCmcTemplateSessionBMRemote</business-remote>
+        <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.retrievecmctemplate.RetrieveCmcTemplateSessionEJB</ejb-class>
             <env-entry>
                 <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>
@@ -120,9 +142,9 @@
         </session> -->
         <!-- <session>
             <ejb-name>SendMessageResultSessionEJB</ejb-name>
-            <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.sendmessageresult.ISendMessageResultSessionBMLocal</business-local>
-            <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.sendmessageresult.ISendMessageResultSessionBMRemote</business-remote>
-            <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.sendmessageresult.SendMessageResultSessionEJB</ejb-class>
+        <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.sendmessageresult.ISendMessageResultSessionBMLocal</business-local>
+        <business-remote>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.sendmessageresult.ISendMessageResultSessionBMRemote</business-remote>
+        <ejb-class>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.sendmessageresult.SendMessageResultSessionEJB</ejb-class>
             <env-entry>
                 <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
                 <env-entry-type>java.lang.String</env-entry-type>

@@ -22,7 +22,7 @@ import hk.gov.cmc.model.maintainmessage.template.CmcTemplate;
 import hk.gov.cmc.model.maintainmessage.user.IasUser;
 import hk.gov.cmc.model.maintainmessage.user.IasUserWrapped;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
-import hk.gov.cmc.persistence.ias.todoitem.IasUserToDoItem_;
+import hk.gov.cmc.persistence.maintainmessage.todoitem.IasUserToDoItem_;
 import hk.gov.cmc.utils.maintainmessage.ias.IasToDoItemUtils;
 import hk.gov.cmc.utils.maintainmessage.ias.IasUtils;
 import hk.gov.cmc.validator.IasToDoItemValidator;

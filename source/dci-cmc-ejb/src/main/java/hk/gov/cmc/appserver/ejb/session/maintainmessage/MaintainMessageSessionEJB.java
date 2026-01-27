@@ -512,7 +512,7 @@ public class MaintainMessageSessionEJB extends EJBBase
 
         }
 
-        logInfo("[BATCH_JOB][MaintainMessageSessionEJB]processMessageByBatchPull - END");
+        logInfo("[MaintainMessageSessionEJB]processMessageByBatchPull - END");
     }
 
     private SOAPMessage getMessageBySinglePull(String senderAppId) throws EJBException {

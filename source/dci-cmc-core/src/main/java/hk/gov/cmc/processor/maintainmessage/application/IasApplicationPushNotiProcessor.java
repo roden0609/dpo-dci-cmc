@@ -24,7 +24,7 @@ import hk.gov.cmc.model.maintainmessage.application.IasUserApplication;
 import hk.gov.cmc.model.maintainmessage.key.IasClientIdNotiIdPair;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
-import hk.gov.cmc.persistence.ias.application.IasUserApplication_;
+import hk.gov.cmc.persistence.maintainmessage.application.IasUserApplication_;
 
 public class IasApplicationPushNotiProcessor {
 

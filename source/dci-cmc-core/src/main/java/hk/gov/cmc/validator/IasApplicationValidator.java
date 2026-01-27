@@ -17,7 +17,7 @@ import hk.gov.cmc.common.StatusConstants;
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.model.maintainmessage.response.MessageResponse;
 import hk.gov.cmc.model.maintainmessage.status.AppStatus;
-import hk.gov.cmc.persistence.ias.application.IasUserApplication_;
+import hk.gov.cmc.persistence.maintainmessage.application.IasUserApplication_;
 import hk.gov.cmc.utils.maintainmessage.MaintainMessageUtils;
 
 public class IasApplicationValidator {

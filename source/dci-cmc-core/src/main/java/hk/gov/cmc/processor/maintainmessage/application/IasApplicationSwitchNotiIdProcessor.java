@@ -7,7 +7,6 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.asn1.ocsp.ServiceLocator;
 
 import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.common.IasApplicationConstant;
@@ -31,8 +30,8 @@ import hk.gov.cmc.model.maintainmessage.key.IasClientIdNotiIdPair;
 import hk.gov.cmc.model.maintainmessage.key.IasMsgRecipientKey;
 import hk.gov.cmc.model.maintainmessage.user.IasUser;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
-import hk.gov.cmc.persistence.ias.application.IasUserApplication_;
-import hk.gov.cmc.persistence.ias.notification.IasEsNotiMap_;
+import hk.gov.cmc.persistence.maintainmessage.application.IasUserApplication_;
+import hk.gov.cmc.persistence.maintainmessage.notification.IasEsNotiMap_;
 import hk.gov.cmc.utils.common.EncUtils;
 
 

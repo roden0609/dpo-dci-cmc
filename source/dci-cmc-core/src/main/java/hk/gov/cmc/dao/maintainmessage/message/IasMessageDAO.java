@@ -7,8 +7,8 @@ import hk.gov.cmc.common.CmcAppConstants;
 import hk.gov.cmc.common.IntegrationConstants;
 import hk.gov.cmc.common.StatusConstants;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
-import hk.gov.cmc.persistence.ias.message.IasMessage_;
-import hk.gov.cmc.persistence.ias.message.IasUserMessage_;
+import hk.gov.cmc.persistence.maintainmessage.message.IasMessage_;
+import hk.gov.cmc.persistence.maintainmessage.message.IasUserMessage_;
 import hk.gov.cmc.utils.common.EncUtils;
 
 public class IasMessageDAO {

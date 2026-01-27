@@ -420,7 +420,7 @@ public class MessageProcessor {
                                     recipient, validatedIasUserWrapped,
                                     eMsgIasOptCheck,
                                     dataContentEn, dataContentTc, dataContentSc,
-                                    cmcToDoItemTemplate, cmcMsgParamIasToDoItem, conn,
+                                    cmcToDoItemTemplate, cmcMsgParamIasMessage, conn,
                                     response);
                             if (processIasMessageResult.isSuccess()) {
                                 response.addMessageResponse(
