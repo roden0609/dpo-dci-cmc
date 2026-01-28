@@ -23,35 +23,29 @@ public class TemplateUtils {
 
     public static String getIasMergedContent(
             String templateStringEn, String templateStringTc, String templateStringSc,
-            String dataEn, String dataTc, String dataSc, String lang, List<MessageParam> paraList) throws Exception {
+            String dataEn, String dataTc, String dataSc, String lang) throws Exception {
         String result = "";
 
         if (lang.equals(CmcAppConstants.LANGUAGE_SC)) {
 
             if (templateStringSc != null && templateStringSc.length() > 0) {
-                result = XsltUtil.xml2htmlwithMergedParam(templateStringSc, dataSc,
-                        getIasMergedParamMap(paraList, CmcAppConstants.LANGUAGE_SC));
+                result = XsltUtil.xml2htmlwithMergedParam(templateStringSc, dataSc);
             } else if (templateStringTc != null && templateStringTc.length() > 0) {
-                result = XsltUtil.xml2htmlwithMergedParam(templateStringTc, dataTc,
-                        getIasMergedParamMap(paraList, CmcAppConstants.LANGUAGE_TC));
+                result = XsltUtil.xml2htmlwithMergedParam(templateStringTc, dataTc);
             } else {
-                result = XsltUtil.xml2htmlwithMergedParam(templateStringEn, dataEn,
-                        getIasMergedParamMap(paraList, CmcAppConstants.LANGUAGE_EN));
+                result = XsltUtil.xml2htmlwithMergedParam(templateStringEn, dataEn);
             }
 
         } else if (lang.equals(CmcAppConstants.LANGUAGE_TC)) {
 
             if (templateStringTc != null && templateStringTc.length() > 0) {
-                result = XsltUtil.xml2htmlwithMergedParam(templateStringTc, dataTc,
-                        getIasMergedParamMap(paraList, CmcAppConstants.LANGUAGE_TC));
+                result = XsltUtil.xml2htmlwithMergedParam(templateStringTc, dataTc);
             } else {
-                result = XsltUtil.xml2htmlwithMergedParam(templateStringEn, dataEn,
-                        getIasMergedParamMap(paraList, CmcAppConstants.LANGUAGE_EN));
+                result = XsltUtil.xml2htmlwithMergedParam(templateStringEn, dataEn);
             }
 
         } else {
-            result = XsltUtil.xml2htmlwithMergedParam(templateStringEn, dataEn,
-                    getIasMergedParamMap(paraList, CmcAppConstants.LANGUAGE_EN));
+            result = XsltUtil.xml2htmlwithMergedParam(templateStringEn, dataEn);
         }
 
         return result;

@@ -40,7 +40,7 @@ public class IasToDoItemProcessor {
             Recipient recipient, IasUserWrapped iasUserWrapped,
             int toDoItemCutOffDay, int impDtUpperLimit,
             String dataContentEn, String dataContentTc, String dataContentSc,
-            CmcTemplate cmcTemplate, List<MessageParam> cmcMessageParam, HPFW_Connection conn,
+            CmcTemplate cmcTemplate, HPFW_Connection conn,
             Map<String, String> iasToDoItemHandledCache, MaintainMessageResponse response) throws Exception {
         logger.info("processIasToDoItem - Start");
         logger.info("processIasToDoItem - portalId: " + portalId + ", iasToDoItemId: " + iasToDoItemId
@@ -51,8 +51,8 @@ public class IasToDoItemProcessor {
 
         logger.debug("processIasToDoItem - portalId: " + portalId + ", iasToDoItemId: " + iasToDoItemId
                 + ", recipient: " + recipient.toString() + ", iasUserWrapped.toString(): " + iasUserWrapped.toString()
-                + ", cmcTemplate: " + cmcTemplate.toString() + ", cmcMessageParam size: " + cmcMessageParam.size()
-                + ", toDoItemCutOffDay: " + toDoItemCutOffDay + ", impDtUpperLimit: " + impDtUpperLimit);
+                + ", cmcTemplate: " + cmcTemplate.toString() + ", toDoItemCutOffDay: " + toDoItemCutOffDay 
+                + ", impDtUpperLimit: " + impDtUpperLimit);
         logger.debug("processIasToDoItem - dataContentEn: " + dataContentEn + ", dataContentTc: " + dataContentTc
                 + ", dataContentSc: " + dataContentSc);
 
@@ -95,8 +95,7 @@ public class IasToDoItemProcessor {
                     msgRsp = IasToDoItemUtils.mergeTemplateAndCreateIasToDoItem(
                             recipient.getIdpId(), recipient.getTranId(), recipient.getRecipientId(),
                             conn, portalId, iasToDoItemId,
-                            cmcTemplate, cmcMessageParam,
-                            dataContentEn, dataContentTc, dataContentSc,
+                            cmcTemplate, dataContentEn, dataContentTc, dataContentSc,
                             properties);
                 }
 
@@ -181,8 +180,7 @@ public class IasToDoItemProcessor {
                         msgRsp = IasToDoItemUtils.mergeTemplateAndCreateIasToDoItem(
                                 recipient.getIdpId(), recipient.getTranId(), recipient.getRecipientId(),
                                 conn, portalId, iasToDoItemId,
-                                cmcTemplate, cmcMessageParam,
-                                dataContentEn, dataContentTc, dataContentSc,
+                                cmcTemplate, dataContentEn, dataContentTc, dataContentSc,
                                 properties);
                     }
 

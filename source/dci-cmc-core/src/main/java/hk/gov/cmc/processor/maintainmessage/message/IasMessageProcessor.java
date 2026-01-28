@@ -34,7 +34,7 @@ public class IasMessageProcessor {
             Recipient recipient, IasUserWrapped iasUserWrapped,
             boolean eMsgIasOptCheck,
             String dataContentEn, String dataContentTc, String dataContentSc,
-            CmcTemplate cmcTemplate, List<MessageParam> cmcMessageParam, HPFW_Connection conn,
+            CmcTemplate cmcTemplate, HPFW_Connection conn,
             MaintainMessageResponse response) throws Exception {
         logger.info("processIasMessage - Start");
         logger.info("processIasMessage - portalId: " + portalId + ", iasMsgId: " + iasMsgId
@@ -47,7 +47,6 @@ public class IasMessageProcessor {
                 + ", recipient: " + recipient.toString()
                 + ", iasUserWrapped.toString(): " + iasUserWrapped.toString()
                 + ", cmcTemplate: " + cmcTemplate.toString()
-                + ", cmcMessageParam size: " + cmcMessageParam.size()
                 + ", eMsgIasOptCheck: " + eMsgIasOptCheck);
         logger.debug("processIasMessage - dataContentEn: " + dataContentEn + ", dataContentTc: " + dataContentTc
                 + ", dataContentSc: " + dataContentSc);
@@ -87,10 +86,8 @@ public class IasMessageProcessor {
                         // merge the template and create the master record in IAS_MESSAGE
                         msgRsp = IasMessageUtils.mergeTemplateAndCreateIasMessage(
                                 recipient.getIdpId(), recipient.getTranId(), recipient.getRecipientId(),
-                                conn, portalId, iasMsgId,
-                                cmcTemplate, cmcMessageParam,
-                                dataContentEn, dataContentTc, dataContentSc,
-                                properties);
+                                conn, portalId, iasMsgId, cmcTemplate,
+                                dataContentEn, dataContentTc, dataContentSc, properties);
                     }
 
                     if (msgRsp != null) {

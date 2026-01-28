@@ -37,14 +37,12 @@ public class IasApplicationUtils {
     public static MessageResponse mergeTemplateAndCreateIasApplication(
             String idpId, String tranId, String recipientId,
             HPFW_Connection conn, String portalId, String iasApplicationId,
-            CmcTemplate cmcTemplate, List<MessageParam> cmcMessageParam,
-            String dataContentEn, String dataContentTc, String dataContentSc,
+            CmcTemplate cmcTemplate, String dataContentEn, String dataContentTc, String dataContentSc,
             Properties properties) throws Exception {
 
         logger.debug("mergeTemplateAndCreateIasApplication - portalId: " + portalId + ", iasApplicationId: "
                 + iasApplicationId
-                + ", idpId: " + idpId + ", tranId: " + tranId + ", recipientId: " + recipientId + ", cmcMessageParam: "
-                + cmcMessageParam);
+                + ", idpId: " + idpId + ", tranId: " + tranId + ", recipientId: " + recipientId);
         logger.debug("mergeTemplateAndCreateIasApplication - cmcTemplate: " + cmcTemplate);
         logger.debug("mergeTemplateAndCreateIasApplication - dataContentEn: " + dataContentEn + ", dataContentTc: "
                 + dataContentTc
@@ -58,7 +56,7 @@ public class IasApplicationUtils {
                     cmcTemplate.getIasSubjectEn(), cmcTemplate.getIasSubjectTc(),
                     cmcTemplate.getIasSubjectSc(),
                     dataContentEn, dataContentTc, dataContentSc,
-                    CmcAppConstants.LANGUAGE_EN, cmcMessageParam);
+                    CmcAppConstants.LANGUAGE_EN);
         }
         String mergedIasApplicationTitleTc = null;
         if (cmcTemplate.getIasSubjectTc() != null && cmcTemplate.getIasSubjectTc().length() > 0) {
@@ -66,7 +64,7 @@ public class IasApplicationUtils {
                     cmcTemplate.getIasSubjectEn(), cmcTemplate.getIasSubjectTc(),
                     cmcTemplate.getIasSubjectSc(),
                     dataContentEn, dataContentTc, dataContentSc,
-                    CmcAppConstants.LANGUAGE_TC, cmcMessageParam);
+                    CmcAppConstants.LANGUAGE_TC);
         }
         String mergedIasApplicationTitleSc = null;
         if (cmcTemplate.getIasSubjectSc() != null && cmcTemplate.getIasSubjectSc().length() > 0) {
@@ -74,7 +72,7 @@ public class IasApplicationUtils {
                     cmcTemplate.getIasSubjectEn(), cmcTemplate.getIasSubjectTc(),
                     cmcTemplate.getIasSubjectSc(),
                     dataContentEn, dataContentTc, dataContentSc,
-                    CmcAppConstants.LANGUAGE_SC, cmcMessageParam);
+                    CmcAppConstants.LANGUAGE_SC);
         }
         String mergedIasApplicationDetailEn = null;
         if (cmcTemplate.getIasContentEn() != null && cmcTemplate.getIasContentEn().length() > 0) {
@@ -82,7 +80,7 @@ public class IasApplicationUtils {
                     cmcTemplate.getIasContentEn(), cmcTemplate.getIasContentTc(),
                     cmcTemplate.getIasContentSc(),
                     dataContentEn, dataContentTc, dataContentSc,
-                    CmcAppConstants.LANGUAGE_EN, cmcMessageParam);
+                    CmcAppConstants.LANGUAGE_EN);
         }
         String mergedIasApplicationDetailTc = null;
         if (cmcTemplate.getIasContentTc() != null && cmcTemplate.getIasContentTc().length() > 0) {
@@ -90,7 +88,7 @@ public class IasApplicationUtils {
                     cmcTemplate.getIasContentEn(), cmcTemplate.getIasContentTc(),
                     cmcTemplate.getIasContentSc(),
                     dataContentEn, dataContentTc, dataContentSc,
-                    CmcAppConstants.LANGUAGE_TC, cmcMessageParam);
+                    CmcAppConstants.LANGUAGE_TC);
         }
         String mergedIasApplicationDetailSc = null;
         if (cmcTemplate.getIasContentSc() != null && cmcTemplate.getIasContentSc().length() > 0) {
@@ -98,7 +96,7 @@ public class IasApplicationUtils {
                     cmcTemplate.getIasContentEn(), cmcTemplate.getIasContentTc(),
                     cmcTemplate.getIasContentSc(),
                     dataContentEn, dataContentTc, dataContentSc,
-                    CmcAppConstants.LANGUAGE_SC, cmcMessageParam);
+                    CmcAppConstants.LANGUAGE_SC);
         }
 
         // validate merged message size and add to the web service response

@@ -57,7 +57,7 @@ public class XsltUtil {
         }
     }
 
-    public static String xml2htmlwithMergedParam(String xslContent, String metaData, Map<String, String> mergedParamMap)
+    public static String xml2htmlwithMergedParam(String xslContent, String metaData)
             throws Exception {
         ByteArrayOutputStream byteArrayOutputStream = null;
         try {
@@ -73,13 +73,6 @@ public class XsltUtil {
             transformer.setErrorListener(errorListener);
 
             byteArrayOutputStream = new ByteArrayOutputStream();
-
-            // For merging additional parameters received
-            if (mergedParamMap.size() > 0) {
-                for (Map.Entry<String, String> entry : mergedParamMap.entrySet()) {
-                    transformer.setParameter(entry.getKey(), entry.getValue());
-                }
-            }
 
             transformer.transform(xmlSource, new StreamResult(byteArrayOutputStream));
 

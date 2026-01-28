@@ -209,25 +209,6 @@ public class MessageProcessor {
         int impDtUpperLimit = Integer.parseInt(
                 properties.getProperty(CmcAppPropertyNames.TTO_DO_ITEM_IMPORTANT_DT_UPPER_LIMIT_PROPERTY_NAME));
 
-        List<MessageParam> cmcMsgParamAll = MessageParamDAO.getMsgParamByMsgType(conn,
-                MessageParam.MESSAGE_TYPE_ALL_MSG);
-        List<MessageParam> cmcMsgParamIasMessage = MessageParamDAO.getMsgParamByMsgType(conn,
-                MessageParam.MESSAGE_TYPE_IAS_MSG);
-        List<MessageParam> cmcMsgParamIasToDoItem = MessageParamDAO.getMsgParamByMsgType(conn,
-                MessageParam.MESSAGE_TYPE_IAS_TO_DO_ITEM);
-        List<MessageParam> cmcMsgParamIasApplication = MessageParamDAO.getMsgParamByMsgType(conn,
-                MessageParam.MESSAGE_TYPE_IAS_APPLICATION);
-
-        ParamUtils.updateStaticSystemParam(cmcMsgParamIasMessage);
-        ParamUtils.updateStaticSystemParam(cmcMsgParamIasToDoItem);
-        ParamUtils.updateStaticSystemParam(cmcMsgParamIasApplication);
-        ParamUtils.updateStaticSystemParam(cmcMsgParamAll);
-
-        // Append message parameters of all message to each message type
-        cmcMsgParamIasMessage.addAll(cmcMsgParamAll);
-        cmcMsgParamIasToDoItem.addAll(cmcMsgParamAll);
-        cmcMsgParamIasApplication.addAll(cmcMsgParamAll);
-
         Map<String, IasUserWrapped> validatedIasUserWrappedMap = new HashMap<String, IasUserWrapped>();
         List<String> iasMsgCreatedNotiIdList = new ArrayList<String>();
 
@@ -420,8 +401,7 @@ public class MessageProcessor {
                                     recipient, validatedIasUserWrapped,
                                     eMsgIasOptCheck,
                                     dataContentEn, dataContentTc, dataContentSc,
-                                    cmcToDoItemTemplate, cmcMsgParamIasMessage, conn,
-                                    response);
+                                    cmcToDoItemTemplate, conn, response);
                             if (processIasMessageResult.isSuccess()) {
                                 response.addMessageResponse(
                                         MaintainMessageUtils.getMessageResponse(recipient.getTranId(),
@@ -461,7 +441,7 @@ public class MessageProcessor {
                                     recipient, validatedIasUserWrapped,
                                     toDoItemCutOffDay, impDtUpperLimit,
                                     dataContentEn, dataContentTc, dataContentSc,
-                                    cmcToDoItemTemplate, cmcMsgParamIasToDoItem, conn,
+                                    cmcToDoItemTemplate, conn,
                                     iasToDoItemHandledCache, response);
                             if (processIasToDoItemResult.isSuccess()) {
                                 response.addMessageResponse(
@@ -501,7 +481,7 @@ public class MessageProcessor {
                                     portalId, iasApplicationId,
                                     recipient, validatedIasUserWrapped,
                                     dataContentEn, dataContentTc, dataContentSc,
-                                    cmcApplicationTemplate, cmcMsgParamIasApplication, conn,
+                                    cmcApplicationTemplate, conn,
                                     iasApplicationHandledCache, response);
                             if (processIasApplicationResult.isSuccess()) {
                                 response.addMessageResponse(

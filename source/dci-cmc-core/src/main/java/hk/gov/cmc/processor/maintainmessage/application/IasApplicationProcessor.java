@@ -12,7 +12,6 @@ import hk.gov.cmc.common.IasApplicationConstant;
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.dto.maintainmessage.SingleMaintainMsgResult;
 import hk.gov.cmc.model.maintainmessage.action.Action;
-import hk.gov.cmc.model.maintainmessage.param.MessageParam;
 import hk.gov.cmc.model.maintainmessage.request.Recipient;
 import hk.gov.cmc.model.maintainmessage.response.MaintainMessageResponse;
 import hk.gov.cmc.model.maintainmessage.response.MessageResponse;
@@ -38,7 +37,7 @@ public class IasApplicationProcessor {
             String portalId, String iasApplicationId,
             Recipient recipient, IasUserWrapped iasUserWrapped,
             String dataContentEn, String dataContentTc, String dataContentSc,
-            CmcTemplate cmcTemplate, List<MessageParam> cmcMessageParam, HPFW_Connection conn,
+            CmcTemplate cmcTemplate, HPFW_Connection conn,
             Map<String, String> iasApplicationHandledCache, MaintainMessageResponse response) throws Exception {
         logger.info("processIasApplication - Start");
         logger.info("processIasApplication - portalId: " + portalId + ", iasApplicationId: " + iasApplicationId
@@ -49,7 +48,7 @@ public class IasApplicationProcessor {
 
         logger.debug("processIasApplication - portalId: " + portalId + ", iasApplicationId: " + iasApplicationId
                 + ", recipient: " + recipient.toString() + ", iasUserWrapped.toString(): " + iasUserWrapped.toString()
-                + ", cmcTemplate: " + cmcTemplate.toString() + ", cmcMessageParam size: " + cmcMessageParam.size());
+                + ", cmcTemplate: " + cmcTemplate.toString());
         logger.debug("processIasApplication - dataContentEn: " + dataContentEn + ", dataContentTc: " + dataContentTc
                 + ", dataContentSc: " + dataContentSc);
 
@@ -91,9 +90,8 @@ public class IasApplicationProcessor {
                     // merge the template and create the master record in IAS_APPLICATION
                     msgRsp = IasApplicationUtils.mergeTemplateAndCreateIasApplication(
                             recipient.getIdpId(), recipient.getTranId(), recipient.getRecipientId(),
-                            conn, portalId, iasApplicationId, cmcTemplate, cmcMessageParam,
-                            dataContentEn, dataContentTc, dataContentSc,
-                            properties);
+                            conn, portalId, iasApplicationId, cmcTemplate,
+                            dataContentEn, dataContentTc, dataContentSc, properties);
                 }
 
                 if (msgRsp != null) {
@@ -175,8 +173,7 @@ public class IasApplicationProcessor {
                             msgRsp = IasApplicationUtils.mergeTemplateAndCreateIasApplication(
                                     recipient.getIdpId(), recipient.getTranId(), recipient.getRecipientId(),
                                     conn, portalId, iasApplicationId,
-                                    cmcTemplate, cmcMessageParam,
-                                    dataContentEn, dataContentTc, dataContentSc,
+                                    cmcTemplate, dataContentEn, dataContentTc, dataContentSc,
                                     properties);
                         }
 
