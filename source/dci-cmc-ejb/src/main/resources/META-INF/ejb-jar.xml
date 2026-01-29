@@ -60,6 +60,38 @@
                 <env-entry-value><![CDATA[/config/cmc/cmc_app.properties]]></env-entry-value>
             </env-entry>
         </session>
+		<session>
+			<ejb-name>FwBatchSessionEJB</ejb-name>
+			<business-local>hk.gov.cmc.appserver.ejb.session.batchfw.IFwBatchSessionBMLocal</business-local>
+			<business-remote>hk.gov.cmc.appserver.ejb.session.batchfw.IFwBatchSessionBM</business-remote>
+			<ejb-class>hk.gov.cmc.appserver.ejb.session.batchfw.FwBatchSessionEJB</ejb-class>
+			<env-entry>
+				<env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
+				<env-entry-type>java.lang.String</env-entry-type>
+				<env-entry-value><![CDATA[/config/common_app.properties]]></env-entry-value>
+			</env-entry>
+			<env-entry>
+				<env-entry-name>APP_PROPERTIES_FILENAME</env-entry-name>
+				<env-entry-type>java.lang.String</env-entry-type>
+				<env-entry-value><![CDATA[/config/cmc/cmc_app.properties]]></env-entry-value>
+			</env-entry>
+		</session>
+		<!-- <session>
+			<ejb-name>FwReportSessionEJB</ejb-name>
+			<business-local>hk.gov.ogcio.mars_cmc.reportfw.appserver.ejb.session.IFwReportSessionBMLocal</business-local>
+			<business-remote>hk.gov.ogcio.mars_cmc.reportfw.appserver.ejb.session.IFwReportSessionBM</business-remote>
+			<ejb-class>hk.gov.ogcio.mars_cmc.reportfw.appserver.ejb.session.FwReportSessionEJB</ejb-class>
+			<env-entry>
+				<env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>
+				<env-entry-type>java.lang.String</env-entry-type>
+				<env-entry-value><![CDATA[/config/common_app.properties]]></env-entry-value>
+			</env-entry>
+			<env-entry>
+				<env-entry-name>APP_PROPERTIES_FILENAME</env-entry-name>
+				<env-entry-type>java.lang.String</env-entry-type>
+				<env-entry-value><![CDATA[/config/cmc_app.properties]]></env-entry-value>
+			</env-entry>
+		</session> -->
         <!-- <session>
             <ejb-name>GenerateAdminReportSessionEJB</ejb-name>
         <business-local>hk.gov.ogcio.mars_cmc.cmc.appserver.ejb.session.adminreport.IGenerateAdminReportSessionBMLocal</business-local>

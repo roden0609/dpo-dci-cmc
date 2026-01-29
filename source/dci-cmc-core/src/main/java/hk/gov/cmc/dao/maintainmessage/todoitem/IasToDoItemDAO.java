@@ -89,7 +89,7 @@ public class IasToDoItemDAO {
         iasUserToDoItem.setItemDate(itemDate);
         iasUserToDoItem.setOperationType(operationType);
         iasUserToDoItem.setCompleteInd(StatusConstants.COMPLETE_IND_IN_COMPLETED);
-        iasUserToDoItem.setReadInd(CmcAppConstants.READ_IND_UNREAD);
+        iasUserToDoItem.setReadInd(StatusConstants.READ_IND_UNREAD);
         iasUserToDoItem.setDeleteInd(StatusConstants.DELETE_IND_NOT_DELETED);
         iasUserToDoItem.setIasDeleteNotiStatus(IntegrationConstants.IAS_NOTI_STATUS_NEW);
         iasUserToDoItem.setIasNotiStatus(IntegrationConstants.IAS_NOTI_STATUS_NEW);
@@ -120,7 +120,7 @@ public class IasToDoItemDAO {
         iasUserToDoItem.setItemDate(itemDate);
         iasUserToDoItem.setOperationType(operationType);
         iasUserToDoItem.setCompleteInd(StatusConstants.COMPLETE_IND_IN_COMPLETED);
-        iasUserToDoItem.setReadInd(CmcAppConstants.READ_IND_UNREAD);
+        iasUserToDoItem.setReadInd(StatusConstants.READ_IND_UNREAD);
         iasUserToDoItem.setDeleteInd(StatusConstants.DELETE_IND_NOT_DELETED);
         iasUserToDoItem.setIasDeleteNotiStatus(IntegrationConstants.IAS_NOTI_STATUS_NEW);
         iasUserToDoItem.setIasNotiStatus(IntegrationConstants.IAS_NOTI_STATUS_NEW);

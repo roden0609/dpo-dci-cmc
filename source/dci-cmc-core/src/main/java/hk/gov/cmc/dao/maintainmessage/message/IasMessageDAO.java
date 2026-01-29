@@ -75,7 +75,7 @@ public class IasMessageDAO {
         iasUserMessage.setOpenId(openId);
         iasUserMessage.setIasMsgId(iasMsgId);
         iasUserMessage.setTranId(tranId);
-        iasUserMessage.setReadInd(CmcAppConstants.READ_IND_UNREAD);
+        iasUserMessage.setReadInd(StatusConstants.READ_IND_UNREAD);
         iasUserMessage.setDeleteInd(StatusConstants.DELETE_IND_NOT_DELETED);
         iasUserMessage.setIasNotiStatus(IntegrationConstants.IAS_NOTI_STATUS_NEW);
         iasUserMessage.setNotiId(iasUserNotiId);
