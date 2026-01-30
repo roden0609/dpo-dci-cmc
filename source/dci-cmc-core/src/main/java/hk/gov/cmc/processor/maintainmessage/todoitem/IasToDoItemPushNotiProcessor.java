@@ -155,7 +155,12 @@ public class IasToDoItemPushNotiProcessor {
 
                 if (pushNotiResp != null) {
 
-                    logger.debug("pushIasToDoItemToIAMSmart - PushNoti Resp Content=" + pushNotiResp.getContent());
+                    logger.info("pushIasToDoItemToIAMSmart - EIDUtils.doRequestPushNotificationMessages pushNotiResp: TxID="
+                            + pushNotiResp.getTxID() + ", Code=" + pushNotiResp.getCode()
+                            + ", Message=" + pushNotiResp.getMessage());
+
+                    logger.info("pushIasToDoItemToIAMSmart - EIDUtils.doRequestPushNotificationMessages pushNotiResp: Content="
+                            + pushNotiResp.getContent());
 
                     if (((IntegrationConstants.GET_NOTI_ID_RESULT_CODE_SUCCESS.equalsIgnoreCase(pushNotiResp.getCode()))
                             || (IntegrationConstants.GET_NOTI_ID_RESULT_CODE_PARTIAL_SUCCESS
@@ -233,8 +238,8 @@ public class IasToDoItemPushNotiProcessor {
                         pushNotiItemList = new ArrayList<PushNotificationItem>();
 
                     } else {
-                        logger.warn("pushIasToDoItemToIAMSmart - PushNoti Fail. Code=" + pushNotiResp.getCode()
-                                + ", Message=" + pushNotiResp.getMessage()
+                        logger.warn("pushIasToDoItemToIAMSmart - EIDUtils.doRequestPushNotificationMessages failed. pushNotiResp Code="
+                                + pushNotiResp.getCode() + ", Message=" + pushNotiResp.getMessage()
                                 + ", TxID=" + pushNotiResp.getTxID() + ". No DB Change, will retry in next run.");
                         logger.debug(
                                 "pushIasToDoItemToIAMSmart - EIDUtils.doRequestPushNotificationMessages pushNotiBean.toString: "
@@ -242,7 +247,7 @@ public class IasToDoItemPushNotiProcessor {
                     }
                 } else {
                     logger.warn(
-                            "pushIasToDoItemToIAMSmart - PushNoti Fail. pushNotiResp is null. No DB Change, will retry in next run.");
+                            "pushIasToDoItemToIAMSmart - EIDUtils.doRequestPushNotificationMessages failed. pushNotiResp is null. No DB Change, will retry in next run.");
                 }
             }
         }
@@ -351,8 +356,14 @@ public class IasToDoItemPushNotiProcessor {
 
                 if (pushNotiResp != null) {
 
-                    logger.debug("pushIasToDoItemToIAMSmartForDeletion - PushNoti Resp Content="
-                            + pushNotiResp.getContent());
+                    logger.info(
+                            "pushIasToDoItemToIAMSmartForDeletion - EIDUtils.doRequestPushNotificationMessages pushNotiResp: TxID="
+                                    + pushNotiResp.getTxID() + ", Code=" + pushNotiResp.getCode()
+                                    + ", Message=" + pushNotiResp.getMessage());
+
+                    logger.debug(
+                            "pushIasToDoItemToIAMSmartForDeletion - EIDUtils.doRequestPushNotificationMessages pushNotiResp: Content="
+                                    + pushNotiResp.getContent());
 
                     if (((IntegrationConstants.GET_NOTI_ID_RESULT_CODE_SUCCESS.equalsIgnoreCase(pushNotiResp.getCode()))
                             || (IntegrationConstants.GET_NOTI_ID_RESULT_CODE_PARTIAL_SUCCESS
@@ -432,16 +443,15 @@ public class IasToDoItemPushNotiProcessor {
                         pushNotiItemList = new ArrayList<PushNotificationItem>();
 
                     } else {
-                        logger.warn("pushIasToDoItemToIAMSmartForDeletion - PushNoti Fail. Code="
-                                + pushNotiResp.getCode() + ", Message=" + pushNotiResp.getMessage()
-                                + ", TxID=" + pushNotiResp.getTxID() + ". No DB Change, will retry in next run.");
-                        logger.debug(
-                                "pushIasToDoItemToIAMSmartForDeletion - EIDUtils.doRequestPushNotificationMessages pushNotiBean.toString: "
-                                        + pushNotiBean.toString());
+                        logger.warn(
+                                "pushIasToDoItemToIAMSmartForDeletion - EIDUtils.doRequestPushNotificationMessages failed. pushNotiResp Code="
+                                        + pushNotiResp.getCode() + ", Message=" + pushNotiResp.getMessage()
+                                        + ", TxID=" + pushNotiResp.getTxID()
+                                        + ". No DB Change, will retry in next run.");
                     }
                 } else {
                     logger.warn(
-                            "pushIasToDoItemToIAMSmartForDeletion - PushNoti Fail. pushNotiResp is null. No DB Change, will retry in next run.");
+                            "pushIasToDoItemToIAMSmartForDeletion - EIDUtils.doRequestPushNotificationMessages failed. pushNotiResp is null. No DB Change, will retry in next run.");
                 }
             }
         }

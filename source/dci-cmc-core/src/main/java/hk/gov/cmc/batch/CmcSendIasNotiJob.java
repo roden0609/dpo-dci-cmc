@@ -114,7 +114,8 @@ public class CmcSendIasNotiJob {
                     // Retrieve the noti id from iAM Smart system
                     while (totalNotiIdCnt < notiIdMissList.size()) {
 
-                        logger.info("[BATCH_JOB]CmcSendIasNotiJob - totalNotiIdCnt=" + totalNotiIdCnt);
+                        logger.info("[BATCH_JOB]CmcSendIasNotiJob - iasUserMsgNotiIdMissList - totalNotiIdCnt="
+                                + totalNotiIdCnt);
 
                         int batchCnt = 0;
 
@@ -135,10 +136,11 @@ public class CmcSendIasNotiJob {
 
                             totalNotiIdCnt++;
                         }
-                        logger.info("[BATCH_JOB]CmcSendIasNotiJob - batchCnt=" + batchCnt);
+                        logger.info("[BATCH_JOB]CmcSendIasNotiJob - iasUserMsgNotiIdMissList - batchCnt=" + batchCnt);
 
-                        logger.info("[BATCH_JOB]CmcSendIasNotiJob - eServiceOpenIdItemList.size()="
-                                + eServiceOpenIdItemList.size());
+                        logger.info(
+                                "[BATCH_JOB]CmcSendIasNotiJob - iasUserMsgNotiIdMissList - eServiceOpenIdItemList.size()="
+                                        + eServiceOpenIdItemList.size());
 
                         if (eServiceOpenIdItemList.size() > 0) {
                             EServiceOpenIdsBean eServiceOpenIdsBean = new EServiceOpenIdsBean();
@@ -155,7 +157,13 @@ public class CmcSendIasNotiJob {
                             if (getNotiIdResponse != null) {
 
                                 logger.info(
-                                        "[BATCH_JOB]CmcSendIasNotiJob - GetNotiId for ias_user_message, Resp Content()="
+                                        "[BATCH_JOB]CmcSendIasNotiJob - iasUserMsgNotiIdMissList - doRequestGetNotificationIDs - TxID="
+                                                + getNotiIdResponse.getTxID() + ", Code="
+                                                + getNotiIdResponse.getCode() + ", Message="
+                                                + getNotiIdResponse.getMessage());
+
+                                logger.info(
+                                        "[BATCH_JOB]CmcSendIasNotiJob - iasUserMsgNotiIdMissList - doRequestGetNotificationIDs - Content="
                                                 + getNotiIdResponse.getContent());
 
                                 if (((IntegrationConstants.GET_NOTI_ID_RESULT_CODE_SUCCESS
@@ -202,15 +210,16 @@ public class CmcSendIasNotiJob {
                                         }
                                     }
                                 } else {
-                                    logger.warn("[BATCH_JOB]CmcSendIasNotiJob - IAS_USER_MESSAGE GetNotiId Fail. Code="
-                                            + getNotiIdResponse.getCode() +
-                                            ", Message=" + getNotiIdResponse.getMessage() + ", TxID="
-                                            + getNotiIdResponse.getTxID()
-                                            + ". No DB Change, will retry again in next run.");
+                                    logger.warn(
+                                            "[BATCH_JOB]CmcSendIasNotiJob - iasUserMsgNotiIdMissList - doGetNotificationIDs failed. Code="
+                                                    + getNotiIdResponse.getCode() + ", Message="
+                                                    + getNotiIdResponse.getMessage() + ", TxID="
+                                                    + getNotiIdResponse.getTxID()
+                                                    + ". No DB Change, will retry again in next run.");
                                 }
                             } else {
                                 logger.warn(
-                                        "[BATCH_JOB]CmcSendIasNotiJob - GetNotiId Fail. getNotiIdResponse is null. No DB Change, will retry again in next run.");
+                                        "[BATCH_JOB]CmcSendIasNotiJob - iasUserMsgNotiIdMissList - doGetNotificationIDs failed. getNotiIdResponse is null. No DB Change, will retry again in next run.");
                             }
                         }
                     }
@@ -562,12 +571,12 @@ public class CmcSendIasNotiJob {
 
                     while (totalNotiIdCnt < outstandingAssoJobList.size()) {
 
-                        logger.info("[BATCH_JOB]CmcSendIasNotiJob - totalNotiIdCnt=" + totalNotiIdCnt);
+                        logger.info("[BATCH_JOB]CmcSendIasNotiJob - outstandingAssoJobList - totalNotiIdCnt="
+                                + totalNotiIdCnt);
 
                         int batchCnt = 0;
 
                         ArrayList<EServiceOpenIdItem> eServiceOpenIdItemList = new ArrayList<>();
-                        // for (int i=startIdx; i<endBound; i++) {
                         while ((batchCnt < iasGetNotiIdBatchLimit) && (totalNotiIdCnt < iasAssoJobList.size())) {
 
                             IasAssoQueueJob iasAssoJob = (IasAssoQueueJob) iasAssoJobList.get(totalNotiIdCnt);
@@ -585,10 +594,11 @@ public class CmcSendIasNotiJob {
                             totalNotiIdCnt++;
                         }
 
-                        logger.info("[BATCH_JOB]CmcSendIasNotiJob - batchCnt=" + batchCnt);
+                        logger.info("[BATCH_JOB]CmcSendIasNotiJob - outstandingAssoJobList - batchCnt=" + batchCnt);
 
-                        logger.info("[BATCH_JOB]CmcSendIasNotiJob - eServiceOpenIdItemList.size()="
-                                + eServiceOpenIdItemList.size());
+                        logger.info(
+                                "[BATCH_JOB]CmcSendIasNotiJob - outstandingAssoJobList - eServiceOpenIdItemList.size()="
+                                        + eServiceOpenIdItemList.size());
 
                         if (eServiceOpenIdItemList.size() > 0) {
 
@@ -606,7 +616,13 @@ public class CmcSendIasNotiJob {
                             if (getNotiIdResponse != null) {
 
                                 logger.info(
-                                        "[BATCH_JOB]CmcSendIasNotiJob - GetNotiId for ias_asso_queue, Resp Content()="
+                                        "[BATCH_JOB]CmcSendIasNotiJob - outstandingAssoJobList - EIDUtils.doRequestGetNotificationIDs - TxID="
+                                                + getNotiIdResponse.getTxID() + ", Code="
+                                                + getNotiIdResponse.getCode() + ", Message="
+                                                + getNotiIdResponse.getMessage());
+
+                                logger.info(
+                                        "[BATCH_JOB]CmcSendIasNotiJob - outstandingAssoJobList - EIDUtils.doRequestGetNotificationIDs - Content="
                                                 + getNotiIdResponse.getContent());
 
                                 if (((IntegrationConstants.GET_NOTI_ID_RESULT_CODE_SUCCESS
@@ -653,15 +669,16 @@ public class CmcSendIasNotiJob {
                                         }
                                     }
                                 } else {
-                                    logger.warn("[BATCH_JOB]CmcSendIasNotiJob - IAS_ASSO_QUEUE GetNotiId Fail. Code="
-                                            + getNotiIdResponse.getCode() +
-                                            ", Message=" + getNotiIdResponse.getMessage() + ", TxID="
-                                            + getNotiIdResponse.getTxID()
-                                            + ". No DB Change, will retry again in next run.");
+                                    logger.warn(
+                                            "[BATCH_JOB]CmcSendIasNotiJob - outstandingAssoJobList - EIDUtils.doRequestGetNotificationIDs failed. Code="
+                                                    + getNotiIdResponse.getCode() + ", Message="
+                                                    + getNotiIdResponse.getMessage() + ", TxID="
+                                                    + getNotiIdResponse.getTxID()
+                                                    + ". No DB Change, will retry again in next run.");
                                 }
                             } else {
                                 logger.warn(
-                                        "[BATCH_JOB]CmcSendIasNotiJob - IAS_ASSO_QUEUE GetNotiId Fail. getNotiIdResponse is null. No DB Change, will retry again in next run.");
+                                        "[BATCH_JOB]CmcSendIasNotiJob - outstandingAssoJobList - EIDUtils.doRequestGetNotificationIDs failed. getNotiIdResponse is null. No DB Change, will retry again in next run.");
                             }
                         }
 
@@ -1004,7 +1021,11 @@ public class CmcSendIasNotiJob {
 
                         if (sendNotiResp != null) {
 
-                            logger.debug("[BATCH_JOB]CmcSendIasNotiJob - SendNoti Resp Content="
+                            logger.info("[BATCH_JOB]CmcSendIasNotiJob - EIDUtils.doRequestSendNotificationMessages - TxID="
+                                    + sendNotiResp.getTxID() + ", Code="
+                                    + sendNotiResp.getCode() + ", Message=" + sendNotiResp.getMessage());
+
+                            logger.debug("[BATCH_JOB]CmcSendIasNotiJob - EIDUtils.doRequestSendNotificationMessages - Content="
                                     + sendNotiResp.getContent());
 
                             if (((IntegrationConstants.GET_NOTI_ID_RESULT_CODE_SUCCESS
@@ -1081,16 +1102,17 @@ public class CmcSendIasNotiJob {
 
                             } else {
                                 logger.warn(
-                                        "[BATCH_JOB]CmcSendIasNotiJob - SendNoti Fail. Code=" + sendNotiResp.getCode() +
+                                        "[BATCH_JOB]CmcSendIasNotiJob - EIDUtils.doRequestSendNotificationMessages failed - Code="
+                                                + sendNotiResp.getCode() +
                                                 ", Message=" + sendNotiResp.getMessage() + ", TxID="
                                                 + sendNotiResp.getTxID() + ". No DB Change, will retry in next run.");
                                 logger.warn(
-                                        "[BATCH_JOB]CmcSendIasNotiJob - EIDUtils.doRequestSendNotificationMessages notiBean: "
+                                        "[BATCH_JOB]CmcSendIasNotiJob - EIDUtils.doRequestSendNotificationMessages failed - notiBean: "
                                                 + IasUtils.getNotificationBeanStr(notiBean));
                             }
                         } else {
                             logger.warn(
-                                    "[BATCH_JOB]CmcSendIasNotiJob - SendNoti Fail. sendNotiResp is null. No DB Change, will retry in next run.");
+                                    "[BATCH_JOB]CmcSendIasNotiJob - EIDUtils.doRequestSendNotificationMessages failed - sendNotiResp is null. No DB Change, will retry in next run.");
                         }
                     }
                 }
@@ -1101,10 +1123,10 @@ public class CmcSendIasNotiJob {
                 jobControlUtils.releaseJobControl(jobControlName);
 
             } else {
-                logger.info("[CmcSendIasNotiJob]CMC_MARS_SYN_JOB_LOCK table cannot be locked.");
+                logger.info("[BATCH_JOB]CmcSendIasNotiJob - CMC_MARS_SYN_JOB_LOCK table cannot be locked.");
             }
         } catch (Exception e) {
-            logger.error("CmcSendIasNotiJob exception", e);
+            logger.error("[BATCH_JOB]CmcSendIasNotiJob - exception", e);
             throw e;
         } finally {
             if (conn != null) {

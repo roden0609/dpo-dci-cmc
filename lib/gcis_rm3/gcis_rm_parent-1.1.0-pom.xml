@@ -163,6 +163,8 @@
 
         <!-- Miscellaneous libraies -->
         <bouncycastle.version>1.80</bouncycastle.version>
+        <httpclient.version>4.5.14</httpclient.version>
+        <httpcore.version>4.4.16</httpcore.version>
         <quartz.version>2.5.0</quartz.version>
         <dom4j.version>2.1.4</dom4j.version>
         <java-uuid-generator.version>5.1.0</java-uuid-generator.version>
@@ -428,6 +430,16 @@
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpg-jdk18on</artifactId>
                 <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${httpcore.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>

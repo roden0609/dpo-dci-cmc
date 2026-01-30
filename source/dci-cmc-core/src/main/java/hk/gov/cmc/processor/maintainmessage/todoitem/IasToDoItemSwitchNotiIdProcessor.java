@@ -138,8 +138,15 @@ public class IasToDoItemSwitchNotiIdProcessor {
 
                 if (getNotiIdResponse != null) {
 
-                    logger.debug("updateIasUserToDoItemNotiIDByESHKID - EIDResponseBean.getContent="
-                            + getNotiIdResponse.getContent());
+                    logger.info(
+                            "updateIasUserToDoItemNotiIDByESHKID - EIDUtils.doRequestSwitchNotificationIDsByHKIDs getNotiIdResponse: TxID="
+                                    + getNotiIdResponse.getTxID()
+                                    + ", Code=" + getNotiIdResponse.getCode() + ", Message="
+                                    + getNotiIdResponse.getMessage());
+
+                    logger.debug(
+                            "updateIasUserToDoItemNotiIDByESHKID - EIDUtils.doRequestSwitchNotificationIDsByHKIDs getNotiIdResponse: Content="
+                                    + getNotiIdResponse.getContent());
 
                     if (((IntegrationConstants.GET_NOTI_ID_RESULT_CODE_SUCCESS
                             .equalsIgnoreCase(getNotiIdResponse.getCode())) ||
@@ -182,14 +189,14 @@ public class IasToDoItemSwitchNotiIdProcessor {
                             }
                         }
                     } else {
-                        logger.warn("updateIasUserToDoItemNotiIDByESHKID - EIDUtils.doRequestGetNotificationIDs Fail. "
+                        logger.warn("updateIasUserToDoItemNotiIDByESHKID - EIDUtils.doRequestSwitchNotificationIDsByHKIDs Fail. "
                                 + "EIDResponseBean.getCode=" + getNotiIdResponse.getCode()
                                 + ", EIDResponseBean.getMessage=" + getNotiIdResponse.getMessage()
                                 + ", EIDResponseBean.getTxID=" + getNotiIdResponse.getTxID()
                                 + ". No DB Change, will retry again in next run.");
                     }
                 } else {
-                    logger.warn("updateIasUserToDoItemNotiIDByESHKID - EIDUtils.doRequestGetNotificationIDs Fail. "
+                    logger.warn("updateIasUserToDoItemNotiIDByESHKID - EIDUtils.doRequestSwitchNotificationIDsByHKIDs Fail. "
                             + "EIDResponseBean is null. No DB Change, will retry again in next run.");
                 }
             }
@@ -414,8 +421,13 @@ public class IasToDoItemSwitchNotiIdProcessor {
 
                 if (getNotiIdResponse != null) {
 
-                    logger.debug("updateIasUserToDoItemNotiIDByESOpenID - EIDResponseBean.getContent="
-                            + getNotiIdResponse.getContent());
+                    logger.info("updateIasUserToDoItemNotiIDByESOpenID - EIDUtils.doRequestGetNotificationIDs getNotiIdResponse: TxID="
+                            + getNotiIdResponse.getTxID()
+                            + ", Code=" + getNotiIdResponse.getCode() + ", Message=" + getNotiIdResponse.getMessage());
+
+                    logger.debug(
+                            "updateIasUserToDoItemNotiIDByESOpenID - EIDUtils.doRequestGetNotificationIDs getNotiIdResponse: Content="
+                                    + getNotiIdResponse.getContent());
 
                     if (((IntegrationConstants.GET_NOTI_ID_RESULT_CODE_SUCCESS
                             .equalsIgnoreCase(getNotiIdResponse.getCode())) ||

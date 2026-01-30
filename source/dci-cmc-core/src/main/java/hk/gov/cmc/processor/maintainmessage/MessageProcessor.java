@@ -207,7 +207,7 @@ public class MessageProcessor {
                 iasIdpId);
 
         int impDtUpperLimit = Integer.parseInt(
-                properties.getProperty(CmcAppPropertyNames.TTO_DO_ITEM_IMPORTANT_DT_UPPER_LIMIT_PROPERTY_NAME));
+                properties.getProperty(CmcAppPropertyNames.TO_DO_ITEM_IMPORTANT_DT_UPPER_LIMIT_PROPERTY_NAME));
 
         Map<String, IasUserWrapped> validatedIasUserWrappedMap = new HashMap<String, IasUserWrapped>();
         List<String> iasMsgCreatedNotiIdList = new ArrayList<String>();

@@ -9,7 +9,7 @@ public class CmcAppPropertyNames {
 
     public static final String MAINT_MSG_REQ_RECIPIENT_APP_TYPE_PROPERTY_NAME = "MAINT_MSG_REQ_RECIPIENT_APP_TYPE";
 
-    public static final String TTO_DO_ITEM_IMPORTANT_DT_UPPER_LIMIT_PROPERTY_NAME = "TO_DO_ITEM_IMPORTANT_DT_UPPER_LIMIT";
+    public static final String TO_DO_ITEM_IMPORTANT_DT_UPPER_LIMIT_PROPERTY_NAME = "TO_DO_ITEM_IMPORTANT_DT_UPPER_LIMIT";
 
     public final static String WS_AUTH_TYPE_PROPERTY = "WS_AUTH_TYPE";
 

@@ -128,7 +128,15 @@ public class IasApplicationSwitchNotiIdProcessor {
 
                 if (getNotiIdResponse != null) {
 
-                    logger.debug("updateIasUserAppNotiIDByESHKID - EIDResponseBean.getContent=" + getNotiIdResponse.getContent());
+                    logger.info(
+                            "updateIasUserAppNotiIDByESHKID - EIDUtils.doRequestSwitchNotificationIDsByHKIDs getNotiIdResponse: TxID="
+                                    + getNotiIdResponse.getTxID()
+                                    + ", Code=" + getNotiIdResponse.getCode() + ", Message="
+                                    + getNotiIdResponse.getMessage());
+
+                    logger.debug(
+                            "updateIasUserAppNotiIDByESHKID - EIDUtils.doRequestSwitchNotificationIDsByHKIDs getNotiIdResponse: Content="
+                                    + getNotiIdResponse.getContent());
 
                     if (((IntegrationConstants.GET_NOTI_ID_RESULT_CODE_SUCCESS.equalsIgnoreCase(getNotiIdResponse.getCode())) || 
                             (IntegrationConstants.GET_NOTI_ID_RESULT_CODE_PARTIAL_SUCCESS.equalsIgnoreCase(getNotiIdResponse.getCode())))
@@ -161,12 +169,12 @@ public class IasApplicationSwitchNotiIdProcessor {
                             }
                         }
                     } else {
-                        logger.warn("updateIasUserAppNotiIDByESHKID - EIDUtils.doRequestGetNotificationIDs Fail. "
+                        logger.warn("updateIasUserAppNotiIDByESHKID - EIDUtils.doRequestSwitchNotificationIDsByHKIDs Fail. "
                             + "EIDResponseBean.getCode=" + getNotiIdResponse.getCode() + ", EIDResponseBean.getMessage=" + getNotiIdResponse.getMessage()
                             + ", EIDResponseBean.getTxID=" + getNotiIdResponse.getTxID() + ". No DB Change, will retry again in next run.");
                     }
                 } else {
-                    logger.warn("updateIasUserAppNotiIDByESHKID - EIDUtils.doRequestGetNotificationIDs Fail. "
+                    logger.warn("updateIasUserAppNotiIDByESHKID - EIDUtils.doRequestSwitchNotificationIDsByHKIDs Fail. "
                         + "EIDResponseBean is null. No DB Change, will retry again in next run.");
                 }
             }
@@ -362,7 +370,13 @@ public class IasApplicationSwitchNotiIdProcessor {
 
                 if (getNotiIdResponse != null) {
 
-                    logger.debug("updateIasUserAppNotiIDByESOpenID - EIDResponseBean.getContent=" + getNotiIdResponse.getContent());
+                    logger.info("updateIasUserAppNotiIDByESOpenID - EIDUtils.doRequestGetNotificationIDs getNotiIdResponse: TxID="
+                            + getNotiIdResponse.getTxID()
+                            + ", Code=" + getNotiIdResponse.getCode() + ", Message=" + getNotiIdResponse.getMessage());
+
+                    logger.debug(
+                            "updateIasUserAppNotiIDByESOpenID - EIDUtils.doRequestGetNotificationIDs getNotiIdResponse: Content="
+                                    + getNotiIdResponse.getContent());
 
                     if (((IntegrationConstants.GET_NOTI_ID_RESULT_CODE_SUCCESS.equalsIgnoreCase(getNotiIdResponse.getCode())) || 
                             (IntegrationConstants.GET_NOTI_ID_RESULT_CODE_PARTIAL_SUCCESS.equalsIgnoreCase(getNotiIdResponse.getCode())))
