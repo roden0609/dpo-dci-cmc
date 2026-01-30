@@ -117,7 +117,7 @@ public class IasApplicationSwitchNotiIdProcessor {
 
             if (eServiceHKIdItemList.size() > 0) {
                 EServiceHkidsBean eServiceHKIdsBean = new EServiceHkidsBean();
-                eServiceHKIdsBean.setEServiceHKIDs(eServiceHKIdItemList);
+                eServiceHKIdsBean.seteServiceHKIDs(eServiceHKIdItemList);
 
                 // Call switchNotificationID API to get missing NotiID from iAM Smart system by ClientID and HKID
                 if (!isEIDUtilsInit) {

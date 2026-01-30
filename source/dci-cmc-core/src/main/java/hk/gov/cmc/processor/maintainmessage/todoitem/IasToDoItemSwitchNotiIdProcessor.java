@@ -126,12 +126,16 @@ public class IasToDoItemSwitchNotiIdProcessor {
 
             if (eServiceHKIdItemList.size() > 0) {
                 EServiceHkidsBean eServiceHKIdsBean = new EServiceHkidsBean();
-                eServiceHKIdsBean.setEServiceHKIDs(eServiceHKIdItemList);
+                eServiceHKIdsBean.seteServiceHKIDs(eServiceHKIdItemList);
 
                 // Call switchNotificationID API to get missing NotiID from iAM Smart system by ClientID and HKID
                 if (!isEIDUtilsInit) {
                     EIDUtils.initialize(prop);
                 }
+
+                logger.info(
+                        "updateIasUserToDoItemNotiIDByESHKID - Call EIDUtils.doRequestSwitchNotificationIDsByHKIDs with eServiceHKIdsBean: "
+                                + eServiceHKIdsBean.toString());
 
                 EIDResponseBean getNotiIdResponse = EIDUtils
                         .doRequestSwitchNotificationIDsByHKIDs(iasSwitchNotiIdEndPoint, eServiceHKIdsBean);

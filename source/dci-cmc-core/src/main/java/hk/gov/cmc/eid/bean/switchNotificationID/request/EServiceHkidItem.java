@@ -29,8 +29,8 @@ public class EServiceHkidItem implements Serializable {
         return HKID;
     }
 
-    public void setHKID(String hKID) {
-        HKID = hKID;
+    public void setHKID(String HKID) {
+        this.HKID = HKID;
     }
 
     @Override

@@ -142,7 +142,7 @@ public class IasApplicationPushNotiProcessor {
                     + pushNotiItemList.size());
             if (pushNotiItemList.size() > 0 &&
                     ((notiIdCount == iasPushNotiBatchLimit) || (i == (outstandingIasUserApplicationList.size() - 1)))) {
-                pushNotiBean.setPushNotifications(new ArrayList<PushNotificationItem>(pushNotiItemList));
+                pushNotiBean.setNotifications(new ArrayList<PushNotificationItem>(pushNotiItemList));
 
                 if (!isEIDUtilsInit) {
                     EIDUtils.initialize(prop);
@@ -369,7 +369,7 @@ public class IasApplicationPushNotiProcessor {
                     + pushNotiItemList.size());
             if (pushNotiItemList.size() > 0 &&
                     ((notiIdCount == iasPushNotiBatchLimit) || (i == (outstandingIasUserApplicationList.size() - 1)))) {
-                pushNotiBean.setPushNotifications(new ArrayList<PushNotificationItem>(pushNotiItemList));
+                pushNotiBean.setNotifications(new ArrayList<PushNotificationItem>(pushNotiItemList));
 
                 if (!isEIDUtilsInit) {
                     EIDUtils.initialize(prop);

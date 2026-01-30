@@ -43,11 +43,11 @@ public class EServiceHkidsBean implements Serializable {
                 : null;
     }
 
-    public void setEServiceHKIDs(ArrayList<EServiceHkidItem> eServiceHKIDs) {
+    public void seteServiceHKIDs(ArrayList<EServiceHkidItem> eServiceHKIDs) {
         this.eServiceHKIDs = eServiceHKIDs;
     }
 
-    public ArrayList<EServiceHkidItem> getEServiceHKIDs() {
+    public ArrayList<EServiceHkidItem> geteServiceHKIDs() {
         return this.eServiceHKIDs;
     }
 

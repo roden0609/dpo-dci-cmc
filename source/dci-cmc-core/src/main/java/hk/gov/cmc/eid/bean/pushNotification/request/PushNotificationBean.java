@@ -13,11 +13,11 @@ public class PushNotificationBean {
         this.notifications = notifications;
     }
 
-    public ArrayList<PushNotificationItem> getPushNotifications() {
+    public ArrayList<PushNotificationItem> getNotifications() {
         return notifications;
     }
 
-    public void setPushNotifications(ArrayList<PushNotificationItem> notifications) {
+    public void setNotifications(ArrayList<PushNotificationItem> notifications) {
         this.notifications = notifications;
     }
 

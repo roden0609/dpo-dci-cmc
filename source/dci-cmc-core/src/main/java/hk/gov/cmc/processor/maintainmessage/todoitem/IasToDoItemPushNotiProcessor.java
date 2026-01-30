@@ -142,11 +142,14 @@ public class IasToDoItemPushNotiProcessor {
                     + pushNotiItemList.size());
             if (pushNotiItemList.size() > 0 &&
                     ((notiIdCount == iasPushNotiBatchLimit) || (i == (outstandingIasUserToDoItemList.size() - 1)))) {
-                pushNotiBean.setPushNotifications(new ArrayList<PushNotificationItem>(pushNotiItemList));
+                pushNotiBean.setNotifications(new ArrayList<PushNotificationItem>(pushNotiItemList));
 
                 if (!isEIDUtilsInit) {
                     EIDUtils.initialize(prop);
                 }
+
+                logger.debug("pushIasToDoItemToIAMSmart - EIDUtils.doRequestPushNotificationMessages - pushNotiBean: "
+                        + pushNotiBean.toString());
 
                 // Push iAM Smart Notification message
                 EIDResponseBean pushNotiResp = EIDUtils.doRequestPushNotificationMessages(iasPushNotiEndPoint,
@@ -343,7 +346,7 @@ public class IasToDoItemPushNotiProcessor {
                     + pushNotiItemList.size());
             if (pushNotiItemList.size() > 0 &&
                     ((notiIdCount == iasPushNotiBatchLimit) || (i == (outstandingIasUserToDoItemList.size() - 1)))) {
-                pushNotiBean.setPushNotifications(new ArrayList<PushNotificationItem>(pushNotiItemList));
+                pushNotiBean.setNotifications(new ArrayList<PushNotificationItem>(pushNotiItemList));
 
                 if (!isEIDUtilsInit) {
                     EIDUtils.initialize(prop);
