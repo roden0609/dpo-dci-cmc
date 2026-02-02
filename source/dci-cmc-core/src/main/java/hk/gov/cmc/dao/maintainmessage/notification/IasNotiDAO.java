@@ -34,7 +34,6 @@ public class IasNotiDAO {
             throws Exception {
         logger.debug("getIasUserInfo - START");
 
-        IasUser iasUser = null;
         ResultSet rs = null;
         ArrayList<IasUserMsg> resultList = new ArrayList<IasUserMsg>();
 
@@ -82,7 +81,6 @@ public class IasNotiDAO {
     public List<IasUserMsg> getOutstandingMessage(HPFW_Connection conn, int iasMsgProcessBatchLimit) throws Exception {
         logger.debug("getOutstandingMessage - START");
 
-        IasUser iasUser = null;
         ResultSet rs = null;
         ArrayList<IasUserMsg> resultList = new ArrayList<IasUserMsg>();
 
@@ -134,7 +132,6 @@ public class IasNotiDAO {
             throws Exception {
         logger.debug("getMotherMissingVipMapList - START");
 
-        IasUser iasUser = null;
         ResultSet rs = null;
         ArrayList<IasUserMsg> resultList = new ArrayList<IasUserMsg>();
 
@@ -212,42 +209,6 @@ public class IasNotiDAO {
                     HPFW_Connection.close(rs);
             } catch (Exception ex) {
                 logger.error("General exception caught in getTxIdFromSentIasUserMsg - rs.close();", ex);
-            }
-        }
-    }
-
-    public List<String> getTxIdFromSentIasUserToDoItem(HPFW_Connection conn, int IasLiveToTimeDay, int dayLimit,
-            int sizeLimit) throws Exception {
-        logger.debug("getTxIdFromSentIasUserToDoItem - START");
-
-        ResultSet rs = null;
-        ArrayList<String> resultList = new ArrayList<String>();
-
-        try {
-            ArrayList<Parameter> paraList = new ArrayList<Parameter>();
-
-            paraList.add(new Parameter(Parameter.String, IntegrationConstants.IAS_NOTI_STATUS_SENT));
-            paraList.add(new Parameter(Parameter.Integer, IasLiveToTimeDay));
-            paraList.add(new Parameter(Parameter.Integer, dayLimit));
-            paraList.add(new Parameter(Parameter.Integer, sizeLimit));
-
-            rs = conn.getResultSet(SELECT_TX_ID_FROM_SENT_IAS_USER_TO_DO_ITEM, paraList);
-            while (rs.next()) {
-                resultList.add(rs.getString("TX_ID"));
-            }
-
-            logger.debug("getTxIdFromSentIasUserToDoItem - END");
-            return resultList;
-        } catch (Exception ex) {
-            logger.error("General exception caught in getTxIdFromSentIasUserToDoItem", ex);
-            throw ex;
-        } finally {
-            try {
-                if (rs != null) {
-                    HPFW_Connection.close(rs);
-                }
-            } catch (Exception ex) {
-                logger.error("General exception caught in getTxIdFromSentIasUserToDoItem - rs.close();", ex);
             }
         }
     }
@@ -331,7 +292,6 @@ public class IasNotiDAO {
     public List<IasMsgStatusQueueJob> getDeRegUserJobFromIasMsgStatusQueue(HPFW_Connection conn) throws Exception {
         logger.debug("getDeRegUserJobFromIasMsgStatusQueue - START");
 
-        IasUser iasUser = null;
         ResultSet rs = null;
         ArrayList<IasMsgStatusQueueJob> resultList = new ArrayList<IasMsgStatusQueueJob>();
 
@@ -467,7 +427,6 @@ public class IasNotiDAO {
             throws Exception {
         logger.debug("getIasAssoJobFromIasAssoQueue - START");
 
-        IasUser iasUser = null;
         ResultSet rs = null;
         ArrayList<IasAssoQueueJob> resultList = new ArrayList<>();
 
@@ -599,24 +558,6 @@ public class IasNotiDAO {
         conn.executeStatement(InsertSQL, paraI);
     }
 
-    public void createIasUndeliveredToDoItem(HPFW_Connection conn, String clientId, String openId, String iasToDoItemId,
-            String reason, String rcptType) throws Exception {
-
-        String InsertSQL = "INSERT INTO ias_undelivered_to_do_item " +
-                "(CLIENT_ID, OPEN_ID, IAS_TO_DO_ITEM_ID, RCPT_TYPE, STATUS, REASON, CREATE_DT, LAST_MODIFY_DT, CREATE_BY, LAST_MODIFY_BY) "
-                + "VALUES (?, ?, ?, ?, ?, ?, now(3), now(3), 'CMC', 'CMC')";
-
-        ArrayList<Parameter> paraI = new ArrayList<Parameter>();
-        paraI.add(new Parameter(Parameter.String, clientId));
-        paraI.add(new Parameter(Parameter.String, openId));
-        paraI.add(new Parameter(Parameter.String, iasToDoItemId));
-        paraI.add(new Parameter(Parameter.String, rcptType));
-        paraI.add(new Parameter(Parameter.String, "N"));
-        paraI.add(new Parameter(Parameter.String, reason));
-
-        conn.executeStatement(InsertSQL, paraI);
-    }
-
     public boolean isIasUserMessageExistByNotiIdMsgIdTxId(HPFW_Connection conn, String notiId, String iasMsgId,
             String txId) throws Exception {
         logger.debug("isIasUserMessageExistByNotiIdMsgIdTxId - START");
@@ -650,46 +591,6 @@ public class IasNotiDAO {
                     HPFW_Connection.close(rs);
             } catch (Exception ex) {
                 logger.error("General exception caught in isIasUserMessageExistByNotiIdMsgIdTxId - rs.close();", ex);
-            }
-        }
-    }
-
-    public boolean isIasUserToDoItemExistByNotiIdToDoItemIdTxId(HPFW_Connection conn, String notiId,
-            String iasToDoItemId, String txId) throws Exception {
-        logger.debug("isIasUserToDoItemExistByNotiIdToDoItemIdTxId - START");
-
-        boolean result = false;
-        ResultSet rs = null;
-
-        try {
-            ArrayList<Parameter> paraList = new ArrayList<Parameter>();
-
-            paraList.add(new Parameter(Parameter.String, notiId));
-            paraList.add(new Parameter(Parameter.String, iasToDoItemId));
-            paraList.add(new Parameter(Parameter.String, txId));
-
-            rs = conn.getResultSet(SELECT_IAS_USER_TO_DO_ITEM_BY_NOTI_ID_TO_DO_ITEM_ID_TX_ID, paraList);
-
-            while (rs.next()) {
-                if (Integer.parseInt(rs.getString("CNT")) > 0) {
-                    result = true;
-                }
-            }
-
-            logger.debug("isIasUserToDoItemExistByNotiIdToDoItemIdTxId - END");
-
-            return result;
-        } catch (Exception ex) {
-            logger.error("General exception caught in isIasUserToDoItemExistByNotiIdToDoItemIdTxId", ex);
-            throw ex;
-        } finally {
-            try {
-                if (rs != null) {
-                    HPFW_Connection.close(rs);
-                }
-            } catch (Exception ex) {
-                logger.error("General exception caught in isIasUserToDoItemExistByNotiIdToDoItemIdTxId - rs.close();",
-                        ex);
             }
         }
     }
@@ -747,14 +648,6 @@ public class IasNotiDAO {
             + "and SENT_DT <= now() - interval ? DAY "
             + "and SENT_DT > now() - interval ? DAY order by SENT_DT limit ?";
 
-    private final String SELECT_TX_ID_FROM_SENT_IAS_USER_TO_DO_ITEM = "select distinct TX_ID "
-            + "from IAS_USER_TO_DO_ITEM "
-            + "where IAS_NOTI_STATUS = ? and IAS_DELIVERY_STATUS is null "
-            + "and IAS_NOTI_RESULT IN ('" + IntegrationConstants.SEND_NOTI_ID_RESULT_READY_TO_SEND + "', '"
-            + IntegrationConstants.SEND_NOTI_ID_RESULT_SENT + "') "
-            + "and SENT_DT <= now() - interval ? DAY "
-            + "and SENT_DT > now() - interval ? DAY order by SENT_DT limit ?";
-
     private final String SELECT_IAS_ES_NOTI_MAP_BY_NOTI_ID_SP_ID = "select NOTI_ID, OPEN_ID, HKID_HASHED, HKID_ENCRYPTED, OPT_IN "
             + "from IAS_ES_NOTI_MAP  "
             + "where NOTI_ID = ? "
@@ -792,6 +685,4 @@ public class IasNotiDAO {
             + "and t.STATUS = 'A' ";
 
     private final String SELECT_IAS_USER_MESSAGE_BY_NOTI_ID_MSG_ID_TX_ID = "SELECT COUNT(*) CNT FROM IAS_USER_MESSAGE WHERE NOTI_ID = ? and IAS_MSG_ID = ? and TX_ID = ?";
-
-    private final String SELECT_IAS_USER_TO_DO_ITEM_BY_NOTI_ID_TO_DO_ITEM_ID_TX_ID = "SELECT COUNT(*) CNT FROM IAS_USER_TO_DO_ITEM WHERE NOTI_ID = ? and IAS_TO_DO_ITEM_ID = ? and TX_ID = ?";
 }
