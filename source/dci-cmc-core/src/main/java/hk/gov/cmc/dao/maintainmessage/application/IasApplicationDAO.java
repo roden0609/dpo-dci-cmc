@@ -12,6 +12,7 @@ import hk.gov.cmc.common.CmcAppConstants;
 import hk.gov.cmc.common.IntegrationConstants;
 import hk.gov.cmc.common.RecipientIDTypeConstant;
 import hk.gov.cmc.common.StatusConstants;
+import hk.gov.cmc.model.maintainmessage.application.IasUserApplication;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
 import hk.gov.cmc.persistence.maintainmessage.application.IasApplication_;
@@ -240,6 +241,51 @@ public class IasApplicationDAO {
                     HPFW_Connection.close(rs);
             } catch (Exception ex) {
                 logger.error("General exception caught in getNumberOfNotDeletedIasApplicationByNotiIdAndCreateDt - rs.close();", ex);
+            }
+        }
+    }
+
+    public List<IasUserApplication> getIasUserApplicationKeyBySpIdNotiIdCreateDt(HPFW_Connection conn, String spId, String notiId, Timestamp createDt) throws Exception {
+        logger.debug("getIasUserApplicationKeyBySpIdNotiIdCreateDt - START");
+
+        ResultSet rs = null;
+        List<IasUserApplication> iasUserApplicationKeyList = new ArrayList<IasUserApplication>();
+        try {
+            ArrayList<Parameter> paraList = new ArrayList<Parameter>() ;
+            paraList.add(new Parameter(Parameter.String, spId));
+			paraList.add(new Parameter(Parameter.String, notiId));
+			paraList.add(new Parameter(Parameter.Timestamp, createDt));
+            String sql = "select iua.client_id, iua.recipient_id, iua.ias_application_id" +
+                " from ias_user_application iua, ias_application ia, cmc_template ct" +
+                " where iua.ias_application_id = ia.ias_application_id" +
+                " and ia.template_id = ct.template_id" +
+                " and ia.template_version = ct.template_version" +
+                " and ct.service_provider_id = ?" +
+                " and iua.NOTI_ID = ?" +
+                " and iua.CREATE_DT < ?" +
+                " and iua.DELETE_IND != 'Y'" +
+                " order by iua.client_id, iua.recipient_id, iua.ias_application_id";
+			rs = conn.getResultSet(sql, paraList);
+
+            while (rs.next()) {
+                IasUserApplication iasUserApplicationKey = new IasUserApplication();
+                iasUserApplicationKey.setClientId(rs.getString("CLIENT_ID"));
+                iasUserApplicationKey.setRecipientId(rs.getString("RECIPIENT_ID"));
+                iasUserApplicationKey.setIasApplicationId(rs.getString("IAS_APPLICATION_ID"));
+                iasUserApplicationKeyList.add(iasUserApplicationKey);
+            }
+            logger.debug("getIasUserApplicationKeyBySpIdNotiIdCreateDt - END");
+
+            return iasUserApplicationKeyList;
+        } catch (Exception ex) {
+            logger.error("General exception caught in getIasUserApplicationKeyBySpIdNotiIdCreateDt", ex);
+            throw ex;
+        } finally {
+            try {
+                if (rs != null)
+                    HPFW_Connection.close(rs);
+            } catch (Exception ex) {
+                logger.error("General exception caught in getIasUserApplicationKeyBySpIdNotiIdCreateDt - rs.close();", ex);
             }
         }
     }

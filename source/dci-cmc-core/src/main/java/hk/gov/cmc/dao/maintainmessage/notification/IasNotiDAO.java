@@ -21,6 +21,7 @@ import hk.gov.cmc.model.maintainmessage.job.IasMsgStatusQueueJob;
 import hk.gov.cmc.model.maintainmessage.user.IasUser;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
+import hk.gov.cmc.persistence.maintainmessage.msgstatus.IasMsgStatusQueue_;
 
 public class IasNotiDAO {
 
@@ -405,22 +406,11 @@ public class IasNotiDAO {
     }
 
     public void updateIasMsgJobStatus(HPFW_Connection hpfwConn, String status, String jobId) throws Exception {
-        String markDeleteSqlStr = "Update IAS_MSG_STATUS_QUEUE set job_status=? where job_id=? ";
-
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            Connection conn = hpfwConn.getConnectionPtr();
-            ps = conn.prepareStatement(markDeleteSqlStr);
-            ps.setString(1, status);
-            ps.setString(2, jobId);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            close(ps, rs);
-        }
+        ArrayList<Parameter> paraSetList = new ArrayList<Parameter>();
+        ArrayList<Parameter> paraWhereList = new ArrayList<Parameter>();
+        paraSetList.add(new Parameter(Parameter.String, status));
+        paraWhereList.add(new Parameter(Parameter.String, jobId));
+        IasMsgStatusQueue_.update(hpfwConn, "set JOB_STATUS = ?", paraSetList, "where JOB_ID = ?", paraWhereList);
     }
 
     public List<IasAssoQueueJob> getIasAssoJobFromIasAssoQueue(HPFW_Connection conn, int iasAssoJobProcessBatchLimit)

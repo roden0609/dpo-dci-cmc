@@ -13,6 +13,7 @@ import hk.gov.cmc.common.CmcAppConstants;
 import hk.gov.cmc.common.IntegrationConstants;
 import hk.gov.cmc.common.RecipientIDTypeConstant;
 import hk.gov.cmc.common.StatusConstants;
+import hk.gov.cmc.model.maintainmessage.todoitem.IasUserToDoItem;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
 import hk.gov.cmc.persistence.maintainmessage.todoitem.IasToDoItem_;
@@ -233,6 +234,52 @@ public class IasToDoItemDAO {
                 logger.error(
                         "General exception caught in getNumberOfNotDeletedIasToDoItemByNotiIdAndCreateDt - rs.close();",
                         ex);
+            }
+        }
+    }
+
+    public List<IasUserToDoItem> getIasUserToDoItemKeyBySpIdNotiIdCreateDt(HPFW_Connection conn, String spId,
+            String notiId, Timestamp createDt) throws Exception {
+        logger.debug("getIasUserToDoItemKeyBySpIdNotiIdCreateDt - START");
+
+        ResultSet rs = null;
+        List<IasUserToDoItem> iasUserToDoItemKeyList = new ArrayList<IasUserToDoItem>();
+        try {
+            ArrayList<Parameter> paraList = new ArrayList<Parameter>();
+            paraList.add(new Parameter(Parameter.String, spId));
+            paraList.add(new Parameter(Parameter.String, notiId));
+            paraList.add(new Parameter(Parameter.Timestamp, createDt));
+            String sql = "select iuti.client_id, iuti.recipient_id, iuti.ias_to_do_item_id" +
+                    " from ias_user_to_do_item iuti, ias_to_do_item iti, cmc_template ct" +
+                    " where iuti.ias_to_do_item_id = iti.ias_to_do_item_id" +
+                    " and iti.template_id = ct.template_id" +
+                    " and iti.template_version = ct.template_version" +
+                    " and ct.service_provider_id = ?" +
+                    " and iuti.NOTI_ID = ?" +
+                    " and iuti.CREATE_DT < ?" +
+                    " and iuti.DELETE_IND != 'Y'" +
+                    " order by iuti.client_id, iuti.recipient_id, iuti.ias_to_do_item_id";
+            rs = conn.getResultSet(sql, paraList);
+
+            while (rs.next()) {
+                IasUserToDoItem iasUserToDoItem = new IasUserToDoItem();
+                iasUserToDoItem.setClientId(rs.getString("CLIENT_ID"));
+                iasUserToDoItem.setRecipientId(rs.getString("RECIPIENT_ID"));
+                iasUserToDoItem.setIasToDoItemId(rs.getString("IAS_TO_DO_ITEM_ID"));
+                iasUserToDoItemKeyList.add(iasUserToDoItem);
+            }
+            logger.debug("getIasUserToDoItemKeyBySpIdNotiIdCreateDt - END");
+
+            return iasUserToDoItemKeyList;
+        } catch (Exception ex) {
+            logger.error("General exception caught in getIasUserToDoItemKeyBySpIdNotiIdCreateDt", ex);
+            throw ex;
+        } finally {
+            try {
+                if (rs != null)
+                    HPFW_Connection.close(rs);
+            } catch (Exception ex) {
+                logger.error("General exception caught in getIasUserToDoItemKeyBySpIdNotiIdCreateDt - rs.close();", ex);
             }
         }
     }
