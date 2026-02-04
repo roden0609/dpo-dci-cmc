@@ -10,6 +10,7 @@ import javax.naming.InitialContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import hk.gov.cmc.appserver.ejb.session.housekeep.IHouseKeepingRecordSessionBM;
 import hk.gov.gcis.rm.common.utils.PropertiesUtils;
 
 public class HouseKeepingRecordService {
@@ -50,10 +51,8 @@ public class HouseKeepingRecordService {
             if (args[1].equals("1")) {
                 service.markHouseKeepIndicator(inputDate);
             } else if (args[1].equals("2")) {
-                service.archiveAndRemoveRecord(inputDate);
-            } else if (args[1].equals("3")) {
                 service.removeHistoricalRecord(inputDate);
-            } else if (args[1].equals("4")) {
+            } else if (args[1].equals("3")) {
                 service.deleteMainTableRecord(inputDate);
             }
 
@@ -80,17 +79,6 @@ public class HouseKeepingRecordService {
         IHouseKeepingRecordSessionBM houseKeepingRecordSessionBM = (IHouseKeepingRecordSessionBM) ctx
                 .lookup(houseKeepingRecordSessionEjbJndiName);
         houseKeepingRecordSessionBM.markHouseKeepIndicator(inputDate);
-        // houseKeepingRecordSessionBM.archiveAndRemoveRecord();
-    }
-
-    public void archiveAndRemoveRecord(String inputDate) throws Exception {
-        InitialContext ctx = new InitialContext(properties);
-        String houseKeepingRecordSessionEjbJndiName = properties
-                .getProperty("HOUSE_KEEPING_RECORD_SESSION_EJB_JNDI_NAME");
-        IHouseKeepingRecordSessionBM houseKeepingRecordSessionBM = (IHouseKeepingRecordSessionBM) ctx
-                .lookup(houseKeepingRecordSessionEjbJndiName);
-        // houseKeepingRecordSessionBM.markHouseKeepIndicator();
-        houseKeepingRecordSessionBM.archiveAndRemoveRecord(inputDate);
     }
 
     public void removeHistoricalRecord(String inputDate) throws Exception {
@@ -100,7 +88,6 @@ public class HouseKeepingRecordService {
         IHouseKeepingRecordSessionBM houseKeepingRecordSessionBM = (IHouseKeepingRecordSessionBM) ctx
                 .lookup(houseKeepingRecordSessionEjbJndiName);
         houseKeepingRecordSessionBM.removeHistoricalRecord(inputDate);
-        // houseKeepingRecordSessionBM.archiveAndRemoveRecord();
     }
 
     public void deleteMainTableRecord(String inputDate) throws Exception {
