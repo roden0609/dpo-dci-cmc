@@ -474,5 +474,16 @@
             <scope>provided</scope>
         </dependency>
         <!-- CMC-EID package Third-Party Library END -->
+
+        <!-- JasperReports libraries START -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-pdf</artifactId>
+        </dependency>
+        <!-- JasperReports libraries END -->
     </dependencies>
 </project>

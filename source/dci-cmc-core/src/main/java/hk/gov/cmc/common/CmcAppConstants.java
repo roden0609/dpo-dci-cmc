@@ -44,4 +44,5 @@ public class CmcAppConstants {
 
     public static final String ENC_IND_YES = "Y";
     public static final String ENC_IND_NO = "N";
+
 }

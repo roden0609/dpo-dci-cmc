@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class HPFWServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 6850265215857459663L;
+    private static final long serialVersionUID = 1L;
     private static Log logger = LogFactory.getLog(HPFWServlet.class);
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
 

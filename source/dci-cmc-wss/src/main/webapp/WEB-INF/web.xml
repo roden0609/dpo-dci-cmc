@@ -19,10 +19,10 @@
         <servlet-class>hk.gov.cmc.webserver.servlet.CmcSysParamServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <!-- <servlet>
+    <servlet>
         <servlet-name>GenAdminBatchReportServlet</servlet-name>
-        <servlet-class>hk.gov.ogcio.mars_cmc.cmc.admsys.servlet.GenAdminBatchReportServlet</servlet-class>
-    </servlet> -->
+        <servlet-class>hk.gov.cmc.webserver.servlet.GenAdminBatchReportServlet</servlet-class>
+    </servlet>
     <!-- <servlet>
         <servlet-name>RegenerateAdminBatchReportServlet</servlet-name>
         <servlet-class>hk.gov.ogcio.mars_cmc.cmc.admsys.servlet.RegenerateAdminBatchReportServlet</servlet-class>

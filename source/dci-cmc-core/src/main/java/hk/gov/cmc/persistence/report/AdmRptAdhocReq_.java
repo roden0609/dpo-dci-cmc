@@ -1,4 +1,4 @@
-package hk.gov.cmc.persistence.maintainmessage.notification;
+package hk.gov.cmc.persistence.report;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -9,49 +9,60 @@ import java.util.ArrayList;
 
 import hk.gov.cmc.persistence.connection.hpfw.CommonDBUtils;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
+import hk.gov.cmc.persistence.connection.hpfw.MysqlCommonDBUtils;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
 
-public class IasEsNotiMap_ implements Serializable {
+public class AdmRptAdhocReq_ implements Serializable {
     private static final long serialVersionUID = 1L;
     private boolean initialized = false;
-    private final static String thisTableName = "IAS_ES_NOTI_MAP";
-    private final static String thisTableHistName = "_H";
+    private final static String thisTableName = "adm_rpt_adhoc_req";
+    private final static String thisTableHistName = "_h";
     private boolean forUpdate = false;
-    private String notiId = null;
-    private String serviceProviderId = null;
-    private String openId = null;
-    private String hkidHashed = null;
-    private String hkidEncrypted = null;
-    private String optIn = null;
-    private Timestamp createDt = null;
-    private Timestamp lastModifyDt = null;
-    private String createBy = null;
+    private String seqId = null;
+    private String rptId = null;
+    private String outputFileType = null;
+    private String userId = null;
+    private String param = null;
+    private String status = null;
+    private String reqType = null;
+    private String projectId = null;
     private String lastModifyBy = null;
-    private boolean dirty_notiId = false;
-    private boolean dirty_serviceProviderId = false;
-    private boolean dirty_openId = false;
-    private boolean dirty_hkidHashed = false;
-    private boolean dirty_hkidEncrypted = false;
-    private boolean dirty_optIn = false;
-    private boolean dirty_createDt = false;
-    private boolean dirty_lastModifyDt = false;
-    private boolean dirty_createBy = false;
-    private boolean dirty_lastModifyBy = false;
+    private Timestamp lastModifyDt = null;
+    private Timestamp createDt = null;
+    private String createBy = null;
 
-    public IasEsNotiMap_() {
+    private boolean dirty_seqId = false;
+    private boolean dirty_rptId = false;
+    private boolean dirty_outputFileType = false;
+    private boolean dirty_userId = false;
+    private boolean dirty_param = false;
+    private boolean dirty_status = false;
+    private boolean dirty_reqType = false;
+    private boolean dirty_projectId = false;
+    private boolean dirty_lastModifyBy = false;
+    private boolean dirty_lastModifyDt = false;
+    private boolean dirty_createDt = false;
+    private boolean dirty_createBy = false;
+
+    /**
+     * AdmRptAdhocReq_ Contructor
+     */
+    public AdmRptAdhocReq_() {
         super();
     }
 
-    public IasEsNotiMap_(HPFW_Connection countCon, String innotiId, String inserviceProviderId)
-            throws SQLException, NullPointerException {
+    /**
+     * AdmRptAdhocReq_ Constructor with specify PK
+     */
+    public AdmRptAdhocReq_(HPFW_Connection countCon, String inseqId) throws SQLException, NullPointerException {
         this();
-        init(countCon, innotiId, inserviceProviderId, false);
+        init(countCon, inseqId, false);
     }
 
-    public IasEsNotiMap_(HPFW_Connection countCon, String innotiId, String inserviceProviderId, boolean forUpdate)
+    public AdmRptAdhocReq_(HPFW_Connection countCon, String inseqId, boolean forUpdate)
             throws SQLException, NullPointerException {
         this();
-        init(countCon, innotiId, inserviceProviderId, forUpdate);
+        init(countCon, inseqId, forUpdate);
     }
 
     static public void delete(HPFW_Connection countCon, String whereCluase, ArrayList<Parameter> paraL)
@@ -70,7 +81,7 @@ public class IasEsNotiMap_ implements Serializable {
             ResultSet rs = null;
 
             try {
-                String sql = "select noti_id,service_provider_id from " + thisTableName + " " + whereCluase;
+                String sql = "select seq_id from " + thisTableName + " " + whereCluase;
                 stmt = countCon.getConnectionPtr().prepareStatement(sql);
                 CommonDBUtils.setStatement(stmt, paraL);
                 rs = stmt.executeQuery();
@@ -78,29 +89,29 @@ public class IasEsNotiMap_ implements Serializable {
                 while (rs.next()) {
                     String histsql = "insert into ";
                     histsql += thisTableName + thisTableHistName;
-                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,last_modify_by,last_modify_dt,create_by,create_dt,noti_id,service_provider_id";
-                    histsql += ") values (?,?,?,?,?,?,?,?,?,?";
+                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,last_modify_by,last_modify_dt,create_by,create_dt,seq_id";
+                    histsql += ") values (?,?,?,?,?,?,?,?";
                     // perpare where ...
-                    histsql += ",?";
                     histsql += ",?";
                     histsql += ")";
                     ArrayList<Parameter> histParaList = new ArrayList<Parameter>();
-                    histParaList.add(
-                            new Parameter(Parameter.String,
-                                    CommonDBUtils.getSequence(countCon, thisTableName + thisTableHistName)));
+                    // MyGov5-01-207: Migrate DBMS to MySQL
+                    // histParaList.add(new Parameter(Parameter.String,CommonDBUtils.getSequence(countCon, thisTableName + thisTableHistName))) ;
+                    histParaList.add(new Parameter(Parameter.String, MysqlCommonDBUtils.getNextMachineBaseSequence()));
+                    // MyGov5-01-207: Migrate DBMS to MySQL
                     histParaList.add(new Parameter(Parameter.String, HPFW_Connection.DELETE));
                     histParaList.add(new Parameter(Parameter.String,
                             countCon.getUpdateMode().equals(HPFW_Connection.HISTORY_ONLY) ? HPFW_Connection.DUAL
                                     : HPFW_Connection.REMOTE));
                     histParaList.add(new Parameter(Parameter.String, HPFW_Connection.PENDING));
-                    histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
                     histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
                     histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
                     histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
                     histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
                     // perpare where ...
+                    // MyGov5-01-207: Migrate DBMS to MySQL
                     histParaList.add(new Parameter(Parameter.String, rs.getString(1)));
-                    histParaList.add(new Parameter(Parameter.String, rs.getString(2)));
+                    // MyGov5-01-207: Migrate DBMS to MySQL
                     countCon.executeStatement(histsql, histParaList, true);
                 }
             } catch (SQLException e) {
@@ -129,13 +140,15 @@ public class IasEsNotiMap_ implements Serializable {
                 || HPFW_Connection.DIRECT_WITH_HISTORY.equals(countCon.getUpdateMode())) {
             String sql = "delete from ";
             sql += thisTableName;
-            sql += " where 1=1 and noti_id = ?  and service_provider_id = ? ";
+            sql += " where 1=1 and seq_id = ? ";
 
             ArrayList<Parameter> paraList = new ArrayList<Parameter>();
 
             // perpare where ...
-            paraList.add(new Parameter(Parameter.String, this.notiId));
-            paraList.add(new Parameter(Parameter.String, this.serviceProviderId));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+            // paraList.add(new Parameter(Parameter.Long, this.seqId)) ;
+            paraList.add(new Parameter(Parameter.String, this.seqId));
+            // MyGov5-01-207: Migrate DBMS to MySQL
             countCon.executeStatement(sql, paraList);
         }
 
@@ -143,31 +156,25 @@ public class IasEsNotiMap_ implements Serializable {
                 || HPFW_Connection.DIRECT_WITH_HISTORY.equals(countCon.getUpdateMode())) {
             String histsql = "insert into ";
             histsql += thisTableName + thisTableHistName;
-            histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,last_modify_by,last_modify_dt,create_by,create_dt";
-            histsql += ",NotiId";
-            histsql += ",ServiceProviderId";
-            histsql += ") values (?,?,?,?,?,?,?,?,?";
-            // perpare where ...
-            histsql += ",?";
-            histsql += ",?";
-            histsql += ")";
+            histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,last_modify_by,last_modify_dt,create_by,create_dt,seq_id) values (?,?,?,?,?,?,?,?,?)";
             ArrayList<Parameter> histParaList = new ArrayList<Parameter>();
-            histParaList
-                    .add(new Parameter(Parameter.String,
-                            CommonDBUtils.getSequence(countCon, thisTableName + thisTableHistName)));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+            // histParaList.add(new Parameter(Parameter.String,CommonDBUtils.getSequence(countCon, thisTableName + thisTableHistName))) ;
+            histParaList.add(new Parameter(Parameter.String, MysqlCommonDBUtils.getNextMachineBaseSequence()));
+            // MyGov5-01-207: Migrate DBMS to MySQL
             histParaList.add(new Parameter(Parameter.String, HPFW_Connection.DELETE));
             histParaList.add(new Parameter(Parameter.String,
                     countCon.getUpdateMode().equals(HPFW_Connection.HISTORY_ONLY) ? HPFW_Connection.DUAL
                             : HPFW_Connection.REMOTE));
             histParaList.add(new Parameter(Parameter.String, HPFW_Connection.PENDING));
-            histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
             // perpare where ...
-            histParaList.add(new Parameter(Parameter.String, this.notiId));
-            histParaList.add(new Parameter(Parameter.String, this.serviceProviderId));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+            histParaList.add(new Parameter(Parameter.String, this.seqId));
+            // MyGov5-01-207: Migrate DBMS to MySQL
             countCon.executeStatement(histsql, histParaList, true);
         }
     }
@@ -182,48 +189,63 @@ public class IasEsNotiMap_ implements Serializable {
             sql += " (";
 
             // perpare set ...
-            if (notiId != null)
-                sql += "noti_id,";
-            if (serviceProviderId != null)
-                sql += "service_provider_id,";
-            if (openId != null)
-                sql += "open_id,";
-            if (hkidHashed != null)
-                sql += "hkid_hashed,";
-            if (hkidEncrypted != null)
-                sql += "hkid_encrypted,";
-            if (optIn != null)
-                sql += "opt_in,";
+            if (seqId != null)
+                sql += "seq_id,";
+            if (rptId != null)
+                sql += "rpt_id,";
+            if (outputFileType != null)
+                sql += "output_file_type,";
+            if (userId != null)
+                sql += "user_id,";
+            if (param != null)
+                sql += "param,";
+            if (status != null)
+                sql += "status,";
+            if (reqType != null)
+                sql += "req_type,";
+            if (projectId != null)
+                sql += "project_id,";
             sql += "create_by,last_modify_by,create_dt,last_modify_dt) values (";
 
             // perpare set ...
-            if (notiId != null)
+            if (seqId != null)
                 sql += "?,";
-            if (serviceProviderId != null)
+            if (rptId != null)
                 sql += "?,";
-            if (openId != null)
+            if (outputFileType != null)
                 sql += "?,";
-            if (hkidHashed != null)
+            if (userId != null)
                 sql += "?,";
-            if (hkidEncrypted != null)
+            if (param != null)
                 sql += "?,";
-            if (optIn != null)
+            if (status != null)
+                sql += "?,";
+            if (reqType != null)
+                sql += "?,";
+            if (projectId != null)
                 sql += "?,";
             sql += "?,?,?,?) ";
 
             // perpare set ...
-            if (notiId != null)
-                paraList.add(new Parameter(Parameter.String, this.notiId));
-            if (serviceProviderId != null)
-                paraList.add(new Parameter(Parameter.String, this.serviceProviderId));
-            if (openId != null)
-                paraList.add(new Parameter(Parameter.String, this.openId));
-            if (hkidHashed != null)
-                paraList.add(new Parameter(Parameter.String, this.hkidHashed));
-            if (hkidEncrypted != null)
-                paraList.add(new Parameter(Parameter.String, this.hkidEncrypted));
-            if (optIn != null)
-                paraList.add(new Parameter(Parameter.String, this.optIn));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+            // if(seqId!=null) paraList.add(new Parameter(Parameter.Long, this.seqId)) ;
+            if (seqId != null)
+                paraList.add(new Parameter(Parameter.String, this.seqId));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+            if (rptId != null)
+                paraList.add(new Parameter(Parameter.String, this.rptId));
+            if (outputFileType != null)
+                paraList.add(new Parameter(Parameter.String, this.outputFileType));
+            if (userId != null)
+                paraList.add(new Parameter(Parameter.String, this.userId));
+            if (param != null)
+                paraList.add(new Parameter(Parameter.String, this.param));
+            if (status != null)
+                paraList.add(new Parameter(Parameter.String, this.status));
+            if (reqType != null)
+                paraList.add(new Parameter(Parameter.String, this.reqType));
+            if (projectId != null)
+                paraList.add(new Parameter(Parameter.String, this.projectId));
             paraList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             paraList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             paraList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
@@ -237,60 +259,75 @@ public class IasEsNotiMap_ implements Serializable {
 
             String hist_sql = "insert into ";
             hist_sql += thisTableName + thisTableHistName;
-            hist_sql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,";
+            hist_sql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,";
 
             // perpare set ...
-            if (notiId != null)
-                hist_sql += "noti_id,";
-            if (serviceProviderId != null)
-                hist_sql += "service_provider_id,";
-            if (openId != null)
-                hist_sql += "open_id,";
-            if (hkidHashed != null)
-                hist_sql += "hkid_hashed,";
-            if (hkidEncrypted != null)
-                hist_sql += "hkid_encrypted,";
-            if (optIn != null)
-                hist_sql += "opt_in,";
-            hist_sql += "create_by,last_modify_by,create_dt,last_modify_dt) values (?,?,?,?,?,";
+            if (seqId != null)
+                hist_sql += "seq_id,";
+            if (rptId != null)
+                hist_sql += "rpt_id,";
+            if (outputFileType != null)
+                hist_sql += "output_file_type,";
+            if (userId != null)
+                hist_sql += "user_id,";
+            if (param != null)
+                hist_sql += "param,";
+            if (status != null)
+                hist_sql += "status,";
+            if (reqType != null)
+                hist_sql += "req_type,";
+            if (projectId != null)
+                hist_sql += "project_id,";
+            hist_sql += "create_by,last_modify_by,create_dt,last_modify_dt) values (?,?,?,?,";
 
             // perpare set ...
-            if (notiId != null)
+            if (seqId != null)
                 hist_sql += "?,";
-            if (serviceProviderId != null)
+            if (rptId != null)
                 hist_sql += "?,";
-            if (openId != null)
+            if (outputFileType != null)
                 hist_sql += "?,";
-            if (hkidHashed != null)
+            if (userId != null)
                 hist_sql += "?,";
-            if (hkidEncrypted != null)
+            if (param != null)
                 hist_sql += "?,";
-            if (optIn != null)
+            if (status != null)
+                hist_sql += "?,";
+            if (reqType != null)
+                hist_sql += "?,";
+            if (projectId != null)
                 hist_sql += "?,";
             hist_sql += "?,?,?,?) ";
-            histParaList
-                    .add(new Parameter(Parameter.String,
-                            CommonDBUtils.getSequence(countCon, thisTableName + thisTableHistName)));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+            // histParaList.add(new Parameter(Parameter.String,CommonDBUtils.getSequence(countCon, thisTableName + thisTableHistName))) ;
+            histParaList.add(new Parameter(Parameter.String, MysqlCommonDBUtils.getNextMachineBaseSequence()));
+            // MyGov5-01-207: Migrate DBMS to MySQL
             histParaList.add(new Parameter(Parameter.String, HPFW_Connection.INSERT));
             histParaList.add(new Parameter(Parameter.String,
                     countCon.getUpdateMode().equals(HPFW_Connection.HISTORY_ONLY) ? HPFW_Connection.DUAL
                             : HPFW_Connection.REMOTE));
             histParaList.add(new Parameter(Parameter.String, HPFW_Connection.PENDING));
-            histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
 
             // perpare set ...
-            if (notiId != null)
-                histParaList.add(new Parameter(Parameter.String, this.notiId));
-            if (serviceProviderId != null)
-                histParaList.add(new Parameter(Parameter.String, this.serviceProviderId));
-            if (openId != null)
-                histParaList.add(new Parameter(Parameter.String, this.openId));
-            if (hkidHashed != null)
-                histParaList.add(new Parameter(Parameter.String, this.hkidHashed));
-            if (hkidEncrypted != null)
-                histParaList.add(new Parameter(Parameter.String, this.hkidEncrypted));
-            if (optIn != null)
-                histParaList.add(new Parameter(Parameter.String, this.optIn));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+            if (seqId != null)
+                histParaList.add(new Parameter(Parameter.String, this.seqId));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+
+            if (rptId != null)
+                histParaList.add(new Parameter(Parameter.String, this.rptId));
+            if (outputFileType != null)
+                histParaList.add(new Parameter(Parameter.String, this.outputFileType));
+            if (userId != null)
+                histParaList.add(new Parameter(Parameter.String, this.userId));
+            if (param != null)
+                histParaList.add(new Parameter(Parameter.String, this.param));
+            if (status != null)
+                histParaList.add(new Parameter(Parameter.String, this.status));
+            if (reqType != null)
+                histParaList.add(new Parameter(Parameter.String, this.reqType));
+            if (projectId != null)
+                histParaList.add(new Parameter(Parameter.String, this.projectId));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
@@ -330,7 +367,7 @@ public class IasEsNotiMap_ implements Serializable {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select noti_id,service_provider_id from " + thisTableName + " " + whereClause;
+                String sql = "select seq_id from " + thisTableName + " " + whereClause;
                 stmt = countCon.getConnectionPtr().prepareStatement(sql);
                 CommonDBUtils.setStatement(stmt, whereParaL);
                 rs = stmt.executeQuery();
@@ -338,30 +375,30 @@ public class IasEsNotiMap_ implements Serializable {
                 while (rs.next()) {
                     String histsql = "insert into ";
                     histsql += thisTableName + thisTableHistName;
-                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,last_modify_by,last_modify_dt,create_by,create_dt,noti_id,service_provider_id,"
+                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,last_modify_by,last_modify_dt,create_by,create_dt,seq_id,"
                             + selectString;
-                    histsql += ") values (?,?,?,?,?,?,?,?,?,?,?";
+                    histsql += ") values (?,?,?,?,?,?,?,?,?";
                     for (int i = 0; i < selectStringArray.length; i++)
                         histsql += ",?";
                     histsql += ")";
 
                     ArrayList<Parameter> histParaList = new ArrayList<Parameter>();
-                    histParaList.add(
-                            new Parameter(Parameter.String,
-                                    CommonDBUtils.getSequence(countCon, thisTableName + thisTableHistName)));
+                    // MyGov5-01-207: Migrate DBMS to MySQL
+                    histParaList.add(new Parameter(Parameter.String, MysqlCommonDBUtils.getNextMachineBaseSequence()));
+                    // MyGov5-01-207: Migrate DBMS to MySQL
                     histParaList.add(new Parameter(Parameter.String, HPFW_Connection.UPDATE));
                     histParaList.add(new Parameter(Parameter.String,
                             countCon.getUpdateMode().equals(HPFW_Connection.HISTORY_ONLY) ? HPFW_Connection.DUAL
                                     : HPFW_Connection.REMOTE));
                     histParaList.add(new Parameter(Parameter.String, HPFW_Connection.PENDING));
-                    histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
                     histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
                     histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
                     histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
                     histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
                     // perpare where ...
+                    // MyGov5-01-207: Migrate DBMS to MySQL
                     histParaList.add(new Parameter(Parameter.String, rs.getString(1)));
-                    histParaList.add(new Parameter(Parameter.String, rs.getString(2)));
+                    // MyGov5-01-207: Migrate DBMS to MySQL
                     histParaList.addAll(paraL);
                     countCon.executeStatement(histsql, histParaList, true);
 
@@ -405,30 +442,43 @@ public class IasEsNotiMap_ implements Serializable {
             sql += thisTableName;
             sql += " set ";
             // perpare set ...
-            if (dirty_openId)
-                sql += "open_id = ?,";
-            if (dirty_hkidHashed)
-                sql += "hkid_hashed = ?,";
-            if (dirty_hkidEncrypted)
-                sql += "hkid_encrypted = ?,";
-            if (dirty_optIn)
-                sql += "opt_in = ?,";
+            if (dirty_rptId)
+                sql += "rpt_id = ?,";
+            if (dirty_outputFileType)
+                sql += "output_file_type = ?,";
+            if (dirty_userId)
+                sql += "user_id = ?,";
+            if (dirty_param)
+                sql += "param = ?,";
+            if (dirty_status)
+                sql += "status = ?,";
+            if (dirty_reqType)
+                sql += "req_type = ?,";
+            if (dirty_projectId)
+                sql += "project_id = ?,";
 
-            sql += " last_modify_by = ?,last_modify_dt = ? where 1=1 and noti_id = ?  and service_provider_id = ? ";
+            sql += " last_modify_by = ?,last_modify_dt = ? where 1=1 and seq_id = ? ";
             // perpare set ...
-            if (dirty_openId)
-                paraList.add(new Parameter(Parameter.String, this.openId));
-            if (dirty_hkidHashed)
-                paraList.add(new Parameter(Parameter.String, this.hkidHashed));
-            if (dirty_hkidEncrypted)
-                paraList.add(new Parameter(Parameter.String, this.hkidEncrypted));
-            if (dirty_optIn)
-                paraList.add(new Parameter(Parameter.String, this.optIn));
+            if (dirty_rptId)
+                paraList.add(new Parameter(Parameter.String, this.rptId));
+            if (dirty_outputFileType)
+                paraList.add(new Parameter(Parameter.String, this.outputFileType));
+            if (dirty_userId)
+                paraList.add(new Parameter(Parameter.String, this.userId));
+            if (dirty_param)
+                paraList.add(new Parameter(Parameter.String, this.param));
+            if (dirty_status)
+                paraList.add(new Parameter(Parameter.String, this.status));
+            if (dirty_reqType)
+                paraList.add(new Parameter(Parameter.String, this.reqType));
+            if (dirty_projectId)
+                paraList.add(new Parameter(Parameter.String, this.projectId));
             paraList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             paraList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
             // perpare where ...
-            paraList.add(new Parameter(Parameter.String, this.notiId));
-            paraList.add(new Parameter(Parameter.String, this.serviceProviderId));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+            paraList.add(new Parameter(Parameter.String, this.seqId));
+            // MyGov5-01-207: Migrate DBMS to MySQL
             countCon.executeStatement(sql, paraList);
         }
 
@@ -438,54 +488,70 @@ public class IasEsNotiMap_ implements Serializable {
 
             String hist_sql = "insert into ";
             hist_sql += thisTableName + thisTableHistName;
-            hist_sql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,";
+            hist_sql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,";
 
             // perpare set ...
-            hist_sql += "noti_id,";
-            hist_sql += "service_provider_id,";
-            if (dirty_openId)
-                hist_sql += "open_id,";
-            if (dirty_hkidHashed)
-                hist_sql += "hkid_hashed,";
-            if (dirty_hkidEncrypted)
-                hist_sql += "hkid_encrypted,";
-            if (dirty_optIn)
-                hist_sql += "opt_in,";
-            hist_sql += "last_modify_by,last_modify_dt,create_by,create_dt) values (?,?,?,?,?,";
+            hist_sql += "seq_id,";
+            if (dirty_rptId)
+                hist_sql += "rpt_id,";
+            if (dirty_outputFileType)
+                hist_sql += "output_file_type,";
+            if (dirty_userId)
+                hist_sql += "user_id,";
+            if (dirty_param)
+                hist_sql += "param,";
+            if (dirty_status)
+                hist_sql += "status,";
+            if (dirty_reqType)
+                hist_sql += "req_type,";
+            if (dirty_projectId)
+                hist_sql += "project_id,";
+            hist_sql += "last_modify_by,last_modify_dt,create_by,create_dt) values (?,?,?,?,";
 
             // perpare set ...
             hist_sql += "?,";
-            hist_sql += "?,";
-            if (dirty_openId)
+            if (dirty_rptId)
                 hist_sql += "?,";
-            if (dirty_hkidHashed)
+            if (dirty_outputFileType)
                 hist_sql += "?,";
-            if (dirty_hkidEncrypted)
+            if (dirty_userId)
                 hist_sql += "?,";
-            if (dirty_optIn)
+            if (dirty_param)
+                hist_sql += "?,";
+            if (dirty_status)
+                hist_sql += "?,";
+            if (dirty_reqType)
+                hist_sql += "?,";
+            if (dirty_projectId)
                 hist_sql += "?,";
             hist_sql += "?,?,?,?) ";
-            histParaList
-                    .add(new Parameter(Parameter.String,
-                            CommonDBUtils.getSequence(countCon, thisTableName + thisTableHistName)));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+            histParaList.add(new Parameter(Parameter.String, MysqlCommonDBUtils.getNextMachineBaseSequence()));
+            // MyGov5-01-207: Migrate DBMS to MySQL
             histParaList.add(new Parameter(Parameter.String, HPFW_Connection.UPDATE));
             histParaList.add(new Parameter(Parameter.String,
                     countCon.getUpdateMode().equals(HPFW_Connection.HISTORY_ONLY) ? HPFW_Connection.DUAL
                             : HPFW_Connection.REMOTE));
             histParaList.add(new Parameter(Parameter.String, HPFW_Connection.PENDING));
-            histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
 
             // perpare set ...
-            histParaList.add(new Parameter(Parameter.String, this.notiId));
-            histParaList.add(new Parameter(Parameter.String, this.serviceProviderId));
-            if (dirty_openId)
-                histParaList.add(new Parameter(Parameter.String, this.openId));
-            if (dirty_hkidHashed)
-                histParaList.add(new Parameter(Parameter.String, this.hkidHashed));
-            if (dirty_hkidEncrypted)
-                histParaList.add(new Parameter(Parameter.String, this.hkidEncrypted));
-            if (dirty_optIn)
-                histParaList.add(new Parameter(Parameter.String, this.optIn));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+            histParaList.add(new Parameter(Parameter.String, this.seqId));
+            // MyGov5-01-207: Migrate DBMS to MySQL
+            if (dirty_rptId)
+                histParaList.add(new Parameter(Parameter.String, this.rptId));
+            if (dirty_outputFileType)
+                histParaList.add(new Parameter(Parameter.String, this.outputFileType));
+            if (dirty_userId)
+                histParaList.add(new Parameter(Parameter.String, this.userId));
+            if (dirty_param)
+                histParaList.add(new Parameter(Parameter.String, this.param));
+            if (dirty_status)
+                histParaList.add(new Parameter(Parameter.String, this.status));
+            if (dirty_reqType)
+                histParaList.add(new Parameter(Parameter.String, this.reqType));
+            if (dirty_projectId)
+                histParaList.add(new Parameter(Parameter.String, this.projectId));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
@@ -495,12 +561,12 @@ public class IasEsNotiMap_ implements Serializable {
         this.forUpdate = false;
     }
 
-    public static ArrayList<IasEsNotiMap_> getResultList(HPFW_Connection countCon, String whereCluase,
+    public static ArrayList<AdmRptAdhocReq_> getResultList(HPFW_Connection countCon, String whereCluase,
             ArrayList<Parameter> paraL) throws SQLException {
         boolean needClose = countCon == null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ArrayList<IasEsNotiMap_> result = new ArrayList<IasEsNotiMap_>();
+        ArrayList<AdmRptAdhocReq_> result = new ArrayList<AdmRptAdhocReq_>();
         String sql = "select " + thisTableName + ".* from ";
         try {
             sql += thisTableName + " ";
@@ -513,17 +579,23 @@ public class IasEsNotiMap_ implements Serializable {
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                IasEsNotiMap_ obj = new IasEsNotiMap_();
-                obj.notiId = rs.getString("noti_id"); // String
-                obj.serviceProviderId = rs.getString("service_provider_id"); // String
-                obj.openId = rs.getString("open_id"); // String
-                obj.hkidHashed = rs.getString("hkid_hashed"); // String
-                obj.hkidEncrypted = rs.getString("hkid_encrypted"); // String
-                obj.optIn = rs.getString("opt_in"); // String
-                obj.createDt = rs.getTimestamp("create_dt"); // Timestamp
-                obj.lastModifyDt = rs.getTimestamp("last_modify_dt"); // Timestamp
-                obj.createBy = rs.getString("create_by"); // String
+                AdmRptAdhocReq_ obj = new AdmRptAdhocReq_();
+                // seqId = rs.getString("seq_id")==null || "".equals(rs.getString("seq_id")) ? null : new Long(rs.getLong("seq_id")); //Long
+                // MyGov5-01-207: Migrate DBMS to MySQL
+                // obj.seqId = new Long(rs.getLong("seq_id")); //Long
+                obj.seqId = rs.getString("seq_id"); // Long
+                // MyGov5-01-207: Migrate DBMS to MySQL
+                obj.rptId = rs.getString("rpt_id"); // String
+                obj.outputFileType = rs.getString("output_file_type"); // String
+                obj.userId = rs.getString("user_id"); // String
+                obj.param = rs.getString("param"); // String
+                obj.status = rs.getString("status"); // String
+                obj.reqType = rs.getString("req_type"); // String
+                obj.projectId = rs.getString("project_id"); // String
                 obj.lastModifyBy = rs.getString("last_modify_by"); // String
+                obj.lastModifyDt = rs.getTimestamp("last_modify_dt"); // Timestamp
+                obj.createDt = rs.getTimestamp("create_dt"); // Timestamp
+                obj.createBy = rs.getString("create_by"); // String
                 obj.initialized = true;
                 result.add(obj);
             }
@@ -561,35 +633,39 @@ public class IasEsNotiMap_ implements Serializable {
         this.initialized = initialized;
     }
 
-    public void init(HPFW_Connection countCon, final String innotiId, final String inserviceProviderId,
-            boolean forUpdate)
+    public void init(HPFW_Connection countCon, final String inseqId, boolean forUpdate)
             throws SQLException, NullPointerException {
         this.forUpdate = forUpdate;
         boolean needClose = countCon == null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            String sql = "select * from " + thisTableName + " where 1=1 and noti_id = ?  and service_provider_id = ? ";
+            String sql = "select * from " + thisTableName + " where 1=1 and seq_id = ? ";
             if (forUpdate)
                 sql += "for update";
             if (countCon == null)
                 countCon = HPFW_Connection.getHPFW_Connection();
             stmt = countCon.getConnectionPtr().prepareStatement(sql);
-            stmt.setString(1, innotiId);
-            stmt.setString(2, inserviceProviderId);
+            stmt.setString(1, inseqId);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                notiId = rs.getString("noti_id"); // String
-                serviceProviderId = rs.getString("service_provider_id"); // String
-                openId = rs.getString("open_id"); // String
-                hkidHashed = rs.getString("hkid_hashed"); // String
-                hkidEncrypted = rs.getString("hkid_encrypted"); // String
-                optIn = rs.getString("opt_in"); // String
-                createDt = rs.getTimestamp("create_dt"); // Timestamp
-                lastModifyDt = rs.getTimestamp("last_modify_dt"); // Timestamp
-                createBy = rs.getString("create_by"); // String
+                // seqId = rs.getString("seq_id")==null || "".equals(rs.getString("seq_id")) ? null : new Long(rs.getLong("seq_id")); //Long
+                // MyGov5-01-207: Migrate DBMS to MySQL
+                // seqId = new Long(rs.getLong("seq_id")); //Long
+                seqId = rs.getString("seq_id"); // Long
+                // MyGov5-01-207: Migrate DBMS to MySQL
+                rptId = rs.getString("rpt_id"); // String
+                outputFileType = rs.getString("output_file_type"); // String
+                userId = rs.getString("user_id"); // String
+                param = rs.getString("param"); // String
+                status = rs.getString("status"); // String
+                reqType = rs.getString("req_type"); // String
+                projectId = rs.getString("project_id"); // String
                 lastModifyBy = rs.getString("last_modify_by"); // String
+                lastModifyDt = rs.getTimestamp("last_modify_dt"); // Timestamp
+                createDt = rs.getTimestamp("create_dt"); // Timestamp
+                createBy = rs.getString("create_by"); // String
                 initialized = true;
             } else {
                 throw new java.lang.NullPointerException();
@@ -620,107 +696,203 @@ public class IasEsNotiMap_ implements Serializable {
             }
         }
     }
+    // }INIT
 
+    /**
+     * AdmRptAdhocReq_ Destroyer
+     */
     protected void finalize() throws Throwable {
-        notiId = null;
-        serviceProviderId = null;
-        openId = null;
-        hkidHashed = null;
-        hkidEncrypted = null;
-        optIn = null;
-        createDt = null;
-        lastModifyDt = null;
-        createBy = null;
+        seqId = null;
+        rptId = null;
+        outputFileType = null;
+        userId = null;
+        param = null;
+        status = null;
+        reqType = null;
+        projectId = null;
         lastModifyBy = null;
+        lastModifyDt = null;
+        createDt = null;
+        createBy = null;
     }
 
-    public String getNotiId() {
-        return notiId == null ? "" : notiId;
+    /**
+     * Get seq_id
+     */
+    public String getSeqId() {
+        return seqId;
     }
 
-    public void setNotiId(final String inNotiId) {
-        notiId = inNotiId;
-        dirty_notiId = true;
+    /**
+     * Set seq_id
+     */
+    public void setSeqId(final String inSeqId) {
+        seqId = inSeqId;
+        dirty_seqId = true;
     }
 
-    public String getServiceProviderId() {
-        return serviceProviderId == null ? "" : serviceProviderId;
+    /**
+     * Get rpt_id
+     */
+    public String getRptId() {
+        return rptId == null ? "" : rptId;
     }
 
-    public void setServiceProviderId(final String inServiceProviderId) {
-        serviceProviderId = inServiceProviderId;
-        dirty_serviceProviderId = true;
+    /**
+     * Set rpt_id
+     */
+    public void setRptId(final String inRptId) {
+        rptId = inRptId;
+        dirty_rptId = true;
     }
 
-    public String getOpenId() {
-        return openId == null ? "" : openId;
+    /**
+     * Get output_file_type
+     */
+    public String getOutputFileType() {
+        return outputFileType == null ? "" : outputFileType;
     }
 
-    public void setOpenId(final String inOpenId) {
-        openId = inOpenId;
-        dirty_openId = true;
+    /**
+     * Set output_file_type
+     */
+    public void setOutputFileType(final String inOutputFileType) {
+        outputFileType = inOutputFileType;
+        dirty_outputFileType = true;
     }
 
-    public String getHkidHashed() {
-        return hkidHashed == null ? "" : hkidHashed;
+    /**
+     * Get user_id
+     */
+    public String getUserId() {
+        return userId == null ? "" : userId;
     }
 
-    public void setHkidHashed(final String inHkidHashed) {
-        hkidHashed = inHkidHashed;
-        dirty_hkidHashed = true;
+    /**
+     * Set user_id
+     */
+    public void setUserId(final String inUserId) {
+        userId = inUserId;
+        dirty_userId = true;
     }
 
-    public String getHkidEncrypted() {
-        return hkidEncrypted == null ? "" : hkidEncrypted;
+    /**
+     * Get param
+     */
+    public String getParam() {
+        return param == null ? "" : param;
     }
 
-    public void setHkidEncrypted(final String inHkidEncrypted) {
-        hkidEncrypted = inHkidEncrypted;
-        dirty_hkidEncrypted = true;
+    /**
+     * Set param
+     */
+    public void setParam(final String inParam) {
+        param = inParam;
+        dirty_param = true;
     }
 
-    public String getOptIn() {
-        return optIn == null ? "" : optIn;
+    /**
+     * Get status
+     */
+    public String getStatus() {
+        return status == null ? "" : status;
     }
 
-    public void setOptIn(final String inOptIn) {
-        optIn = inOptIn;
-        dirty_optIn = true;
+    /**
+     * Set status
+     */
+    public void setStatus(final String inStatus) {
+        status = inStatus;
+        dirty_status = true;
     }
 
-    public Timestamp getCreateDt() {
-        return createDt;
+    /**
+     * Get req_type
+     */
+    public String getReqType() {
+        return reqType == null ? "" : reqType;
     }
 
-    public void setCreateDt(final Timestamp inCreateDt) {
-        createDt = inCreateDt;
-        dirty_createDt = true;
+    /**
+     * Set req_type
+     */
+    public void setReqType(final String inReqType) {
+        reqType = inReqType;
+        dirty_reqType = true;
     }
 
+    /**
+     * Get project_id
+     */
+    public String getProjectId() {
+        return projectId == null ? "" : projectId;
+    }
+
+    /**
+     * Set project_id
+     */
+    public void setProjectId(final String inProjectId) {
+        projectId = inProjectId;
+        dirty_projectId = true;
+    }
+
+    /**
+     * Get last_modify_by
+     */
+    public String getLastModifyBy() {
+        return lastModifyBy == null ? "" : lastModifyBy;
+    }
+
+    /**
+     * Set last_modify_by
+     */
+    public void setLastModifyBy(final String inLastModifyBy) {
+        lastModifyBy = inLastModifyBy;
+        dirty_lastModifyBy = true;
+    }
+
+    /**
+     * Get last_modify_dt
+     */
     public Timestamp getLastModifyDt() {
         return lastModifyDt;
     }
 
+    /**
+     * Set last_modify_dt
+     */
     public void setLastModifyDt(final Timestamp inLastModifyDt) {
         lastModifyDt = inLastModifyDt;
         dirty_lastModifyDt = true;
     }
 
+    /**
+     * Get create_dt
+     */
+    public Timestamp getCreateDt() {
+        return createDt;
+    }
+
+    /**
+     * Set create_dt
+     */
+    public void setCreateDt(final Timestamp inCreateDt) {
+        createDt = inCreateDt;
+        dirty_createDt = true;
+    }
+
+    /**
+     * Get create_by
+     */
     public String getCreateBy() {
         return createBy == null ? "" : createBy;
     }
 
+    /**
+     * Set create_by
+     */
     public void setCreateBy(final String inCreateBy) {
         createBy = inCreateBy;
         dirty_createBy = true;
-    }
-
-    public String getLastModifyBy() {
-        return lastModifyBy == null ? "" : lastModifyBy;
-    }
-
-    public void setLastModifyBy(final String inLastModifyBy) {
-        lastModifyBy = inLastModifyBy;
-        dirty_lastModifyBy = true;
     }
 }

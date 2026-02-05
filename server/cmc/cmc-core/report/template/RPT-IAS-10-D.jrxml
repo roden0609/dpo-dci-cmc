@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT-IAS-10-D" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="782" leftMargin="30" rightMargin="30" topMargin="36" bottomMargin="20" uuid="d1d7adfc-a9c2-4377-b175-62e0d6f93976">
+	<property name="ireport.zoom" value="0.9982500000000003"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="REQUEST_DATE" class="java.lang.String"/>
+	<parameter name="GEN_DATE" class="java.lang.String"/>
+	<parameter name="SEARCH_BY_SPID" class="java.lang.String"/>
+	<parameter name="SPID" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select csp.service_provider_name sp_name
+from ias_user_to_do_item iutdi, ias_to_do_item itdi, cmc_template ct, cmc_service_provider csp
+where iutdi.ias_to_do_item_id = itdi.ias_to_do_item_id
+and   itdi.template_id = ct.template_id
+and   itdi.template_version = ct.template_version
+and   ct.service_provider_id = csp.service_provider_id
+and   DATE_FORMAT(iutdi.last_modify_dt, '%d/%m/%Y') = $P{REQUEST_DATE}
+and   IFNULL(iutdi.delete_ind, 'Y') = 'Y'
+and   iutdi.action_tran_id is not null
+and   exists(
+   select 'x'
+   from ias_user_to_do_item iutdi1, ias_to_do_item itdi1
+   where iutdi1.ias_to_do_item_id = itdi1.ias_to_do_item_id
+   and   itdi1.template_id = itdi.template_id
+   and   itdi1.template_version = itdi.template_version
+   and   iutdi1.recipient_id = iutdi1.recipient_id
+   and   iutdi1.tran_id = iutdi.action_tran_id)
+$P!{SEARCH_BY_SPID}
+group by csp.service_provider_name
+union
+select csp.service_provider_name sp_name
+from ias_user_to_do_item iutdi, ias_to_do_item itdi, cmc_template ct, cmc_service_provider csp
+where iutdi.ias_to_do_item_id = itdi.ias_to_do_item_id
+and   itdi.template_id = ct.template_id
+and   itdi.template_version = ct.template_version
+and   ct.service_provider_id = csp.service_provider_id
+and   DATE_FORMAT(iutdi.last_modify_dt, '%d/%m/%Y') = $P{REQUEST_DATE}
+and   IFNULL(iutdi.delete_ind, 'Y') = 'Y'
+and   iutdi.action_tran_id is not null
+and   not exists(
+   select 'x'
+   from ias_user_to_do_item iutdi1, ias_to_do_item itdi1
+   where iutdi1.ias_to_do_item_id = itdi1.ias_to_do_item_id
+   and   itdi1.template_id = itdi.template_id
+   and   itdi1.template_version = itdi.template_version
+   and   iutdi1.recipient_id = iutdi.recipient_id
+   and   iutdi1.tran_id = iutdi.action_tran_id)
+$P!{SEARCH_BY_SPID}
+group by csp.service_provider_name
+union
+select csp.service_provider_name sp_name
+from ias_user_to_do_item iutdi, ias_to_do_item itdi, cmc_template ct, cmc_service_provider csp
+where iutdi.ias_to_do_item_id = itdi.ias_to_do_item_id
+and   itdi.template_id = ct.template_id
+and   itdi.template_version = ct.template_version
+and   ct.service_provider_id = csp.service_provider_id
+and   DATE_FORMAT(iutdi.last_modify_dt, '%d/%m/%Y') = $P{REQUEST_DATE}
+and   IFNULL(iutdi.complete_ind, 'I') = 'C'
+and   iutdi.action_tran_id is not null
+and   not exists(
+   select 'x'
+   from ias_user_to_do_item iutdi1, ias_to_do_item itdi1
+   where iutdi1.ias_to_do_item_id = itdi1.ias_to_do_item_id
+   and   itdi1.template_id = itdi.template_id
+   and   itdi1.template_version = itdi.template_version
+   and   iutdi1.recipient_id = iutdi.recipient_id
+   and   iutdi1.tran_id = iutdi.action_tran_id)
+$P!{SEARCH_BY_SPID}
+group by csp.service_provider_name
+order by sp_name asc]]>
+	</queryString>
+	<field name="SP_NAME" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="78" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement key="textField-7" x="591" y="13" width="84" height="14" uuid="01a894ac-9b54-4ad8-8222-c9ab2bf6fa47"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-1" x="0" y="0" width="57" height="13" uuid="d821db19-4a9d-48c1-b9dd-a6415b6b8358"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Report ID]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="textField-7" x="591" y="0" width="117" height="14" uuid="a9fa486a-89fa-4c3e-bdcc-e7248b886f31"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{GEN_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-18" x="61" y="13" width="7" height="13" uuid="9354cf00-2ce4-4d32-ae38-a908b7a1a861"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-18" x="575" y="13" width="7" height="14" uuid="c821887f-e1ca-4a97-a07e-6549a5359bf3"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-18" x="61" y="0" width="7" height="13" uuid="0763de94-3925-4cc8-b6e8-3ea4b4a7d1ab"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-18" x="473" y="13" width="58" height="14" uuid="b7ef7360-8f54-498c-924a-db9a2d18899b"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Page No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-18" x="473" y="0" width="137" height="14" uuid="e1e40590-216f-4af2-98e6-3a4bca276614"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Report Generation Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-1" x="0" y="13" width="68" height="13" uuid="63de9747-acc6-4b77-9ddb-84960389041d"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Report Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-18" x="575" y="0" width="7" height="14" uuid="78fadbb0-8c09-4055-b5f5-3b963c57c99f"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-1" x="76" y="0" width="218" height="13" uuid="1563e72f-c957-4414-bcda-a277a15c9fa9"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[RPT-IAS-10-D]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-1" x="76" y="14" width="283" height="14" uuid="db56ba76-fb2c-410f-b743-f034b915ad45"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Report on List of iAM Smart To-Do Items Updated by B/Ds]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="51" width="472" height="14" uuid="1df53cd2-2cba-4bbd-85a8-fbceb0684498"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10"/>
+				</textElement>
+				<text><![CDATA[The following lists the iAM Smart to-do item(s) updated by Service Provider on]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="textField-7" x="330" y="51" width="117" height="14" uuid="befe7394-e211-4512-8e55-9480a0245c3f"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{REQUEST_DATE}+" :"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="58" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="782" height="58" uuid="df49b830-b88d-4dc4-919a-e4c47e973306"/>
+				<subreportParameter name="REQUEST_DATE">
+					<subreportParameterExpression><![CDATA[$P{REQUEST_DATE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SP_NAME">
+					<subreportParameterExpression><![CDATA[$F{SP_NAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "RPT-IAS-10-D_sub.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="25" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="340" y="0" width="142" height="15" uuid="46a4d754-0d3f-438b-84b2-2592918b5e97"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-Bold"/>
+				</textElement>
+				<text><![CDATA[--- End of Report ---]]></text>
+			</staticText>
+		</band>
+	</summary>
+	<noData>
+		<band height="98">
+			<staticText>
+				<reportElement key="staticText-18" x="575" y="13" width="7" height="14" uuid="6bdb567f-4ac7-42d1-b49b-2f23dfb6e19f"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-18" x="61" y="0" width="7" height="13" uuid="b54bbca8-b8d4-4f75-b0fe-94b0a03db887"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-18" x="575" y="0" width="7" height="14" uuid="4969b3e5-722e-4fff-9135-f9400d72bfeb"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-18" x="473" y="13" width="58" height="14" uuid="70b2d243-2356-4eae-a5cf-5cb4110995d6"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Page No.]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="textField-7" x="591" y="0" width="117" height="14" uuid="9004b983-535b-49ca-89ba-13cd368fd00b"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{GEN_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-1" x="0" y="13" width="68" height="13" uuid="da756b76-349f-4572-8bf5-2651a51d09a6"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Report Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-18" x="473" y="0" width="137" height="14" uuid="9f628e13-fb79-432a-a052-035f6f4a0bc4"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Report Generation Date]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="textField-7" x="591" y="13" width="84" height="14" uuid="a9dd425d-6e35-4361-b1a9-560e176fd981"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-1" x="0" y="0" width="57" height="13" uuid="a0ff2446-e1f1-4b07-b37a-5c3ee45ed1d0"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Report ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-1" x="76" y="0" width="218" height="13" uuid="abbe2434-5ba4-4638-aadf-92242c1364b6"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[RPT-IAS-10-D]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-18" x="61" y="13" width="7" height="13" uuid="00b929ec-701b-4bb5-aeab-5bcbbdb86c0f"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-1" x="76" y="14" width="283" height="14" uuid="5ff0557f-5bcc-49fb-8b59-4ae7bbb71aaf"/>
+				<box>
+					<topPen lineWidth="0.0" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Report on List of iAM Smart To-Do Items Updated by B/Ds]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="textField-7" x="0" y="47" width="751" height="14" uuid="63b2bdd8-dc63-4601-9566-49eb3a86cd82"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{SPID}!=null&&$P{SPID}.length()>0?"No data for the searching date "+$P{REQUEST_DATE}+" with service provider ID '"+$P{SPID}+"'.":"No data for the searching date "+$P{REQUEST_DATE}+"."]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="340" y="83" width="142" height="15" uuid="65ab6c97-7231-4f86-b34e-46970848f267"/>
+				<textElement>
+					<font fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-Bold"/>
+				</textElement>
+				<text><![CDATA[--- End of Report ---]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

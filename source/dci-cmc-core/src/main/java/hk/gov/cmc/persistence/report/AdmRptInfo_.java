@@ -1,4 +1,4 @@
-package hk.gov.cmc.persistence.maintainmessage.notification;
+package hk.gov.cmc.persistence.report;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -11,47 +11,58 @@ import hk.gov.cmc.persistence.connection.hpfw.CommonDBUtils;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
 
-public class IasEsNotiMap_ implements Serializable {
+public class AdmRptInfo_ implements Serializable {
     private static final long serialVersionUID = 1L;
     private boolean initialized = false;
-    private final static String thisTableName = "IAS_ES_NOTI_MAP";
-    private final static String thisTableHistName = "_H";
-    private boolean forUpdate = false;
-    private String notiId = null;
-    private String serviceProviderId = null;
-    private String openId = null;
-    private String hkidHashed = null;
-    private String hkidEncrypted = null;
-    private String optIn = null;
-    private Timestamp createDt = null;
-    private Timestamp lastModifyDt = null;
-    private String createBy = null;
-    private String lastModifyBy = null;
-    private boolean dirty_notiId = false;
-    private boolean dirty_serviceProviderId = false;
-    private boolean dirty_openId = false;
-    private boolean dirty_hkidHashed = false;
-    private boolean dirty_hkidEncrypted = false;
-    private boolean dirty_optIn = false;
-    private boolean dirty_createDt = false;
-    private boolean dirty_lastModifyDt = false;
-    private boolean dirty_createBy = false;
-    private boolean dirty_lastModifyBy = false;
 
-    public IasEsNotiMap_() {
+    private final static String thisTableName = "adm_rpt_info";
+    private final static String thisTableHistName = "_h";
+    private boolean forUpdate = false;
+    private String rptId = null;
+    private String rptDesc = null;
+    private String implClass = null;
+    private String lastModifyBy = null;
+    private Timestamp lastModifyDt = null;
+    private String teamBatchRpt = null;
+    private String spidBatchRpt = null;
+    private String batchRptFuncId = null;
+    private String batchRptDefaultFormat = null;
+    private String marsRpt = null;
+    private String cmcRpt = null;
+    private String adhocRptFuncId = null;
+
+    private boolean dirty_rptId = false;
+    private boolean dirty_rptDesc = false;
+    private boolean dirty_implClass = false;
+    private boolean dirty_lastModifyBy = false;
+    private boolean dirty_lastModifyDt = false;
+    private boolean dirty_teamBatchRpt = false;
+    private boolean dirty_spidBatchRpt = false;
+    private boolean dirty_batchRptFuncId = false;
+    private boolean dirty_batchRptDefaultFormat = false;
+    private boolean dirty_marsRpt = false;
+    private boolean dirty_cmcRpt = false;
+    private boolean dirty_adhocRptFuncId = false;
+
+    /**
+     * AdmRptInfo_ Contructor
+     */
+    public AdmRptInfo_() {
         super();
     }
 
-    public IasEsNotiMap_(HPFW_Connection countCon, String innotiId, String inserviceProviderId)
-            throws SQLException, NullPointerException {
+    /**
+     * AdmRptInfo_ Constructor with specify PK
+     */
+    public AdmRptInfo_(HPFW_Connection countCon, String inrptId) throws SQLException, NullPointerException {
         this();
-        init(countCon, innotiId, inserviceProviderId, false);
+        init(countCon, inrptId, false);
     }
 
-    public IasEsNotiMap_(HPFW_Connection countCon, String innotiId, String inserviceProviderId, boolean forUpdate)
+    public AdmRptInfo_(HPFW_Connection countCon, String inrptId, boolean forUpdate)
             throws SQLException, NullPointerException {
         this();
-        init(countCon, innotiId, inserviceProviderId, forUpdate);
+        init(countCon, inrptId, forUpdate);
     }
 
     static public void delete(HPFW_Connection countCon, String whereCluase, ArrayList<Parameter> paraL)
@@ -70,7 +81,7 @@ public class IasEsNotiMap_ implements Serializable {
             ResultSet rs = null;
 
             try {
-                String sql = "select noti_id,service_provider_id from " + thisTableName + " " + whereCluase;
+                String sql = "select rpt_id from " + thisTableName + " " + whereCluase;
                 stmt = countCon.getConnectionPtr().prepareStatement(sql);
                 CommonDBUtils.setStatement(stmt, paraL);
                 rs = stmt.executeQuery();
@@ -78,10 +89,9 @@ public class IasEsNotiMap_ implements Serializable {
                 while (rs.next()) {
                     String histsql = "insert into ";
                     histsql += thisTableName + thisTableHistName;
-                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,last_modify_by,last_modify_dt,create_by,create_dt,noti_id,service_provider_id";
-                    histsql += ") values (?,?,?,?,?,?,?,?,?,?";
+                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,last_modify_by,last_modify_dt,create_by,create_dt,rpt_id";
+                    histsql += ") values (?,?,?,?,?,?,?,?";
                     // perpare where ...
-                    histsql += ",?";
                     histsql += ",?";
                     histsql += ")";
                     ArrayList<Parameter> histParaList = new ArrayList<Parameter>();
@@ -93,14 +103,12 @@ public class IasEsNotiMap_ implements Serializable {
                             countCon.getUpdateMode().equals(HPFW_Connection.HISTORY_ONLY) ? HPFW_Connection.DUAL
                                     : HPFW_Connection.REMOTE));
                     histParaList.add(new Parameter(Parameter.String, HPFW_Connection.PENDING));
-                    histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
                     histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
                     histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
                     histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
                     histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
                     // perpare where ...
                     histParaList.add(new Parameter(Parameter.String, rs.getString(1)));
-                    histParaList.add(new Parameter(Parameter.String, rs.getString(2)));
                     countCon.executeStatement(histsql, histParaList, true);
                 }
             } catch (SQLException e) {
@@ -129,13 +137,12 @@ public class IasEsNotiMap_ implements Serializable {
                 || HPFW_Connection.DIRECT_WITH_HISTORY.equals(countCon.getUpdateMode())) {
             String sql = "delete from ";
             sql += thisTableName;
-            sql += " where 1=1 and noti_id = ?  and service_provider_id = ? ";
+            sql += " where 1=1 and rpt_id = ? ";
 
             ArrayList<Parameter> paraList = new ArrayList<Parameter>();
 
             // perpare where ...
-            paraList.add(new Parameter(Parameter.String, this.notiId));
-            paraList.add(new Parameter(Parameter.String, this.serviceProviderId));
+            paraList.add(new Parameter(Parameter.String, this.rptId));
             countCon.executeStatement(sql, paraList);
         }
 
@@ -143,14 +150,7 @@ public class IasEsNotiMap_ implements Serializable {
                 || HPFW_Connection.DIRECT_WITH_HISTORY.equals(countCon.getUpdateMode())) {
             String histsql = "insert into ";
             histsql += thisTableName + thisTableHistName;
-            histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,last_modify_by,last_modify_dt,create_by,create_dt";
-            histsql += ",NotiId";
-            histsql += ",ServiceProviderId";
-            histsql += ") values (?,?,?,?,?,?,?,?,?";
-            // perpare where ...
-            histsql += ",?";
-            histsql += ",?";
-            histsql += ")";
+            histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,last_modify_by,last_modify_dt,create_by,create_dt,rpt_id) values (?,?,?,?,?,?,?,?,?)";
             ArrayList<Parameter> histParaList = new ArrayList<Parameter>();
             histParaList
                     .add(new Parameter(Parameter.String,
@@ -160,14 +160,12 @@ public class IasEsNotiMap_ implements Serializable {
                     countCon.getUpdateMode().equals(HPFW_Connection.HISTORY_ONLY) ? HPFW_Connection.DUAL
                             : HPFW_Connection.REMOTE));
             histParaList.add(new Parameter(Parameter.String, HPFW_Connection.PENDING));
-            histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
             // perpare where ...
-            histParaList.add(new Parameter(Parameter.String, this.notiId));
-            histParaList.add(new Parameter(Parameter.String, this.serviceProviderId));
+            histParaList.add(new Parameter(Parameter.String, this.rptId));
             countCon.executeStatement(histsql, histParaList, true);
         }
     }
@@ -182,48 +180,72 @@ public class IasEsNotiMap_ implements Serializable {
             sql += " (";
 
             // perpare set ...
-            if (notiId != null)
-                sql += "noti_id,";
-            if (serviceProviderId != null)
-                sql += "service_provider_id,";
-            if (openId != null)
-                sql += "open_id,";
-            if (hkidHashed != null)
-                sql += "hkid_hashed,";
-            if (hkidEncrypted != null)
-                sql += "hkid_encrypted,";
-            if (optIn != null)
-                sql += "opt_in,";
+            if (rptId != null)
+                sql += "rpt_id,";
+            if (rptDesc != null)
+                sql += "rpt_desc,";
+            if (implClass != null)
+                sql += "impl_class,";
+            if (teamBatchRpt != null)
+                sql += "team_batch_rpt,";
+            if (spidBatchRpt != null)
+                sql += "spid_batch_rpt,";
+            if (batchRptFuncId != null)
+                sql += "batch_rpt_func_id,";
+            if (batchRptDefaultFormat != null)
+                sql += "batch_rpt_default_format,";
+            if (marsRpt != null)
+                sql += "mars_rpt,";
+            if (cmcRpt != null)
+                sql += "cmc_rpt,";
+            if (adhocRptFuncId != null)
+                sql += "adhoc_rpt_func_id,";
             sql += "create_by,last_modify_by,create_dt,last_modify_dt) values (";
 
             // perpare set ...
-            if (notiId != null)
+            if (rptId != null)
                 sql += "?,";
-            if (serviceProviderId != null)
+            if (rptDesc != null)
                 sql += "?,";
-            if (openId != null)
+            if (implClass != null)
                 sql += "?,";
-            if (hkidHashed != null)
+            if (teamBatchRpt != null)
                 sql += "?,";
-            if (hkidEncrypted != null)
+            if (spidBatchRpt != null)
                 sql += "?,";
-            if (optIn != null)
+            if (batchRptFuncId != null)
+                sql += "?,";
+            if (batchRptDefaultFormat != null)
+                sql += "?,";
+            if (marsRpt != null)
+                sql += "?,";
+            if (cmcRpt != null)
+                sql += "?,";
+            if (adhocRptFuncId != null)
                 sql += "?,";
             sql += "?,?,?,?) ";
 
             // perpare set ...
-            if (notiId != null)
-                paraList.add(new Parameter(Parameter.String, this.notiId));
-            if (serviceProviderId != null)
-                paraList.add(new Parameter(Parameter.String, this.serviceProviderId));
-            if (openId != null)
-                paraList.add(new Parameter(Parameter.String, this.openId));
-            if (hkidHashed != null)
-                paraList.add(new Parameter(Parameter.String, this.hkidHashed));
-            if (hkidEncrypted != null)
-                paraList.add(new Parameter(Parameter.String, this.hkidEncrypted));
-            if (optIn != null)
-                paraList.add(new Parameter(Parameter.String, this.optIn));
+            if (rptId != null)
+                paraList.add(new Parameter(Parameter.String, this.rptId));
+            if (rptDesc != null)
+                paraList.add(new Parameter(Parameter.String, this.rptDesc));
+            if (implClass != null)
+                paraList.add(new Parameter(Parameter.String, this.implClass));
+            if (teamBatchRpt != null)
+                paraList.add(new Parameter(Parameter.String, this.teamBatchRpt));
+            if (spidBatchRpt != null)
+                paraList.add(new Parameter(Parameter.String, this.spidBatchRpt));
+            if (batchRptFuncId != null)
+                paraList.add(new Parameter(Parameter.String, this.batchRptFuncId));
+            if (batchRptDefaultFormat != null)
+                paraList.add(new Parameter(Parameter.String, this.batchRptDefaultFormat));
+            if (marsRpt != null)
+                paraList.add(new Parameter(Parameter.String, this.marsRpt));
+            if (cmcRpt != null)
+                paraList.add(new Parameter(Parameter.String, this.cmcRpt));
+            if (adhocRptFuncId != null)
+                paraList.add(new Parameter(Parameter.String, this.adhocRptFuncId));
             paraList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             paraList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             paraList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
@@ -237,35 +259,51 @@ public class IasEsNotiMap_ implements Serializable {
 
             String hist_sql = "insert into ";
             hist_sql += thisTableName + thisTableHistName;
-            hist_sql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,";
+            hist_sql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,";
 
             // perpare set ...
-            if (notiId != null)
-                hist_sql += "noti_id,";
-            if (serviceProviderId != null)
-                hist_sql += "service_provider_id,";
-            if (openId != null)
-                hist_sql += "open_id,";
-            if (hkidHashed != null)
-                hist_sql += "hkid_hashed,";
-            if (hkidEncrypted != null)
-                hist_sql += "hkid_encrypted,";
-            if (optIn != null)
-                hist_sql += "opt_in,";
-            hist_sql += "create_by,last_modify_by,create_dt,last_modify_dt) values (?,?,?,?,?,";
+            if (rptId != null)
+                hist_sql += "rpt_id,";
+            if (rptDesc != null)
+                hist_sql += "rpt_desc,";
+            if (implClass != null)
+                hist_sql += "impl_class,";
+            if (teamBatchRpt != null)
+                hist_sql += "team_batch_rpt,";
+            if (spidBatchRpt != null)
+                hist_sql += "spid_batch_rpt,";
+            if (batchRptFuncId != null)
+                hist_sql += "batch_rpt_func_id,";
+            if (batchRptDefaultFormat != null)
+                hist_sql += "batch_rpt_default_format,";
+            if (marsRpt != null)
+                hist_sql += "mars_rpt,";
+            if (cmcRpt != null)
+                hist_sql += "cmc_rpt,";
+            if (adhocRptFuncId != null)
+                hist_sql += "adhoc_rpt_func_id,";
+            hist_sql += "create_by,last_modify_by,create_dt,last_modify_dt) values (?,?,?,?,";
 
             // perpare set ...
-            if (notiId != null)
+            if (rptId != null)
                 hist_sql += "?,";
-            if (serviceProviderId != null)
+            if (rptDesc != null)
                 hist_sql += "?,";
-            if (openId != null)
+            if (implClass != null)
                 hist_sql += "?,";
-            if (hkidHashed != null)
+            if (teamBatchRpt != null)
                 hist_sql += "?,";
-            if (hkidEncrypted != null)
+            if (spidBatchRpt != null)
                 hist_sql += "?,";
-            if (optIn != null)
+            if (batchRptFuncId != null)
+                hist_sql += "?,";
+            if (batchRptDefaultFormat != null)
+                hist_sql += "?,";
+            if (marsRpt != null)
+                hist_sql += "?,";
+            if (cmcRpt != null)
+                hist_sql += "?,";
+            if (adhocRptFuncId != null)
                 hist_sql += "?,";
             hist_sql += "?,?,?,?) ";
             histParaList
@@ -276,21 +314,28 @@ public class IasEsNotiMap_ implements Serializable {
                     countCon.getUpdateMode().equals(HPFW_Connection.HISTORY_ONLY) ? HPFW_Connection.DUAL
                             : HPFW_Connection.REMOTE));
             histParaList.add(new Parameter(Parameter.String, HPFW_Connection.PENDING));
-            histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
 
             // perpare set ...
-            if (notiId != null)
-                histParaList.add(new Parameter(Parameter.String, this.notiId));
-            if (serviceProviderId != null)
-                histParaList.add(new Parameter(Parameter.String, this.serviceProviderId));
-            if (openId != null)
-                histParaList.add(new Parameter(Parameter.String, this.openId));
-            if (hkidHashed != null)
-                histParaList.add(new Parameter(Parameter.String, this.hkidHashed));
-            if (hkidEncrypted != null)
-                histParaList.add(new Parameter(Parameter.String, this.hkidEncrypted));
-            if (optIn != null)
-                histParaList.add(new Parameter(Parameter.String, this.optIn));
+            if (rptId != null)
+                histParaList.add(new Parameter(Parameter.String, this.rptId));
+            if (rptDesc != null)
+                histParaList.add(new Parameter(Parameter.String, this.rptDesc));
+            if (implClass != null)
+                histParaList.add(new Parameter(Parameter.String, this.implClass));
+            if (teamBatchRpt != null)
+                histParaList.add(new Parameter(Parameter.String, this.teamBatchRpt));
+            if (spidBatchRpt != null)
+                histParaList.add(new Parameter(Parameter.String, this.spidBatchRpt));
+            if (batchRptFuncId != null)
+                histParaList.add(new Parameter(Parameter.String, this.batchRptFuncId));
+            if (batchRptDefaultFormat != null)
+                histParaList.add(new Parameter(Parameter.String, this.batchRptDefaultFormat));
+            if (marsRpt != null)
+                histParaList.add(new Parameter(Parameter.String, this.marsRpt));
+            if (cmcRpt != null)
+                histParaList.add(new Parameter(Parameter.String, this.cmcRpt));
+            if (adhocRptFuncId != null)
+                histParaList.add(new Parameter(Parameter.String, this.adhocRptFuncId));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
@@ -330,7 +375,7 @@ public class IasEsNotiMap_ implements Serializable {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select noti_id,service_provider_id from " + thisTableName + " " + whereClause;
+                String sql = "select rpt_id from " + thisTableName + " " + whereClause;
                 stmt = countCon.getConnectionPtr().prepareStatement(sql);
                 CommonDBUtils.setStatement(stmt, whereParaL);
                 rs = stmt.executeQuery();
@@ -338,9 +383,9 @@ public class IasEsNotiMap_ implements Serializable {
                 while (rs.next()) {
                     String histsql = "insert into ";
                     histsql += thisTableName + thisTableHistName;
-                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,last_modify_by,last_modify_dt,create_by,create_dt,noti_id,service_provider_id,"
+                    histsql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,last_modify_by,last_modify_dt,create_by,create_dt,rpt_id,"
                             + selectString;
-                    histsql += ") values (?,?,?,?,?,?,?,?,?,?,?";
+                    histsql += ") values (?,?,?,?,?,?,?,?,?";
                     for (int i = 0; i < selectStringArray.length; i++)
                         histsql += ",?";
                     histsql += ")";
@@ -354,14 +399,12 @@ public class IasEsNotiMap_ implements Serializable {
                             countCon.getUpdateMode().equals(HPFW_Connection.HISTORY_ONLY) ? HPFW_Connection.DUAL
                                     : HPFW_Connection.REMOTE));
                     histParaList.add(new Parameter(Parameter.String, HPFW_Connection.PENDING));
-                    histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
                     histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
                     histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
                     histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
                     histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
                     // perpare where ...
                     histParaList.add(new Parameter(Parameter.String, rs.getString(1)));
-                    histParaList.add(new Parameter(Parameter.String, rs.getString(2)));
                     histParaList.addAll(paraL);
                     countCon.executeStatement(histsql, histParaList, true);
 
@@ -405,30 +448,49 @@ public class IasEsNotiMap_ implements Serializable {
             sql += thisTableName;
             sql += " set ";
             // perpare set ...
-            if (dirty_openId)
-                sql += "open_id = ?,";
-            if (dirty_hkidHashed)
-                sql += "hkid_hashed = ?,";
-            if (dirty_hkidEncrypted)
-                sql += "hkid_encrypted = ?,";
-            if (dirty_optIn)
-                sql += "opt_in = ?,";
+            if (dirty_rptDesc)
+                sql += "rpt_desc = ?,";
+            if (dirty_implClass)
+                sql += "impl_class = ?,";
+            if (dirty_teamBatchRpt)
+                sql += "team_batch_rpt = ?,";
+            if (dirty_spidBatchRpt)
+                sql += "spid_batch_rpt = ?,";
+            if (dirty_batchRptFuncId)
+                sql += "batch_rpt_func_id = ?,";
+            if (dirty_batchRptDefaultFormat)
+                sql += "batch_rpt_default_format = ?,";
+            if (dirty_marsRpt)
+                sql += "mars_rpt = ?,";
+            if (dirty_cmcRpt)
+                sql += "cmc_rpt = ?,";
+            if (dirty_adhocRptFuncId)
+                sql += "adhoc_rpt_func_id = ?,";
 
-            sql += " last_modify_by = ?,last_modify_dt = ? where 1=1 and noti_id = ?  and service_provider_id = ? ";
+            sql += " last_modify_by = ?,last_modify_dt = ? where 1=1 and rpt_id = ? ";
             // perpare set ...
-            if (dirty_openId)
-                paraList.add(new Parameter(Parameter.String, this.openId));
-            if (dirty_hkidHashed)
-                paraList.add(new Parameter(Parameter.String, this.hkidHashed));
-            if (dirty_hkidEncrypted)
-                paraList.add(new Parameter(Parameter.String, this.hkidEncrypted));
-            if (dirty_optIn)
-                paraList.add(new Parameter(Parameter.String, this.optIn));
+            if (dirty_rptDesc)
+                paraList.add(new Parameter(Parameter.String, this.rptDesc));
+            if (dirty_implClass)
+                paraList.add(new Parameter(Parameter.String, this.implClass));
+            if (dirty_teamBatchRpt)
+                paraList.add(new Parameter(Parameter.String, this.teamBatchRpt));
+            if (dirty_spidBatchRpt)
+                paraList.add(new Parameter(Parameter.String, this.spidBatchRpt));
+            if (dirty_batchRptFuncId)
+                paraList.add(new Parameter(Parameter.String, this.batchRptFuncId));
+            if (dirty_batchRptDefaultFormat)
+                paraList.add(new Parameter(Parameter.String, this.batchRptDefaultFormat));
+            if (dirty_marsRpt)
+                paraList.add(new Parameter(Parameter.String, this.marsRpt));
+            if (dirty_cmcRpt)
+                paraList.add(new Parameter(Parameter.String, this.cmcRpt));
+            if (dirty_adhocRptFuncId)
+                paraList.add(new Parameter(Parameter.String, this.adhocRptFuncId));
             paraList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             paraList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
             // perpare where ...
-            paraList.add(new Parameter(Parameter.String, this.notiId));
-            paraList.add(new Parameter(Parameter.String, this.serviceProviderId));
+            paraList.add(new Parameter(Parameter.String, this.rptId));
             countCon.executeStatement(sql, paraList);
         }
 
@@ -438,31 +500,49 @@ public class IasEsNotiMap_ implements Serializable {
 
             String hist_sql = "insert into ";
             hist_sql += thisTableName + thisTableHistName;
-            hist_sql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,HIST_server_id,";
+            hist_sql += " (HIST_SEQ,HIST_action,HIST_update_type,HIST_status,";
 
             // perpare set ...
-            hist_sql += "noti_id,";
-            hist_sql += "service_provider_id,";
-            if (dirty_openId)
-                hist_sql += "open_id,";
-            if (dirty_hkidHashed)
-                hist_sql += "hkid_hashed,";
-            if (dirty_hkidEncrypted)
-                hist_sql += "hkid_encrypted,";
-            if (dirty_optIn)
-                hist_sql += "opt_in,";
-            hist_sql += "last_modify_by,last_modify_dt,create_by,create_dt) values (?,?,?,?,?,";
+            hist_sql += "rpt_id,";
+            if (dirty_rptDesc)
+                hist_sql += "rpt_desc,";
+            if (dirty_implClass)
+                hist_sql += "impl_class,";
+            if (dirty_teamBatchRpt)
+                hist_sql += "team_batch_rpt,";
+            if (dirty_spidBatchRpt)
+                hist_sql += "spid_batch_rpt,";
+            if (dirty_batchRptFuncId)
+                hist_sql += "batch_rpt_func_id,";
+            if (dirty_batchRptDefaultFormat)
+                hist_sql += "batch_rpt_default_format,";
+            if (dirty_marsRpt)
+                hist_sql += "mars_rpt,";
+            if (dirty_cmcRpt)
+                hist_sql += "cmc_rpt,";
+            if (dirty_adhocRptFuncId)
+                hist_sql += "adhoc_rpt_func_id,";
+            hist_sql += "last_modify_by,last_modify_dt,create_by,create_dt) values (?,?,?,?,";
 
             // perpare set ...
             hist_sql += "?,";
-            hist_sql += "?,";
-            if (dirty_openId)
+            if (dirty_rptDesc)
                 hist_sql += "?,";
-            if (dirty_hkidHashed)
+            if (dirty_implClass)
                 hist_sql += "?,";
-            if (dirty_hkidEncrypted)
+            if (dirty_teamBatchRpt)
                 hist_sql += "?,";
-            if (dirty_optIn)
+            if (dirty_spidBatchRpt)
+                hist_sql += "?,";
+            if (dirty_batchRptFuncId)
+                hist_sql += "?,";
+            if (dirty_batchRptDefaultFormat)
+                hist_sql += "?,";
+            if (dirty_marsRpt)
+                hist_sql += "?,";
+            if (dirty_cmcRpt)
+                hist_sql += "?,";
+            if (dirty_adhocRptFuncId)
                 hist_sql += "?,";
             hist_sql += "?,?,?,?) ";
             histParaList
@@ -473,19 +553,27 @@ public class IasEsNotiMap_ implements Serializable {
                     countCon.getUpdateMode().equals(HPFW_Connection.HISTORY_ONLY) ? HPFW_Connection.DUAL
                             : HPFW_Connection.REMOTE));
             histParaList.add(new Parameter(Parameter.String, HPFW_Connection.PENDING));
-            histParaList.add(new Parameter(Parameter.String, CommonDBUtils.getSERVER_ID()));
 
             // perpare set ...
-            histParaList.add(new Parameter(Parameter.String, this.notiId));
-            histParaList.add(new Parameter(Parameter.String, this.serviceProviderId));
-            if (dirty_openId)
-                histParaList.add(new Parameter(Parameter.String, this.openId));
-            if (dirty_hkidHashed)
-                histParaList.add(new Parameter(Parameter.String, this.hkidHashed));
-            if (dirty_hkidEncrypted)
-                histParaList.add(new Parameter(Parameter.String, this.hkidEncrypted));
-            if (dirty_optIn)
-                histParaList.add(new Parameter(Parameter.String, this.optIn));
+            histParaList.add(new Parameter(Parameter.String, this.rptId));
+            if (dirty_rptDesc)
+                histParaList.add(new Parameter(Parameter.String, this.rptDesc));
+            if (dirty_implClass)
+                histParaList.add(new Parameter(Parameter.String, this.implClass));
+            if (dirty_teamBatchRpt)
+                histParaList.add(new Parameter(Parameter.String, this.teamBatchRpt));
+            if (dirty_spidBatchRpt)
+                histParaList.add(new Parameter(Parameter.String, this.spidBatchRpt));
+            if (dirty_batchRptFuncId)
+                histParaList.add(new Parameter(Parameter.String, this.batchRptFuncId));
+            if (dirty_batchRptDefaultFormat)
+                histParaList.add(new Parameter(Parameter.String, this.batchRptDefaultFormat));
+            if (dirty_marsRpt)
+                histParaList.add(new Parameter(Parameter.String, this.marsRpt));
+            if (dirty_cmcRpt)
+                histParaList.add(new Parameter(Parameter.String, this.cmcRpt));
+            if (dirty_adhocRptFuncId)
+                histParaList.add(new Parameter(Parameter.String, this.adhocRptFuncId));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
             histParaList.add(new Parameter(Parameter.Timestamp, countCon.getLastUpTime()));
             histParaList.add(new Parameter(Parameter.String, countCon.getLastUpdBy()));
@@ -495,12 +583,12 @@ public class IasEsNotiMap_ implements Serializable {
         this.forUpdate = false;
     }
 
-    public static ArrayList<IasEsNotiMap_> getResultList(HPFW_Connection countCon, String whereCluase,
+    public static ArrayList<AdmRptInfo_> getResultList(HPFW_Connection countCon, String whereCluase,
             ArrayList<Parameter> paraL) throws SQLException {
         boolean needClose = countCon == null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ArrayList<IasEsNotiMap_> result = new ArrayList<IasEsNotiMap_>();
+        ArrayList<AdmRptInfo_> result = new ArrayList<AdmRptInfo_>();
         String sql = "select " + thisTableName + ".* from ";
         try {
             sql += thisTableName + " ";
@@ -513,17 +601,19 @@ public class IasEsNotiMap_ implements Serializable {
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                IasEsNotiMap_ obj = new IasEsNotiMap_();
-                obj.notiId = rs.getString("noti_id"); // String
-                obj.serviceProviderId = rs.getString("service_provider_id"); // String
-                obj.openId = rs.getString("open_id"); // String
-                obj.hkidHashed = rs.getString("hkid_hashed"); // String
-                obj.hkidEncrypted = rs.getString("hkid_encrypted"); // String
-                obj.optIn = rs.getString("opt_in"); // String
-                obj.createDt = rs.getTimestamp("create_dt"); // Timestamp
-                obj.lastModifyDt = rs.getTimestamp("last_modify_dt"); // Timestamp
-                obj.createBy = rs.getString("create_by"); // String
+                AdmRptInfo_ obj = new AdmRptInfo_();
+                obj.rptId = rs.getString("rpt_id"); // String
+                obj.rptDesc = rs.getString("rpt_desc"); // String
+                obj.implClass = rs.getString("impl_class"); // String
                 obj.lastModifyBy = rs.getString("last_modify_by"); // String
+                obj.lastModifyDt = rs.getTimestamp("last_modify_dt"); // Timestamp
+                obj.teamBatchRpt = rs.getString("team_batch_rpt"); // String
+                obj.spidBatchRpt = rs.getString("spid_batch_rpt"); // String
+                obj.batchRptFuncId = rs.getString("batch_rpt_func_id"); // String
+                obj.batchRptDefaultFormat = rs.getString("batch_rpt_default_format"); // String
+                obj.marsRpt = rs.getString("mars_rpt"); // String
+                obj.cmcRpt = rs.getString("cmc_rpt"); // String
+                obj.adhocRptFuncId = rs.getString("adhoc_rpt_func_id"); // String
                 obj.initialized = true;
                 result.add(obj);
             }
@@ -561,35 +651,35 @@ public class IasEsNotiMap_ implements Serializable {
         this.initialized = initialized;
     }
 
-    public void init(HPFW_Connection countCon, final String innotiId, final String inserviceProviderId,
-            boolean forUpdate)
+    public void init(HPFW_Connection countCon, final String inrptId, boolean forUpdate)
             throws SQLException, NullPointerException {
         this.forUpdate = forUpdate;
         boolean needClose = countCon == null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            String sql = "select * from " + thisTableName + " where 1=1 and noti_id = ?  and service_provider_id = ? ";
+            String sql = "select * from " + thisTableName + " where 1=1 and rpt_id = ? ";
             if (forUpdate)
                 sql += "for update";
             if (countCon == null)
                 countCon = HPFW_Connection.getHPFW_Connection();
             stmt = countCon.getConnectionPtr().prepareStatement(sql);
-            stmt.setString(1, innotiId);
-            stmt.setString(2, inserviceProviderId);
+            stmt.setString(1, inrptId);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                notiId = rs.getString("noti_id"); // String
-                serviceProviderId = rs.getString("service_provider_id"); // String
-                openId = rs.getString("open_id"); // String
-                hkidHashed = rs.getString("hkid_hashed"); // String
-                hkidEncrypted = rs.getString("hkid_encrypted"); // String
-                optIn = rs.getString("opt_in"); // String
-                createDt = rs.getTimestamp("create_dt"); // Timestamp
-                lastModifyDt = rs.getTimestamp("last_modify_dt"); // Timestamp
-                createBy = rs.getString("create_by"); // String
+                rptId = rs.getString("rpt_id"); // String
+                rptDesc = rs.getString("rpt_desc"); // String
+                implClass = rs.getString("impl_class"); // String
                 lastModifyBy = rs.getString("last_modify_by"); // String
+                lastModifyDt = rs.getTimestamp("last_modify_dt"); // Timestamp
+                teamBatchRpt = rs.getString("team_batch_rpt"); // String
+                spidBatchRpt = rs.getString("spid_batch_rpt"); // String
+                batchRptFuncId = rs.getString("batch_rpt_func_id"); // String
+                batchRptDefaultFormat = rs.getString("batch_rpt_default_format"); // String
+                marsRpt = rs.getString("mars_rpt"); // String
+                cmcRpt = rs.getString("cmc_rpt"); // String
+                adhocRptFuncId = rs.getString("adhoc_rpt_func_id"); // String
                 initialized = true;
             } else {
                 throw new java.lang.NullPointerException();
@@ -620,107 +710,203 @@ public class IasEsNotiMap_ implements Serializable {
             }
         }
     }
+    // }INIT
 
+    /**
+     * AdmRptInfo_ Destroyer
+     */
     protected void finalize() throws Throwable {
-        notiId = null;
-        serviceProviderId = null;
-        openId = null;
-        hkidHashed = null;
-        hkidEncrypted = null;
-        optIn = null;
-        createDt = null;
-        lastModifyDt = null;
-        createBy = null;
+        rptId = null;
+        rptDesc = null;
+        implClass = null;
         lastModifyBy = null;
+        lastModifyDt = null;
+        teamBatchRpt = null;
+        spidBatchRpt = null;
+        batchRptFuncId = null;
+        batchRptDefaultFormat = null;
+        marsRpt = null;
+        cmcRpt = null;
+        adhocRptFuncId = null;
     }
 
-    public String getNotiId() {
-        return notiId == null ? "" : notiId;
+    /**
+     * Get rpt_id
+     */
+    public String getRptId() {
+        return rptId == null ? "" : rptId;
     }
 
-    public void setNotiId(final String inNotiId) {
-        notiId = inNotiId;
-        dirty_notiId = true;
+    /**
+     * Set rpt_id
+     */
+    public void setRptId(final String inRptId) {
+        rptId = inRptId;
+        dirty_rptId = true;
     }
 
-    public String getServiceProviderId() {
-        return serviceProviderId == null ? "" : serviceProviderId;
+    /**
+     * Get rpt_desc
+     */
+    public String getRptDesc() {
+        return rptDesc == null ? "" : rptDesc;
     }
 
-    public void setServiceProviderId(final String inServiceProviderId) {
-        serviceProviderId = inServiceProviderId;
-        dirty_serviceProviderId = true;
+    /**
+     * Set rpt_desc
+     */
+    public void setRptDesc(final String inRptDesc) {
+        rptDesc = inRptDesc;
+        dirty_rptDesc = true;
     }
 
-    public String getOpenId() {
-        return openId == null ? "" : openId;
+    /**
+     * Get impl_class
+     */
+    public String getImplClass() {
+        return implClass == null ? "" : implClass;
     }
 
-    public void setOpenId(final String inOpenId) {
-        openId = inOpenId;
-        dirty_openId = true;
+    /**
+     * Set impl_class
+     */
+    public void setImplClass(final String inImplClass) {
+        implClass = inImplClass;
+        dirty_implClass = true;
     }
 
-    public String getHkidHashed() {
-        return hkidHashed == null ? "" : hkidHashed;
+    /**
+     * Get last_modify_by
+     */
+    public String getLastModifyBy() {
+        return lastModifyBy == null ? "" : lastModifyBy;
     }
 
-    public void setHkidHashed(final String inHkidHashed) {
-        hkidHashed = inHkidHashed;
-        dirty_hkidHashed = true;
+    /**
+     * Set last_modify_by
+     */
+    public void setLastModifyBy(final String inLastModifyBy) {
+        lastModifyBy = inLastModifyBy;
+        dirty_lastModifyBy = true;
     }
 
-    public String getHkidEncrypted() {
-        return hkidEncrypted == null ? "" : hkidEncrypted;
-    }
-
-    public void setHkidEncrypted(final String inHkidEncrypted) {
-        hkidEncrypted = inHkidEncrypted;
-        dirty_hkidEncrypted = true;
-    }
-
-    public String getOptIn() {
-        return optIn == null ? "" : optIn;
-    }
-
-    public void setOptIn(final String inOptIn) {
-        optIn = inOptIn;
-        dirty_optIn = true;
-    }
-
-    public Timestamp getCreateDt() {
-        return createDt;
-    }
-
-    public void setCreateDt(final Timestamp inCreateDt) {
-        createDt = inCreateDt;
-        dirty_createDt = true;
-    }
-
+    /**
+     * Get last_modify_dt
+     */
     public Timestamp getLastModifyDt() {
         return lastModifyDt;
     }
 
+    /**
+     * Set last_modify_dt
+     */
     public void setLastModifyDt(final Timestamp inLastModifyDt) {
         lastModifyDt = inLastModifyDt;
         dirty_lastModifyDt = true;
     }
 
-    public String getCreateBy() {
-        return createBy == null ? "" : createBy;
+    /**
+     * Get team_batch_rpt
+     */
+    public String getTeamBatchRpt() {
+        return teamBatchRpt == null ? "" : teamBatchRpt;
     }
 
-    public void setCreateBy(final String inCreateBy) {
-        createBy = inCreateBy;
-        dirty_createBy = true;
+    /**
+     * Set team_batch_rpt
+     */
+    public void setTeamBatchRpt(final String inTeamBatchRpt) {
+        teamBatchRpt = inTeamBatchRpt;
+        dirty_teamBatchRpt = true;
     }
 
-    public String getLastModifyBy() {
-        return lastModifyBy == null ? "" : lastModifyBy;
+    /**
+     * Get spid_batch_rpt
+     */
+    public String getSpidBatchRpt() {
+        return spidBatchRpt == null ? "" : spidBatchRpt;
     }
 
-    public void setLastModifyBy(final String inLastModifyBy) {
-        lastModifyBy = inLastModifyBy;
-        dirty_lastModifyBy = true;
+    /**
+     * Set spid_batch_rpt
+     */
+    public void setSpidBatchRpt(final String inSpidBatchRpt) {
+        spidBatchRpt = inSpidBatchRpt;
+        dirty_spidBatchRpt = true;
+    }
+
+    /**
+     * Get batch_rpt_func_id
+     */
+    public String getBatchRptFuncId() {
+        return batchRptFuncId == null ? "" : batchRptFuncId;
+    }
+
+    /**
+     * Set batch_rpt_func_id
+     */
+    public void setBatchRptFuncId(final String inBatchRptFuncId) {
+        batchRptFuncId = inBatchRptFuncId;
+        dirty_batchRptFuncId = true;
+    }
+
+    /**
+     * Get batch_rpt_default_format
+     */
+    public String getBatchRptDefaultFormat() {
+        return batchRptDefaultFormat == null ? "" : batchRptDefaultFormat;
+    }
+
+    /**
+     * Set batch_rpt_default_format
+     */
+    public void setBatchRptDefaultFormat(final String inBatchRptDefaultFormat) {
+        batchRptDefaultFormat = inBatchRptDefaultFormat;
+        dirty_batchRptDefaultFormat = true;
+    }
+
+    /**
+     * Get mars_rpt
+     */
+    public String getMarsRpt() {
+        return marsRpt == null ? "" : marsRpt;
+    }
+
+    /**
+     * Set mars_rpt
+     */
+    public void setMarsRpt(final String inMarsRpt) {
+        marsRpt = inMarsRpt;
+        dirty_marsRpt = true;
+    }
+
+    /**
+     * Get cmc_rpt
+     */
+    public String getCmcRpt() {
+        return cmcRpt == null ? "" : cmcRpt;
+    }
+
+    /**
+     * Set cmc_rpt
+     */
+    public void setCmcRpt(final String inCmcRpt) {
+        cmcRpt = inCmcRpt;
+        dirty_cmcRpt = true;
+    }
+
+    /**
+     * Get adhoc_rpt_func_id
+     */
+    public String getAdhocRptFuncId() {
+        return adhocRptFuncId == null ? "" : adhocRptFuncId;
+    }
+
+    /**
+     * Set adhoc_rpt_func_id
+     */
+    public void setAdhocRptFuncId(final String inAdhocRptFuncId) {
+        adhocRptFuncId = inAdhocRptFuncId;
+        dirty_adhocRptFuncId = true;
     }
 }

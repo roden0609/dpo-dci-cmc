@@ -133,6 +133,10 @@
         <xalan-serializer.version>2.7.3</xalan-serializer.version>
         <xercesImpl.version>2.12.2</xercesImpl.version>
 
+        <!-- JasperReports libraries -->
+        <jasperreports.version>7.0.3</jasperreports.version>
+        <jasperreports-pdf.version>7.0.3</jasperreports-pdf.version>
+
         <!-- Unit Test libraries -->
         <junit.version>4.13.2</junit.version>
         <easymock.version>3.4</easymock.version>
@@ -461,6 +465,19 @@
                 </exclusions>
             </dependency>
             <!-- Miscellaneous libraries END -->
+
+            <!-- JasperReports libraries START -->
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports</artifactId>
+                <version>${jasperreports.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports-pdf</artifactId>
+                <version>${jasperreports-pdf.version}</version>
+            </dependency>
+            <!-- JasperReports libraries END -->
 
             <!-- Unit Test libraries START -->
             <dependency>

@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class CmcSysParamServlet extends HttpServlet {
-    private static final long serialVersionUID = 2957686946503571956L;
+    private static final long serialVersionUID = 1L;
     private static Log logger = LogFactory.getLog(CmcSysParamServlet.class);
     private static Timer cmcSysParamTimer = null;
     private final static long SYS_PARAM_DEFAULT_RELOAD_PERIOD = 60 * 60 * 1000; // 1 hr in milli-second
