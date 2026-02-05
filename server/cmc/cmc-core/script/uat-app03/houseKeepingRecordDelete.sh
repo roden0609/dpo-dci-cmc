@@ -7,7 +7,7 @@ echo `date '+%F %H:%M:%S'` $0 ' Start --'
 
 BATCH_CLASS=hk.gov.cmc.batchjob.HouseKeepingRecordService
 
-${JAVA_HOME}/bin/java -Djboss.ejb.client.properties.file.path=${PROPERTIES_FILE} -Dlog4j2.configurationFile=file:${CONFIG}/log4j2.properties -cp ${CLASSPATH} ${BATCH_CLASS} ${PROPERTIES_FILE} 1 ${HOUSEKEEPING_DATE}
+${JAVA_HOME}/bin/java -Djboss.ejb.client.properties.file.path=${PROPERTIES_FILE} -Dlog4j2.configurationFile=file:${CONFIG}/log4j2.properties -cp ${CLASSPATH} ${BATCH_CLASS} ${PROPERTIES_FILE} 3 ${HOUSEKEEPING_DATE}
 
 rc=$?
 

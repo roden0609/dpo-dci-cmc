@@ -116,66 +116,6 @@ public class RemoveHistoricalRecordProcessor {
             logger.info("removeHistoricalRecord - Delete " + delCont + " record(s) in CMC_ASYN_MESSAGE");
 
             row = 1;
-            delCont = 0;
-            while (row > 0) {
-                row = dao.deleteCmcAsynRspCtrlH(conn, delNonUserTblMonthLimit, inputDate, batchSize);
-                conn.commit();
-                delCont += row;
-                if (row < batchSize) {
-                    break;
-                }
-            }
-            logger.info("removeHistoricalRecord - Delete " + delCont + " record(s) in CMC_ASYN_RSP_CTRL_H");
-
-            row = 1;
-            delCont = 0;
-            while (row > 0) {
-                row = dao.deleteCmcAsynRspCtrl(conn, delNonUserTblMonthLimit, inputDate, batchSize);
-                conn.commit();
-                delCont += row;
-                if (row < batchSize) {
-                    break;
-                }
-            }
-            logger.info("removeHistoricalRecord - Delete " + delCont + " record(s) in CMC_ASYN_RSP_CTRL");
-
-            row = 1;
-            delCont = 0;
-            while (row > 0) {
-                row = dao.deleteCmcEgisNotiStatusH(conn, delNonUserTblMonthLimit, inputDate, batchSize);
-                conn.commit();
-                delCont += row;
-                if (row < batchSize) {
-                    break;
-                }
-            }
-            logger.info("removeHistoricalRecord - Delete " + delCont + " record(s) in CMC_EGIS_NOTI_STATUS_H");
-
-            row = 1;
-            delCont = 0;
-            while (row > 0) {
-                row = dao.deleteCmcEgisNotiStatus(conn, delNonUserTblMonthLimit, inputDate, batchSize);
-                conn.commit();
-                delCont += row;
-                if (row < batchSize) {
-                    break;
-                }
-            }
-            logger.info("removeHistoricalRecord - Delete " + delCont + " record(s) in CMC_EGIS_NOTI_STATUS");
-
-            row = 1;
-            int delParentCont = 0;
-            while (row > 0) {
-                row = dao.deleteCmcArchiveIndex(conn, delArchIdxTblMonthLimit, inputDate, batchSize);
-                conn.commit();
-                delParentCont += row;
-                if (row < batchSize) {
-                    break;
-                }
-            }
-            logger.info("removeHistoricalRecord - Delete " + delParentCont + " record(s) in CMC_ARCHIVE_INDEX");
-
-            row = 1;
             int iasMsgStatusCont = 0;
             while (row > 0) {
                 row = dao.deleteIasMsgStatusQueue(conn, iasMsgHousekeepRetentionMonths, batchSize);

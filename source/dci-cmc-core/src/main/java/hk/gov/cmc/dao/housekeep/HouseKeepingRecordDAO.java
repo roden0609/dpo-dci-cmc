@@ -163,14 +163,14 @@ public class HouseKeepingRecordDAO {
     }
 
     public List<IasUserToDoItem> getDelIasToDoItemIDFromIasUserToDoItem(HPFW_Connection hpfwConn, int startIndex,
-            int endIndex, int iasMsgHousekeepRetentionMonths) throws Exception {
+            int endIndex, int iasToDoItemHousekeepRetentionMonths) throws Exception {
         List<IasUserToDoItem> keyList = new ArrayList<IasUserToDoItem>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
             Connection conn = hpfwConn.getConnectionPtr();
             ps = conn.prepareStatement(GET_DEL_IAS_TO_DO_ITEM_ID_FROM_IAS_USER_TO_DO_ITEM);
-            ps.setInt(1, -iasMsgHousekeepRetentionMonths);
+            ps.setInt(1, -iasToDoItemHousekeepRetentionMonths);
             ps.setInt(2, startIndex - 1);
             ps.setInt(3, endIndex - (startIndex - 1));
             rs = ps.executeQuery();
@@ -189,14 +189,14 @@ public class HouseKeepingRecordDAO {
 
     public List<IasUserApplication> getDelIasApplicationIDFromIasUserApplication(HPFW_Connection hpfwConn,
             int startIndex,
-            int endIndex, int iasMsgHousekeepRetentionMonths) throws Exception {
+            int endIndex, int iasApplicationHousekeepRetentionMonths) throws Exception {
         List<IasUserApplication> keyList = new ArrayList<IasUserApplication>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
             Connection conn = hpfwConn.getConnectionPtr();
             ps = conn.prepareStatement(GET_DEL_IAS_APPLICATION_ID_FROM_IAS_USER_APPLICATION);
-            ps.setInt(1, -iasMsgHousekeepRetentionMonths);
+            ps.setInt(1, -iasApplicationHousekeepRetentionMonths);
             ps.setInt(2, startIndex - 1);
             ps.setInt(3, endIndex - (startIndex - 1));
             rs = ps.executeQuery();
@@ -827,132 +827,6 @@ public class HouseKeepingRecordDAO {
             ps.setInt(3, batchSize);
             int row = ps.executeUpdate();
             return row;
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            close(ps, rs);
-        }
-    }
-
-    public int deleteCmcAsynRspCtrl(HPFW_Connection hpfwConn, int delNonUserTblMonthLimit, String inputDate,
-            int batchSize) throws Exception {
-        String deleteSqlStr = "Delete from CMC_ASYN_RSP_CTRL where " +
-                " CREATE_DT < DATE(STR_TO_DATE(?,'%Y-%m-%d') + interval ? MONTH) and (status='F' or status='A') LIMIT ? ";
-
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            Connection conn = hpfwConn.getConnectionPtr();
-            ps = conn.prepareStatement(deleteSqlStr);
-            ps.setString(1, inputDate);
-            ps.setInt(2, -delNonUserTblMonthLimit);
-            ps.setInt(3, batchSize);
-            int row = ps.executeUpdate();
-            return row;
-
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            close(ps, rs);
-        }
-    }
-
-    public int deleteCmcAsynRspCtrlH(HPFW_Connection hpfwConn, int delNonUserTblMonthLimit, String inputDate,
-            int batchSize) throws Exception {
-        String deleteSqlStr = "Delete from CMC_ASYN_RSP_CTRL_H where " +
-                " corr_id in (select corr_id from CMC_ASYN_RSP_CTRL where CREATE_DT < DATE(STR_TO_DATE(?,'%Y-%m-%d') + interval ? MONTH) and (status='F' or status='A')) "
-                +
-                " LIMIT ? ";
-
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-
-            Connection conn = hpfwConn.getConnectionPtr();
-            ps = conn.prepareStatement(deleteSqlStr);
-            ps.setString(1, inputDate);
-            ps.setInt(2, -delNonUserTblMonthLimit);
-            ps.setInt(3, batchSize);
-            int row = ps.executeUpdate();
-            return row;
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            close(ps, rs);
-        }
-    }
-
-    public int deleteCmcEgisNotiStatus(HPFW_Connection hpfwConn, int delNonUserTblMonthLimit, String inputDate,
-            int batchSize) throws Exception {
-        String deleteSqlStr = "Delete from CMC_EGIS_NOTI_STATUS where " +
-                " CREATE_DT < DATE(STR_TO_DATE(?,'%Y-%m-%d') + interval ? MONTH) and (status='C' or status='F') LIMIT ? ";
-
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            Connection conn = hpfwConn.getConnectionPtr();
-            ps = conn.prepareStatement(deleteSqlStr);
-            ps.setString(1, inputDate);
-            ps.setInt(2, -delNonUserTblMonthLimit);
-            ps.setInt(3, batchSize);
-            int row = ps.executeUpdate();
-            return row;
-
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            close(ps, rs);
-        }
-    }
-
-    public int deleteCmcEgisNotiStatusH(HPFW_Connection hpfwConn, int delNonUserTblMonthLimit, String inputDate,
-            int batchSize) throws Exception {
-        String deleteSqlStr = "Delete from CMC_EGIS_NOTI_STATUS_H where " +
-                " noti_job_id in (" +
-                "	select noti_job_id from CMC_EGIS_NOTI_STATUS where CREATE_DT < DATE(STR_TO_DATE(?,'%Y-%m-%d') + interval ? MONTH) "
-                +
-                "	and (status='C' or status='F')" +
-                ") " +
-                " LIMIT ? ";
-
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            Connection conn = hpfwConn.getConnectionPtr();
-            ps = conn.prepareStatement(deleteSqlStr);
-            ps.setString(1, inputDate);
-            ps.setInt(2, -delNonUserTblMonthLimit);
-            ps.setInt(3, batchSize);
-            int row = ps.executeUpdate();
-            return row;
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            close(ps, rs);
-        }
-    }
-
-    public int deleteCmcArchiveIndex(HPFW_Connection hpfwConn, int delArchIdxTblMonthLimit, String inputDate,
-            int batchSize) throws Exception {
-        String deleteSqlStr = "Delete from CMC_ARCHIVE_INDEX where " +
-                " LAST_ARCHIVE_REC_CREATE_DT < DATE(STR_TO_DATE(?,'%Y-%m-%d') + interval ? MONTH) LIMIT ? ";
-
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            Connection conn = hpfwConn.getConnectionPtr();
-            ps = conn.prepareStatement(deleteSqlStr);
-            ps.setString(1, inputDate);
-            ps.setInt(2, -delArchIdxTblMonthLimit);
-            ps.setInt(3, batchSize);
-            int row = ps.executeUpdate();
-            return row;
-
         } catch (Exception e) {
             throw e;
         } finally {
