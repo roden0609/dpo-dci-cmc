@@ -13,6 +13,8 @@ mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_noti_rest
 mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_pki_soap_client -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_pki_soap_client-1.1.0.jar
 mvn install:install-file -DgroupId=hk.gov.gcis.ss -DartifactId=gcis_ss_pki_rest_client -Dversion=1.1.0 -Dpackaging=jar -Dfile=lib/gcis_rm3/gcis_ss_pki_rest_client-1.1.0.jar
 
+mvn install:install-file -DgroupId=net.sf.jasperreports -DartifactId=jasperreports-fonts-patched -Dversion=1.0.0 -Dpackaging=jar -Dfile=lib/cmc/jasperreports-fonts-patched-1.0.0.jar
+
 <!-- Clean and build the EAR -->
 mvn -f source/pom.xml clean package
 

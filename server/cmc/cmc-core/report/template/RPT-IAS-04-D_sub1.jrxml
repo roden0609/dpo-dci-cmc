@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_IAS_04_D_sub1" language="groovy" pageWidth="779" pageHeight="594" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="779" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
+<jasperReport name="RPT_IAS_04_D_sub1" language="groovy" pageWidth="779" pageHeight="594" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="779" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="dcb1e8ae-a4a9-4d0a-9ae7-25772e728f63">
 	<property name="ireport.zoom" value="2.1435888100000016"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="SP_NAME" class="java.lang.String"/>
 	<parameter name="REQUEST_DATE" class="java.lang.String"/>
-	<queryString>
-		<![CDATA[select ims.template_id template_id, ims.template_version version, ims.no_of_message_created msg_created, ims.no_of_message_created_read msg_read, ims.no_of_message_created_unread msg_unread, ims.no_of_message_sent msg_sent
+	<query language="sql"><![CDATA[select ims.template_id template_id, ims.template_version version, ims.no_of_message_created msg_created, ims.no_of_message_created_read msg_read, ims.no_of_message_created_unread msg_unread, ims.no_of_message_sent msg_sent
 from ias_message_stat ims, cmc_service_provider csp, cmc_template ct, cmc_template_type ctt
 where ims.service_provider_id = csp.service_provider_id
 and DATE_FORMAT(ims.stat_date, '%d/%m/%Y') = $P{REQUEST_DATE}
@@ -14,260 +13,139 @@ and   ims.template_id = ct.template_id
 and   ims.template_version = ct.template_version
 and   ct.template_type = ctt.template_type
 and   (ctt.type_ind = 'M' or ctt.type_ind = 'I' or ctt.type_ind = 'A')
-and csp.service_provider_name = $P{SP_NAME}]]>
-	</queryString>
+and csp.service_provider_name = $P{SP_NAME}]]></query>
 	<field name="TEMPLATE_ID" class="java.lang.String"/>
 	<field name="VERSION" class="java.lang.String"/>
 	<field name="MSG_CREATED" class="java.math.BigDecimal"/>
 	<field name="MSG_READ" class="java.math.BigDecimal"/>
 	<field name="MSG_UNREAD" class="java.math.BigDecimal"/>
 	<field name="MSG_SENT" class="java.math.BigDecimal"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="23" splitType="Stretch">
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="124" y="0" width="316" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{SP_NAME}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="0" y="0" width="137" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10"/>
-				</textElement>
-				<text><![CDATA[Service Provider Name:]]></text>
-			</staticText>
-		</band>
+	<background splitType="Stretch"/>
+	<title height="23" splitType="Stretch">
+		<element kind="textField" uuid="ab2fc2b6-4c90-421d-887d-ffdacec0e9df" key="textField-7" x="124" y="0" width="316" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+			<expression><![CDATA[$P{SP_NAME}]]></expression>
+		</element>
+		<element kind="staticText" uuid="c0bfa094-d48f-46fb-a456-2644292d5fac" x="0" y="0" width="137" height="14" fontName="Times New Roman" fontSize="10.0">
+			<text><![CDATA[Service Provider Name:]]></text>
+		</element>
 	</title>
-	<pageHeader>
-		<band splitType="Stretch"/>
-	</pageHeader>
-	<columnHeader>
-		<band splitType="Stretch"/>
-	</columnHeader>
+	<pageHeader splitType="Stretch"/>
+	<columnHeader splitType="Stretch"/>
 	<detail>
 		<band height="93" splitType="Stretch">
-			<staticText>
-				<reportElement x="16" y="30" width="223" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10"/>
-				</textElement>
+			<element kind="staticText" uuid="34adc426-b0db-441d-9db1-8e0ef6c9bde3" x="16" y="30" width="223" height="14" fontName="Times New Roman" fontSize="10.0">
 				<text><![CDATA[Number of iAM Smart Message(s) created on]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="283" y="30" width="61" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{REQUEST_DATE}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="16" y="72" width="268" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10"/>
-				</textElement>
+			</element>
+			<element kind="textField" uuid="868325d8-4329-4fcb-b6a8-a977f48da3f5" key="textField-7" x="283" y="30" width="61" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+				<expression><![CDATA[$P{REQUEST_DATE}]]></expression>
+			</element>
+			<element kind="staticText" uuid="73ee8f72-a127-4663-89b2-29e819de3ed4" x="16" y="72" width="268" height="14" fontName="Times New Roman" fontSize="10.0">
 				<text><![CDATA[Number of iAM Smart Message(s) unread which is/are created on]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="351" y="58" width="7" height="14"/>
+			</element>
+			<element kind="staticText" uuid="507a0668-a0e7-40e6-8bc4-2d4ff191961a" key="staticText-18" x="351" y="58" width="7" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+				<text><![CDATA[:]]></text>
 				<box>
 					<topPen lineWidth="0.0" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
+			</element>
+			<element kind="staticText" uuid="2617d93b-96c5-458c-b9af-17042c5a4cac" key="staticText-18" x="351" y="30" width="7" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
 				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="351" y="30" width="7" height="14"/>
 				<box>
 					<topPen lineWidth="0.0" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="362" y="58" width="60" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{MSG_READ}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="362" y="30" width="60" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{MSG_CREATED}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="0" y="0" width="152" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10"/>
-				</textElement>
+			</element>
+			<element kind="textField" uuid="849c4081-8180-4594-86e9-0060a4d00be7" key="textField-7" x="362" y="58" width="60" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+				<expression><![CDATA[$F{MSG_READ}]]></expression>
+			</element>
+			<element kind="textField" uuid="29ef6ad6-79f8-472b-b77f-82a6462c3e90" key="textField-7" x="362" y="30" width="60" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+				<expression><![CDATA[$F{MSG_CREATED}]]></expression>
+			</element>
+			<element kind="staticText" uuid="19de2b06-90c7-4692-a4ff-c38f8e36e763" x="0" y="0" width="152" height="14" fontName="Times New Roman" fontSize="10.0">
 				<text><![CDATA[Template ID of iAM Smart Message]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="175" y="0" width="7" height="14"/>
+			</element>
+			<element kind="staticText" uuid="0f1ade85-fb38-4eff-8a30-19fd71575007" key="staticText-18" x="175" y="0" width="7" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+				<text><![CDATA[:]]></text>
 				<box>
 					<topPen lineWidth="0.0" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="16" width="167" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10"/>
-				</textElement>
+			</element>
+			<element kind="staticText" uuid="476be7e2-03f2-4789-9bd9-d1bb7de676ec" x="0" y="16" width="167" height="14" fontName="Times New Roman" fontSize="10.0">
 				<text><![CDATA[Version Number of iAM Smart Message]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="175" y="16" width="7" height="14"/>
+			</element>
+			<element kind="staticText" uuid="e600f6ec-c72e-44d5-b69c-a36000fc6cd4" key="staticText-18" x="175" y="16" width="7" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+				<text><![CDATA[:]]></text>
 				<box>
 					<topPen lineWidth="0.0" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="16" y="58" width="268" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10"/>
-				</textElement>
+			</element>
+			<element kind="staticText" uuid="1690eabe-97f8-413a-8343-4a058d48d488" x="16" y="58" width="268" height="14" fontName="Times New Roman" fontSize="10.0">
 				<text><![CDATA[Number of iAM Smart Message(s) read which is/are created on]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="351" y="72" width="7" height="14"/>
+			</element>
+			<element kind="staticText" uuid="9759230b-7365-4c64-b755-3ecb40cfde54" key="staticText-18" x="351" y="72" width="7" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+				<text><![CDATA[:]]></text>
 				<box>
 					<topPen lineWidth="0.0" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="362" y="72" width="60" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{MSG_UNREAD}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="186" y="16" width="60" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{VERSION}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="186" y="0" width="158" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{TEMPLATE_ID}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="284" y="58" width="61" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{REQUEST_DATE}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="284" y="72" width="61" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{REQUEST_DATE}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="16" y="44" width="268" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10"/>
-				</textElement>
+			</element>
+			<element kind="textField" uuid="823a669b-d93d-4a6a-b132-5aa6e6d85abf" key="textField-7" x="362" y="72" width="60" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+				<expression><![CDATA[$F{MSG_UNREAD}]]></expression>
+			</element>
+			<element kind="textField" uuid="f76d9488-b6aa-488c-9c9d-46b9e795dd4b" key="textField-7" x="186" y="16" width="60" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+				<expression><![CDATA[$F{VERSION}]]></expression>
+			</element>
+			<element kind="textField" uuid="e70641ee-e503-4b0b-999e-21a0ea50a650" key="textField-7" x="186" y="0" width="158" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+				<expression><![CDATA[$F{TEMPLATE_ID}]]></expression>
+			</element>
+			<element kind="textField" uuid="31543d55-2643-4b8c-91d0-1af68da1d7c1" key="textField-7" x="284" y="58" width="61" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+				<expression><![CDATA[$P{REQUEST_DATE}]]></expression>
+			</element>
+			<element kind="textField" uuid="c3ecc3d9-d524-4bb5-82f8-57cf6769828a" key="textField-7" x="284" y="72" width="61" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+				<expression><![CDATA[$P{REQUEST_DATE}]]></expression>
+			</element>
+			<element kind="staticText" uuid="d7244e71-4a6c-448d-ada1-a0020d89849b" x="16" y="44" width="268" height="14" fontName="Times New Roman" fontSize="10.0">
 				<text><![CDATA[Number of iAM Smart Message(s) with push notification sent on]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="284" y="44" width="61" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{REQUEST_DATE}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement key="staticText-18" x="351" y="44" width="7" height="14"/>
+			</element>
+			<element kind="textField" uuid="f7ea2296-1ae1-4c79-adc3-7598ded755c7" key="textField-7" x="284" y="44" width="61" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+				<expression><![CDATA[$P{REQUEST_DATE}]]></expression>
+			</element>
+			<element kind="staticText" uuid="b7f2735a-ca2b-44dd-8363-42de74ae9314" key="staticText-18" x="351" y="44" width="7" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+				<text><![CDATA[:]]></text>
 				<box>
 					<topPen lineWidth="0.0" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="362" y="44" width="60" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{MSG_SENT}]]></textFieldExpression>
-			</textField>
+			</element>
+			<element kind="textField" uuid="a291e56e-87ff-4de5-bdc9-2c6a4bd504a7" key="textField-7" x="362" y="44" width="60" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+				<expression><![CDATA[$F{MSG_SENT}]]></expression>
+			</element>
 		</band>
 	</detail>
-	<columnFooter>
-		<band splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band splitType="Stretch"/>
-	</summary>
-	<noData>
-		<band height="23">
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="124" y="0" width="316" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{SP_NAME}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="0" y="0" width="137" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10"/>
-				</textElement>
-				<text><![CDATA[Service Provider Name:]]></text>
-			</staticText>
-		</band>
+	<columnFooter splitType="Stretch"/>
+	<pageFooter splitType="Stretch"/>
+	<summary splitType="Stretch"/>
+	<noData height="23">
+		<element kind="textField" uuid="7efb78e9-6240-4ff6-bb22-5a4da79d8b65" key="textField-7" x="124" y="0" width="316" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+			<expression><![CDATA[$P{SP_NAME}]]></expression>
+		</element>
+		<element kind="staticText" uuid="ebfade39-4ca0-4c21-a2ef-d7c00e52ca06" x="0" y="0" width="137" height="14" fontName="Times New Roman" fontSize="10.0">
+			<text><![CDATA[Service Provider Name:]]></text>
+		</element>
 	</noData>
 </jasperReport>

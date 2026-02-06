@@ -37,10 +37,10 @@
         <servlet-name>CmcSysParamServlet</servlet-name>
         <url-pattern>/servlet/CmcSysParamServlet</url-pattern>
     </servlet-mapping>
-    <!-- <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GenAdminBatchReportServlet</servlet-name>
         <url-pattern>/servlet/GenAdminBatchReportServlet</url-pattern>
-    </servlet-mapping> -->
+    </servlet-mapping>
     <!-- <servlet-mapping>
         <servlet-name>RegenerateAdminBatchReportServlet</servlet-name>
         <url-pattern>/servlet/RegenerateAdminBatchReportServlet</url-pattern>

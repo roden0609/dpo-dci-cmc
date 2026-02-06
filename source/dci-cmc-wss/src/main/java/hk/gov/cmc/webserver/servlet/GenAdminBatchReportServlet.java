@@ -57,6 +57,8 @@ public class GenAdminBatchReportServlet extends HttpServlet {
             reportId = req.getParameter(REQUSET_PARA_NAME_REPORT_ID);
             batchName = req.getParameter(REQUEST_PARA_NAME_BATCH_NAME);
 
+            logger.info("req.getParameter(reportId) = " + reportId + ", req.getParameter(batchName) = " + batchName);
+
             hpfwConn = HPFW_Connection.getHPFW_Connection(false);
             hpfwConn.setAutoCommit(false);
             hpfwConn.begin(null, null, HPFW_Connection.DIRECT);

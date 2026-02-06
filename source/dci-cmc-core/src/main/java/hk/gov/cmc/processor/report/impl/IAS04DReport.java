@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,25 +45,26 @@ public class IAS04DReport implements IReportImplement {
     @Override
     public List<ReportResult> generateReport(AdmRptInfo_ admRptInfo, Map<String, String> paramMap) throws Exception {
 
-        if (logger.isDebugEnabled()) logger.debug("generateReport() begin");
+        if (logger.isDebugEnabled())
+            logger.debug("generateReport() begin");
 
-        if (logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
             logger.debug("AdmRptInfo_ indebugation:");
-            logger.debug("BatchRptDefaultFormat["+admRptInfo.getBatchRptDefaultFormat()+"]");
-            logger.debug("BatchRptFuncId["+admRptInfo.getBatchRptFuncId()+"]");
-            logger.debug("CmcRpt["+admRptInfo.getCmcRpt()+"]");
-            logger.debug("ImplClass["+admRptInfo.getImplClass()+"]");
-            logger.debug("LastModifyBy["+admRptInfo.getLastModifyBy()+"]");
-            logger.debug("LastModifyDt["+admRptInfo.getLastModifyDt()+"]");
-            logger.debug("MarsRpt["+admRptInfo.getMarsRpt()+"]");
-            logger.debug("RptDesc["+admRptInfo.getRptDesc()+"]");
-            logger.debug("RptId["+admRptInfo.getRptId()+"]");
-            logger.debug("SpidBatchRpt["+admRptInfo.getSpidBatchRpt()+"]");
-            logger.debug("TeamBatchRpt["+admRptInfo.getTeamBatchRpt()+"]");
-            if (paramMap != null && !paramMap.isEmpty()){
+            logger.debug("BatchRptDefaultFormat[" + admRptInfo.getBatchRptDefaultFormat() + "]");
+            logger.debug("BatchRptFuncId[" + admRptInfo.getBatchRptFuncId() + "]");
+            logger.debug("CmcRpt[" + admRptInfo.getCmcRpt() + "]");
+            logger.debug("ImplClass[" + admRptInfo.getImplClass() + "]");
+            logger.debug("LastModifyBy[" + admRptInfo.getLastModifyBy() + "]");
+            logger.debug("LastModifyDt[" + admRptInfo.getLastModifyDt() + "]");
+            logger.debug("MarsRpt[" + admRptInfo.getMarsRpt() + "]");
+            logger.debug("RptDesc[" + admRptInfo.getRptDesc() + "]");
+            logger.debug("RptId[" + admRptInfo.getRptId() + "]");
+            logger.debug("SpidBatchRpt[" + admRptInfo.getSpidBatchRpt() + "]");
+            logger.debug("TeamBatchRpt[" + admRptInfo.getTeamBatchRpt() + "]");
+            if (paramMap != null && !paramMap.isEmpty()) {
                 logger.debug("paramMap key and value:");
-                for(String key : paramMap.keySet()){
-                    logger.debug("key["+key+"], value["+paramMap.get(key)+"]");
+                for (String key : paramMap.keySet()) {
+                    logger.debug("key[" + key + "], value[" + paramMap.get(key) + "]");
                 }
             }
         }
@@ -71,14 +73,14 @@ public class IAS04DReport implements IReportImplement {
         HPFW_Connection hpfwConn = null;
         ByteArrayOutputStream baos = null;
 
-        try{
+        try {
             ReportResult result = new ReportResult();
             boolean isAdhoc = MAP_PARAM_VALUE_YES.equals(paramMap.get(MAP_PARAM_KEY_IS_ADHOC));
             boolean isBatchRegen = MAP_PARAM_VALUE_YES.equals(paramMap.get(MAP_PARAM_KEY_IS_BATCH_REGEN));
 
-            if (logger.isDebugEnabled()){
-                logger.debug("isAdhoc["+isAdhoc+"]");
-                logger.debug("isBatchRegen["+isBatchRegen+"]");
+            if (logger.isDebugEnabled()) {
+                logger.debug("isAdhoc[" + isAdhoc + "]");
+                logger.debug("isBatchRegen[" + isBatchRegen + "]");
             }
 
             String reportingDateStr = paramMap.get(ReportConstants.MAP_PARAM_KEY_REPORTING_DATE);
@@ -93,24 +95,25 @@ public class IAS04DReport implements IReportImplement {
             cal.add(Calendar.DATE, -1);
             Date requestDate = cal.getTime();
 
-            if (logger.isDebugEnabled()){
-                logger.debug("reportingDateStr["+reportingDateStr+"]");
-                logger.debug("spId["+spId+"]");
-                logger.debug("requestDate["+requestDate+"]");
+            if (logger.isDebugEnabled()) {
+                logger.debug("reportingDateStr[" + reportingDateStr + "]");
+                logger.debug("spId[" + spId + "]");
+                logger.debug("requestDate[" + requestDate + "]");
             }
 
-            if (reportingDateStr == null || reportingDateStr.trim().length() == 0){
-                throw new NullPointerException("paramMap "+ReportConstants.MAP_PARAM_KEY_REPORTING_DATE+" is null or empty.");
+            if (reportingDateStr == null || reportingDateStr.trim().length() == 0) {
+                throw new NullPointerException(
+                        "paramMap " + ReportConstants.MAP_PARAM_KEY_REPORTING_DATE + " is null or empty.");
             }
             if (spId == null || spId.trim().length() == 0) {
-                throw new NullPointerException("paramMap "+MAP_PARAM_KEY_SP_ID+" is null or empty.");
+                throw new NullPointerException("paramMap " + MAP_PARAM_KEY_SP_ID + " is null or empty.");
             }
 
             SimpleDateFormat displaySdf = new SimpleDateFormat("dd/MM/yyyy");
             SimpleDateFormat inputDateSdf = new SimpleDateFormat("yyyyMMdd");
 
             StringBuilder whereClause = new StringBuilder();
-            if (!MAP_PARAM_VALUE_IS_ADMIN.equals(spId)){
+            if (!MAP_PARAM_VALUE_IS_ADMIN.equals(spId)) {
                 whereClause.append("and csp.service_provider_id='").append(spId).append("'");
             }
 
@@ -118,7 +121,7 @@ public class IAS04DReport implements IReportImplement {
             Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("SPID", (MAP_PARAM_VALUE_IS_ADMIN.equals(spId) ? null : spId));
             parameters.put("SEARCH_BY_SPID", whereClause.toString());
-            parameters.put("SUBREPORT_DIR", JASPER_REPORT_PATH+"/");
+            parameters.put("SUBREPORT_DIR", JASPER_REPORT_PATH + "/");
             parameters.put("REQUEST_DATE", displaySdf.format(requestDate));
             parameters.put("GEN_DATE", displaySdf.format(reportingDate));
 
@@ -128,13 +131,16 @@ public class IAS04DReport implements IReportImplement {
             if (!dao.recordExistInMessStatTable(hpfwConn, displaySdf.format(requestDate)))
                 dao.updateMessStatTable(hpfwConn, inputDateSdf.format(requestDate));
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(JASPER_REPORT_PATH+"/"+admRptInfo.getRptId()+".jasper", parameters, hpfwConn.getConnectionPtr());
+            JasperPrint jasperPrint = JasperFillManager.fillReport(
+                    JASPER_REPORT_PATH + "/" + admRptInfo.getRptId() + ".jasper", parameters,
+                    hpfwConn.getConnectionPtr());
 
             baos = new ByteArrayOutputStream();
 
             // Export to pdf
             JRPdfExporter exporter = new JRPdfExporter();
-            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            List<JasperPrint> jasperPrintList = Collections.singletonList(jasperPrint);
+            exporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList));
             exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
             exporter.exportReport();
             baos.close();
@@ -148,20 +154,21 @@ public class IAS04DReport implements IReportImplement {
             result.setOutputFileByteArray(baos.toByteArray());
             resultList.add(result);
 
-            if (logger.isInfoEnabled()) logger.info("IAS04DReport successful reportingDateStr["+reportingDateStr+"], requestDate["+requestDate+"], spId["+spId+"]");
+            if (logger.isInfoEnabled())
+                logger.info("IAS04DReport successful reportingDateStr[" + reportingDateStr + "], requestDate["
+                        + requestDate + "], spId[" + spId + "]");
 
             return resultList;
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             logger.error("General exception raised in generateReport", ex);
             throw ex;
-        }
-        finally{
+        } finally {
             if (hpfwConn != null)
                 HPFW_Connection.close(hpfwConn);
             if (baos != null)
                 baos.close();
-            if (logger.isDebugEnabled()) logger.debug("generateReport() end");
+            if (logger.isDebugEnabled())
+                logger.debug("generateReport() end");
         }
     }
 }
