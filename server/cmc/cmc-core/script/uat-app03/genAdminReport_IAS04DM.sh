@@ -5,7 +5,11 @@
 
 thisDay=`date +%d`
 
-REPORT_IDS="RPT-IAS-04-D"
+if [ "$thisDay" = "01" ]; then
+        REPORT_IDS="RPT-IAS-04-D,RPT-IAS-04-M"
+else
+    REPORT_IDS="RPT-IAS-04-D"
+fi
 
 BATCH_NAME_SUFFIX="IAS04DM"
 

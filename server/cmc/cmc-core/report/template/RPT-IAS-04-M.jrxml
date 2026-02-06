@@ -1,17 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT-IAS-04-M" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="782" leftMargin="30" rightMargin="30" topMargin="36" bottomMargin="20">
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
+<jasperReport name="RPT-IAS-04-M" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="782" leftMargin="30" rightMargin="30" topMargin="36" bottomMargin="20" uuid="1164a68b-5af1-4ed0-871e-8b83666eb3c5">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="SUBREPORT_DIR" forPrompting="false" class="java.lang.String"/>
 	<parameter name="REQUEST_MONTH" class="java.lang.String"/>
 	<parameter name="GEN_DATE" class="java.lang.String"/>
 	<parameter name="START_DATE" class="java.lang.String"/>
 	<parameter name="END_DATE" class="java.lang.String"/>
 	<parameter name="SEARCH_BY_SPID" class="java.lang.String"/>
 	<parameter name="SPID" class="java.lang.String"/>
-	<queryString>
-		<![CDATA[select csp.service_provider_name sp_name
+	<query language="sql"><![CDATA[select csp.service_provider_name sp_name
 from ias_message_stat ims, cmc_service_provider csp, cmc_template ct, cmc_template_type ctt
 where ims.service_provider_id = csp.service_provider_id
 and   DATE_FORMAT(ims.stat_date, '%Y%m') = $P{REQUEST_MONTH}
@@ -21,366 +20,240 @@ and   ct.template_type = ctt.template_type
 and   (ctt.type_ind = 'M' or ctt.type_ind = 'I' or ctt.type_ind = 'A')
 $P!{SEARCH_BY_SPID}
 group by csp.service_provider_name
-order by csp.service_provider_name asc]]>
-	</queryString>
+order by csp.service_provider_name asc]]></query>
 	<field name="SP_NAME" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
+		<description><![CDATA[]]></description>
 	</field>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band splitType="Stretch"/>
-	</title>
-	<pageHeader>
-		<band height="57" splitType="Stretch">
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="591" y="13" width="84" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement key="staticText-1" x="0" y="0" width="57" height="13"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Report ID]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="591" y="0" width="117" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{GEN_DATE}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement key="staticText-18" x="61" y="13" width="7" height="13"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="575" y="13" width="7" height="14"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="61" y="0" width="7" height="13"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="473" y="13" width="58" height="14"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Page No.]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="473" y="0" width="137" height="14"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Report Generation Date]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-1" x="0" y="13" width="68" height="13"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Report Name]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="575" y="0" width="7" height="14"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-1" x="76" y="0" width="218" height="13"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[RPT-IAS-04-M]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-1" x="76" y="14" width="397" height="14"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Monthly Statistics Report on iAM Smart Messages Generated, Read or Unread]]></text>
-			</staticText>
-		</band>
+	<background splitType="Stretch"/>
+	<title splitType="Stretch"/>
+	<pageHeader height="57" splitType="Stretch">
+		<element kind="textField" uuid="4d1da9d1-b658-4872-a8bc-ce2ca4442cc4" key="textField-7" x="591" y="13" width="84" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+			<expression><![CDATA[$V{PAGE_NUMBER}]]></expression>
+		</element>
+		<element kind="staticText" uuid="cf95006d-5579-414e-a6a8-a878773ee09c" key="staticText-1" x="0" y="0" width="57" height="13" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[Report ID]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="54e1a5e1-4817-43ec-91dc-9578dfc75f11" key="textField-7" x="591" y="0" width="117" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+			<expression><![CDATA[$P{GEN_DATE}]]></expression>
+		</element>
+		<element kind="staticText" uuid="34471f6f-b7be-467d-a333-09ba6421cf7e" key="staticText-18" x="61" y="13" width="7" height="13" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+			<text><![CDATA[:]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="8445607e-8fb3-4198-9531-6a108e5fa1eb" key="staticText-18" x="575" y="13" width="7" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+			<text><![CDATA[:]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="f9b742fd-5615-427a-9b4b-b8aab895fb70" key="staticText-18" x="61" y="0" width="7" height="13" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+			<text><![CDATA[:]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="7bfaa276-e19a-44bc-9e70-e91c7f3604e7" key="staticText-18" x="473" y="13" width="58" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[Page No.]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="276ae311-4118-4858-9e28-2e24c7f5000f" key="staticText-18" x="473" y="0" width="137" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[Report Generation Date]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="4e4e5c7b-2deb-49d5-b860-518e63739b3e" key="staticText-1" x="0" y="13" width="68" height="13" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[Report Name]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="7608ce32-69df-4547-a5d3-52374a327201" key="staticText-18" x="575" y="0" width="7" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+			<text><![CDATA[:]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="21db33e5-474f-4122-87f6-821d6ab44733" key="staticText-1" x="76" y="0" width="218" height="13" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[RPT-IAS-04-M]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="8a632a73-2400-47ef-8b46-c651c0f10605" key="staticText-1" x="76" y="14" width="397" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[Monthly Statistics Report on iAM Smart Messages Generated, Read or Unread]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
 	</pageHeader>
-	<columnHeader>
-		<band splitType="Stretch"/>
-	</columnHeader>
+	<columnHeader splitType="Stretch"/>
 	<detail>
 		<band height="73" splitType="Stretch">
-			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="782" height="56"/>
-				<subreportParameter name="START_DATE">
-					<subreportParameterExpression><![CDATA[$P{START_DATE}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="REQUEST_MONTH">
-					<subreportParameterExpression><![CDATA[$P{REQUEST_MONTH}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="END_DATE">
-					<subreportParameterExpression><![CDATA[$P{END_DATE}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="SP_NAME">
-					<subreportParameterExpression><![CDATA[$F{SP_NAME}]]></subreportParameterExpression>
-				</subreportParameter>
+			<element kind="subreport" uuid="09eb0827-1605-41ad-9c6c-c21070d8ecf4" positionType="Float" x="0" y="0" width="782" height="56">
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "RPT-IAS-04-M_sub1.jasper"]]></subreportExpression>
-			</subreport>
+				<expression><![CDATA[$P{SUBREPORT_DIR} + "RPT-IAS-04-M_sub1.jasper"]]></expression>
+				<parameter name="START_DATE">
+					<expression><![CDATA[$P{START_DATE}]]></expression>
+				</parameter>
+				<parameter name="REQUEST_MONTH">
+					<expression><![CDATA[$P{REQUEST_MONTH}]]></expression>
+				</parameter>
+				<parameter name="END_DATE">
+					<expression><![CDATA[$P{END_DATE}]]></expression>
+				</parameter>
+				<parameter name="SP_NAME">
+					<expression><![CDATA[$F{SP_NAME}]]></expression>
+				</parameter>
+			</element>
 		</band>
 	</detail>
-	<columnFooter>
-		<band splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band height="25" splitType="Stretch">
-			<staticText>
-				<reportElement mode="Opaque" x="340" y="0" width="142" height="15"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-Bold"/>
-				</textElement>
-				<text><![CDATA[--- End of Report ---]]></text>
-			</staticText>
-		</band>
+	<columnFooter splitType="Stretch"/>
+	<pageFooter splitType="Stretch"/>
+	<summary height="25" splitType="Stretch">
+		<element kind="staticText" uuid="52a35620-ea1c-41f8-b463-9b8c68c420fd" mode="Opaque" x="340" y="0" width="142" height="15" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Bold" bold="true">
+			<text><![CDATA[--- End of Report ---]]></text>
+		</element>
 	</summary>
-	<noData>
-		<band height="98">
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="0" y="47" width="751" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{SPID}!=null&&$P{SPID}.length()>0?"No data for the searching month "+$P{REQUEST_MONTH}+" with service provider ID '"+$P{SPID}+"'.":"No data for the searching month "+$P{REQUEST_MONTH}+"."]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement mode="Opaque" x="340" y="83" width="142" height="15"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-Bold"/>
-				</textElement>
-				<text><![CDATA[--- End of Report ---]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-1" x="76" y="0" width="218" height="13"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[RPT-IAS-04-M]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="61" y="0" width="7" height="13"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="575" y="13" width="7" height="14"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="591" y="13" width="84" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement key="staticText-18" x="575" y="0" width="7" height="14"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="473" y="13" width="58" height="14"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Page No.]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-1" x="76" y="14" width="397" height="14"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Monthly Statistics Report on iAM Smart Messages Generated, Read or Unread]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement key="textField-7" x="591" y="0" width="117" height="14"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{GEN_DATE}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement key="staticText-18" x="61" y="13" width="7" height="13"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-1" x="0" y="0" width="57" height="13"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Report ID]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-18" x="473" y="0" width="137" height="14"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Report Generation Date]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="staticText-1" x="0" y="13" width="68" height="13"/>
-				<box>
-					<topPen lineWidth="0.0" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Report Name]]></text>
-			</staticText>
-		</band>
+	<noData height="98">
+		<element kind="textField" uuid="00ef2004-50b1-4623-984b-4be5e5342420" key="textField-7" x="0" y="47" width="751" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+			<expression><![CDATA[$P{SPID}!=null&&$P{SPID}.length()>0?"No data for the searching month "+$P{REQUEST_MONTH}+" with service provider ID '"+$P{SPID}+"'.":"No data for the searching month "+$P{REQUEST_MONTH}+"."]]></expression>
+		</element>
+		<element kind="staticText" uuid="5b1b3b27-345e-4b25-bf5a-9b936cc2ff0b" mode="Opaque" x="340" y="83" width="142" height="15" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Bold" bold="true">
+			<text><![CDATA[--- End of Report ---]]></text>
+		</element>
+		<element kind="staticText" uuid="3939a334-5dea-4521-bf11-5028afe31e82" key="staticText-1" x="76" y="0" width="218" height="13" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[RPT-IAS-04-M]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="089af810-ab84-4e94-aa23-1d9ece2c3402" key="staticText-18" x="61" y="0" width="7" height="13" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+			<text><![CDATA[:]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="9a13d544-0085-40b6-8e1f-8be165deb9a6" key="staticText-18" x="575" y="13" width="7" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+			<text><![CDATA[:]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="95aa071e-3e57-4b81-9f9a-b381d6fd842e" key="textField-7" x="591" y="13" width="84" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+			<expression><![CDATA[$V{PAGE_NUMBER}]]></expression>
+		</element>
+		<element kind="staticText" uuid="3d8501dc-32ae-44a0-baa0-097c8d28cb23" key="staticText-18" x="575" y="0" width="7" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+			<text><![CDATA[:]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="a9cfc5f6-5e07-4a7b-abd0-df4aba5e1536" key="staticText-18" x="473" y="13" width="58" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[Page No.]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="c91a8709-f06d-406d-93cd-2c57f6296858" key="staticText-1" x="76" y="14" width="397" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[Monthly Statistics Report on iAM Smart Messages Generated, Read or Unread]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="bdbd1aed-b503-49dc-9969-217450eeae84" key="textField-7" x="591" y="0" width="117" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" blankWhenNull="true" underline="false">
+			<expression><![CDATA[$P{GEN_DATE}]]></expression>
+		</element>
+		<element kind="staticText" uuid="1df04b07-63ed-4cc8-adc4-715a343f5c4e" key="staticText-18" x="61" y="13" width="7" height="13" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman" hTextAlign="Right">
+			<text><![CDATA[:]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="88fba772-9dce-4d38-bf7f-5f98f55b82f5" key="staticText-1" x="0" y="0" width="57" height="13" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[Report ID]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="8f5deccc-3aca-4c2b-bb4c-0d49f6138b21" key="staticText-18" x="473" y="0" width="137" height="14" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[Report Generation Date]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="f696aa85-d5be-4836-9626-2cddcaa116f7" key="staticText-1" x="0" y="13" width="68" height="13" fontName="Times New Roman" fontSize="10.0" pdfFontName="Times-Roman">
+			<text><![CDATA[Report Name]]></text>
+			<box>
+				<topPen lineWidth="0.0" lineColor="#000000"/>
+				<leftPen lineWidth="0.0" lineColor="#000000"/>
+				<bottomPen lineWidth="0.0" lineColor="#000000"/>
+				<rightPen lineWidth="0.0" lineColor="#000000"/>
+			</box>
+		</element>
 	</noData>
 </jasperReport>
