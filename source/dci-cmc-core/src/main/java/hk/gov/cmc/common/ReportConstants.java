@@ -8,5 +8,6 @@ public class ReportConstants {
     public static final String MAP_PARAMETER_AND = "&";
     public static final String MAP_PARAMETER_EQUALS = "=";
     public static final String RPT_ADHOC_REQ_REQTYPE_BATCH = "B";
+    public static final String PROJECT_CMC = "CMC";
 
 }
