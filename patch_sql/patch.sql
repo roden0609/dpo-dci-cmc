@@ -17,5 +17,8 @@
 
 UPDATE togcmrce1.adm_rpt_info SET impl_class='hk.gov.cmc.processor.report.impl.IAS04DReport' WHERE rpt_id='RPT-IAS-04-D';
 UPDATE togcmrce1.adm_rpt_info SET impl_class='hk.gov.cmc.processor.report.impl.IAS04MReport' WHERE rpt_id='RPT-IAS-04-M';
+UPDATE togcmrce1.adm_rpt_info SET impl_class='hk.gov.cmc.processor.report.impl.IAS06DReport' WHERE rpt_id='RPT-IAS-06-D';
+UPDATE togcmrce1.adm_rpt_info SET impl_class='hk.gov.cmc.processor.report.impl.IAS10DReport' WHERE rpt_id='RPT-IAS-10-D';
+UPDATE togcmrce1.adm_rpt_info SET impl_class='hk.gov.cmc.processor.report.impl.IAS11DReport' WHERE rpt_id='RPT-IAS-11-D';
 
 COMMIT;

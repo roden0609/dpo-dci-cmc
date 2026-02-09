@@ -23,10 +23,10 @@
         <servlet-name>GenAdminBatchReportServlet</servlet-name>
         <servlet-class>hk.gov.cmc.webserver.servlet.GenAdminBatchReportServlet</servlet-class>
     </servlet>
-    <!-- <servlet>
+    <servlet>
         <servlet-name>RegenerateAdminBatchReportServlet</servlet-name>
-        <servlet-class>hk.gov.ogcio.mars_cmc.cmc.admsys.servlet.RegenerateAdminBatchReportServlet</servlet-class>
-    </servlet> -->
+        <servlet-class>hk.gov.cmc.webserver.servlet.RegenerateAdminBatchReportServlet</servlet-class>
+    </servlet>
 
 
     <servlet-mapping>
@@ -41,10 +41,10 @@
         <servlet-name>GenAdminBatchReportServlet</servlet-name>
         <url-pattern>/servlet/GenAdminBatchReportServlet</url-pattern>
     </servlet-mapping>
-    <!-- <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>RegenerateAdminBatchReportServlet</servlet-name>
         <url-pattern>/servlet/RegenerateAdminBatchReportServlet</url-pattern>
-    </servlet-mapping> -->
+    </servlet-mapping>
 
     <session-config>
         <session-timeout>30</session-timeout>
