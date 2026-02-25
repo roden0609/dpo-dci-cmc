@@ -39,8 +39,8 @@ import hk.gov.gcis.rm.keyservice.common.Constants;
 import hk.gov.gcis.ss.common.utils.SoapUtils;
 import jakarta.ejb.EJB;
 import jakarta.jws.WebMethod;
-import jakarta.jws.WebService;
-import jakarta.jws.soap.SOAPBinding;
+// import jakarta.jws.WebService;
+// import jakarta.jws.soap.SOAPBinding;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Marshaller;
@@ -50,9 +50,14 @@ import jakarta.xml.soap.MessageFactory;
 import jakarta.xml.soap.SOAPBodyElement;
 import jakarta.xml.soap.SOAPEnvelope;
 import jakarta.xml.soap.SOAPMessage;
+import jakarta.xml.ws.Service;
+import jakarta.xml.ws.ServiceMode;
+import jakarta.xml.ws.WebServiceProvider;
 
-@WebService(serviceName = "MaintainMessageService", portName = "MaintainMessagePort", targetNamespace = "http://cmc.gov.hk/ws/maintainmessage")
-@SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL)
+// @WebService(serviceName = "MaintainMessageService", portName = "MaintainMessagePort", targetNamespace = "http://cmc.gov.hk/ws/maintainmessage")
+// @SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL)
+@WebServiceProvider(serviceName = "MaintainMessageService", portName = "MaintainMessagePort", targetNamespace = "http://cmcws.mygovhk.gov.hk/schema/MaintainMessage.xsd")
+@ServiceMode(Service.Mode.MESSAGE)
 public class MaintainMessageSoapProvider {
 
     private static Log logger = LogFactory.getLog(MaintainMessageSoapProvider.class);
