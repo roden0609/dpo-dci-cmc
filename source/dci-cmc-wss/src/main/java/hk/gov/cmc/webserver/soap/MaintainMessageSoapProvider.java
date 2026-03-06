@@ -1,6 +1,8 @@
 package hk.gov.cmc.webserver.soap;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -9,6 +11,7 @@ import javax.naming.InitialContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -24,8 +27,8 @@ import org.w3c.dom.NodeList;
 
 import hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBM;
 import hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMLocal;
-import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.common.CmcAppConstants;
+import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.common.ResultCodes;
 import hk.gov.cmc.common.ResultMessages;
 import hk.gov.cmc.config.CmcEnvProperties;
@@ -38,27 +41,27 @@ import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IPKIUtil;
 import hk.gov.gcis.rm.keyservice.common.Constants;
 import hk.gov.gcis.ss.common.utils.SoapUtils;
 import jakarta.ejb.EJB;
-import jakarta.jws.WebMethod;
 // import jakarta.jws.WebService;
 // import jakarta.jws.soap.SOAPBinding;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
-import jakarta.xml.soap.SOAPBody;
 import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPBody;
 import jakarta.xml.soap.SOAPBodyElement;
 import jakarta.xml.soap.SOAPEnvelope;
 import jakarta.xml.soap.SOAPMessage;
+import jakarta.xml.ws.Provider;
 import jakarta.xml.ws.Service;
 import jakarta.xml.ws.ServiceMode;
 import jakarta.xml.ws.WebServiceProvider;
 
 // @WebService(serviceName = "MaintainMessageService", portName = "MaintainMessagePort", targetNamespace = "http://cmc.gov.hk/ws/maintainmessage")
 // @SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL)
-@WebServiceProvider(serviceName = "MaintainMessageService", portName = "MaintainMessagePort", targetNamespace = "http://cmcws.mygovhk.gov.hk/schema/MaintainMessage.xsd")
+@WebServiceProvider(serviceName = "MaintainMessageService", portName = "MaintainMessagePort", targetNamespace = "http://ws.mygovhk.gov.hk/schema/MaintainMessageRequest.xsd")
 @ServiceMode(Service.Mode.MESSAGE)
-public class MaintainMessageSoapProvider {
+public class MaintainMessageSoapProvider implements Provider<Source> {
 
     private static Log logger = LogFactory.getLog(MaintainMessageSoapProvider.class);
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
@@ -70,17 +73,42 @@ public class MaintainMessageSoapProvider {
         Init.init();
     }
 
-    @WebMethod
-    public SOAPMessage processMessage(SOAPMessage request) {
-        logger.info("processMessage - BEGIN");
+    // @WebMethod
+    // public SOAPMessage processMessage(SOAPMessage request) {
+    // logger.info("processMessage - BEGIN");
+    // try {
+    // SOAPMessage response = MessageFactory.newInstance().createMessage();
+    // return processMaintainMessage(request, response);
+    // } catch (Exception e) {
+    // logger.error("General exception caught in processMessage", e);
+    // return null;
+    // } finally {
+    // logger.info("processMessage - END");
+    // }
+    // }
+    @Override
+    public Source invoke(Source request) {
         try {
-            SOAPMessage response = MessageFactory.newInstance().createMessage();
-            return processMaintainMessage(request, response);
+            logger.info("invoke - BEGIN");
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.transform(request, new StreamResult(byteArrayOutputStream));
+            InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+
+            MessageFactory messageFactory = MessageFactory.newInstance();
+
+            SOAPMessage requestMsg = messageFactory.createMessage(null, inputStream);
+            requestMsg.saveChanges();
+
+            SOAPMessage response = processMaintainMessage(requestMsg, MessageFactory.newInstance().createMessage());
+
+            return response.getSOAPPart().getContent();
         } catch (Exception e) {
-            logger.error("General exception caught in processMessage", e);
+            logger.error("General exception caught in invoke", e);
             return null;
         } finally {
-            logger.info("processMessage - END");
+            logger.info("invoke - END");
         }
     }
 
@@ -106,8 +134,9 @@ public class MaintainMessageSoapProvider {
 
             String appId = null;
             SOAPEnvelope envelope = (SOAPEnvelope) requestMsg.getSOAPPart().getEnvelope();
-            Document envDoc = envelope.getOwnerDocument();
-            NodeList nodeList = envDoc.getElementsByTagName(CmcAppConstants.APPID_TAG_NAME);
+            NodeList nodeList = envelope.getHeader().getElementsByTagNameNS("*", CmcAppConstants.APPID_TAG_NAME);
+            logger.info("processMaintainMessage nodeList == null: " + (nodeList == null));
+            logger.info("processMaintainMessage nodeList.getLength: " + (nodeList != null ? nodeList.getLength() : "null"));
             if (nodeList != null && nodeList.getLength() > 0)
                 appId = nodeList.item(0).getFirstChild().getNodeValue();
             if (appId == null || appId.length() == 0) {
@@ -117,8 +146,10 @@ public class MaintainMessageSoapProvider {
 
             logger.info("processMaintainMessage - appId=" + appId);
 
-            SOAPBodyElement body = (SOAPBodyElement) SoapUtils.getFirstBodyElement(requestMsg);
-            Document bodyDoc = toDocument(body);
+            // SOAPBodyElement body = (SOAPBodyElement) SoapUtils.getFirstBodyElement(requestMsg);
+            // Document bodyDoc = toDocument(body);
+            SOAPBody body = requestMsg.getSOAPPart().getEnvelope().getBody();
+            Document bodyDoc = body.extractContentAsDocument();
             logger.debug("Request body: " + documentToString(bodyDoc));
 
             Properties properties = cmcEnvProperties.getProperties();
@@ -184,7 +215,7 @@ public class MaintainMessageSoapProvider {
 
             InitialContext ctx = new InitialContext();
             IMaintainMessageSessionBM maintainMessageEJB = (IMaintainMessageSessionBM) ctx.lookup(
-                    "java:global/cmc/cmc_app/MaintainMessageSessionEJB!hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMLocal");
+                    "java:global/dci-cmc-app/dci-cmc-ejb/MaintainMessageSessionEJB!hk.gov.cmc.appserver.ejb.session.maintainmessage.IMaintainMessageSessionBMLocal");
 
             MaintainMessageResponse maintainMessageResponse = maintainMessageEJB.processMessage(appId,
                     maintainMessageRequest);

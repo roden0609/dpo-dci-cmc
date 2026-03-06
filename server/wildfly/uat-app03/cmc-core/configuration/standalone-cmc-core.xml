@@ -39,25 +39,24 @@
         <extension module="org.wildfly.extension.request-controller"/>
         <extension module="org.wildfly.extension.security.manager"/>
         <extension module="org.wildfly.extension.undertow"/>
-        <!-- <extension module="org.wildfly.iiop-openjdk"/> -->
     </extensions>
     <system-properties>
-        <property name="java.net.preferIPv4Stack" value="true" />
-        <property name="org.apache.catalina.connector.URI_ENCODING" value="UTF-8" />
-        <property name="jvmRoute" value="node1" />
-        <property name="UseJK" value="true" />
-        <property name="jboss.node.name" value="node1" />
-        <property name="org.apache.jasper.compiler.Parser.STRICT_QUOTE_ESCAPING" value="false" />
-        <property name="file.encoding" value="UTF-8" />
-        <property name="java.awt.headless" value="true" />
-        <property name="hk.gov.gcis.rm.common.PROPERTIES_FILEPATH" value="/bd-ogcmr/uat/cmc/cmc-core" />
-        <property name="org.jboss.resolver.warning" value="true" />
-        <property name="sun.rmi.dgc.client.gcInterval" value="3600000" />
-        <property name="sun.rmi.dgc.server.gcInterval" value="3600000" />
-        <property name="sun.lang.ClassLoader.allowArraySyntax" value="true" />
+        <property name="java.net.preferIPv4Stack" value="true"/>
+        <property name="org.apache.catalina.connector.URI_ENCODING" value="UTF-8"/>
+        <property name="jvmRoute" value="node1"/>
+        <property name="UseJK" value="true"/>
+        <property name="jboss.node.name" value="node1"/>
+        <property name="org.apache.jasper.compiler.Parser.STRICT_QUOTE_ESCAPING" value="false"/>
+        <property name="file.encoding" value="UTF-8"/>
+        <property name="java.awt.headless" value="true"/>
+        <property name="hk.gov.gcis.rm.common.PROPERTIES_FILEPATH" value="/bd-ogcmr/uat/cmc/cmc-core"/>
+        <property name="org.jboss.resolver.warning" value="true"/>
+        <property name="sun.rmi.dgc.client.gcInterval" value="3600000"/>
+        <property name="sun.rmi.dgc.server.gcInterval" value="3600000"/>
+        <property name="sun.lang.ClassLoader.allowArraySyntax" value="true"/>
     </system-properties>
     <paths>
-        <path name="jboss.keystore.location" path="/bd-ogcmr/uat/cmc/cmc-core/cert" />
+        <path name="jboss.keystore.location" path="/bd-ogcmr/uat/cmc/cmc-core/cert"/>
     </paths>
     <management>
         <audit-log>
@@ -121,6 +120,33 @@
                 <level name="WARN"/>
             </logger>
             <logger category="hk.gov.cmc">
+                <level name="INFO"/>
+            </logger>
+            <logger category="org.wildfly.security">
+                <level name="DEBUG"/>
+            </logger>
+            <logger category="org.wildfly.security.ssl">
+                <level name="TRACE"/>
+            </logger>
+            <logger category="org.wildfly.security.http">
+                <level name="TRACE"/>
+            </logger>
+            <logger category="org.wildfly.security.auth.server">
+                <level name="TRACE"/>
+            </logger>
+            <logger category="org.wildfly.extension.elytron">
+                <level name="TRACE"/>
+            </logger>
+            <logger category="io.undertow">
+                <level name="DEBUG"/>
+            </logger>
+            <logger category="io.undertow.request">
+                <level name="DEBUG"/>
+            </logger>
+            <logger category="io.undertow.request.security">
+                <level name="TRACE"/>
+            </logger>
+            <logger category="org.xnio">
                 <level name="DEBUG"/>
             </logger>
             <root-logger>
@@ -153,26 +179,11 @@
         <subsystem xmlns="urn:jboss:domain:core-management:1.0"/>
         <subsystem xmlns="urn:jboss:domain:datasources:7.1">
             <datasources>
-                <!-- <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS"
-                enabled="true" use-java-context="true"
-                statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
-                <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=${wildfly.h2.compatibility.mode:REGULAR}</connection-url>
-                    <driver>h2</driver>
-                    <security user-name="sa" password="sa"/>
-                </datasource>
-                <drivers>
-                    <driver name="h2" module="com.h2database.h2">
-                        <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
-                    </driver>
-                </drivers> -->
-                <datasource jta="true" jndi-name="java:jboss/jdbc/RMDataSource"
-                    pool-name="RMDataSource" enabled="true" use-ccm="false">
-                    <connection-url>
-                        jdbc:mysql://172.16.69.14:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false&amp;allowPublicKeyRetrieval=true
-                    </connection-url>
+                <datasource jta="true" jndi-name="java:jboss/jdbc/RMDataSource" pool-name="RMDataSource" enabled="true" use-ccm="false">
+                    <connection-url>jdbc:mysql://172.16.69.14:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false&amp;allowPublicKeyRetrieval=true</connection-url>
                     <driver>com.mysql</driver>
                     <security user-name="ogcmrceu11">
-                        <credential-reference store="credential-store" alias="db-password" />
+                        <credential-reference store="credential-store" alias="db-password"/>
                     </security>
                     <validation>
                         <validate-on-match>false</validate-on-match>
@@ -182,14 +193,11 @@
                         <share-prepared-statements>false</share-prepared-statements>
                     </statement>
                 </datasource>
-                <datasource jta="true" jndi-name="java:jboss/jdbc/CMCDataSource"
-                    pool-name="CMCDataSource" enabled="true" use-ccm="false">
-                    <connection-url>
-                        jdbc:mysql://172.16.69.14:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false
-                    </connection-url>
+                <datasource jta="true" jndi-name="java:jboss/jdbc/CMCDataSource" pool-name="CMCDataSource" enabled="true" use-ccm="false">
+                    <connection-url>jdbc:mysql://172.16.69.14:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false</connection-url>
                     <driver>com.mysql</driver>
                     <security user-name="ogcmrceu11">
-                        <credential-reference store="credential-store" alias="db-password" />
+                        <credential-reference store="credential-store" alias="db-password"/>
                     </security>
                     <validation>
                         <validate-on-match>false</validate-on-match>
@@ -199,16 +207,6 @@
                         <share-prepared-statements>false</share-prepared-statements>
                     </statement>
                 </datasource>
-                <!-- <datasource jta="false" jndi-name="java:jboss/jdbc/nonManagedTXDS"
-                    pool-name="nonManagedTXDS" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:mysql://127.0.0.1:xxxxx/rm_portal_uat?useUnicode=true&amp;</connection-url>
-                    <driver>com.mysql</driver>
-                    <security>
-                        <user-name>{database_username}</user-name>
-                        <credential-reference store="{credential-store-name}"
-                            alias="{database_password_alias}" />
-                    </security>
-                </datasource> -->
                 <drivers>
                     <driver name="com.mysql" module="com.mysql">
                         <driver-class>com.mysql.cj.jdbc.Driver</driver-class>
@@ -253,16 +251,7 @@
                     <managed-scheduled-executor-service name="default" jndi-name="java:jboss/ee/concurrency/scheduler/default" context-service="default" hung-task-termination-period="0" hung-task-threshold="60000" keepalive-time="3000"/>
                 </managed-scheduled-executor-services>
             </concurrent>
-            <!-- <default-bindings context-service="java:jboss/ee/concurrency/context/default"
-                datasource="java:jboss/datasources/ExampleDS"
-                managed-executor-service="java:jboss/ee/concurrency/executor/default"
-                managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default"
-                managed-thread-factory="java:jboss/ee/concurrency/factory/default" /> -->
-            <default-bindings context-service="java:jboss/ee/concurrency/context/default"
-                datasource="java:jboss/jdbc/RMDataSource"
-                managed-executor-service="java:jboss/ee/concurrency/executor/default"
-                managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default"
-                managed-thread-factory="java:jboss/ee/concurrency/factory/default" />
+            <default-bindings context-service="java:jboss/ee/concurrency/context/default" datasource="java:jboss/jdbc/RMDataSource" managed-executor-service="java:jboss/ee/concurrency/executor/default" managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default" managed-thread-factory="java:jboss/ee/concurrency/factory/default"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:ee-security:1.0"/>
         <subsystem xmlns="urn:jboss:domain:ejb3:10.0">
@@ -305,11 +294,6 @@
                     <keepalive-time time="100" unit="milliseconds"/>
                 </thread-pool>
             </thread-pools>
-            <!-- <iiop enable-by-default="false" use-qualified-name="false"/> -->
-            <!-- <default-security-domain value="other"/> -->
-            <!-- <application-security-domains>
-                <application-security-domain name="other" security-domain="ApplicationDomain"/>
-            </application-security-domains> -->
             <in-vm-remote-interface-invocation pass-by-value="false"/>
             <default-missing-method-permissions-deny-access value="false"/>
             <statistics enabled="${wildfly.ejb3.statistics-enabled:${wildfly.statistics-enabled:false}}"/>
@@ -359,6 +343,7 @@
                         <permission-set name="default-permissions"/>
                     </permission-mapping>
                 </simple-permission-mapper>
+                <x500-attribute-principal-decoder name="x500-decoder" attribute-name="CN" maximum-segments="1"/>
                 <constant-realm-mapper name="local" realm-name="local"/>
                 <simple-role-decoder name="groups-to-roles" attribute="groups"/>
                 <constant-role-mapper name="super-user-mapper">
@@ -376,25 +361,33 @@
                 </permission-set>
             </permission-sets>
             <http>
-                <http-authentication-factory name="application-http-authentication" security-domain="ApplicationDomain" http-server-mechanism-factory="global">
+                <http-authentication-factory name="application-http-authentication" security-domain="ApplicationDomain" http-server-mechanism-factory="configured-cert">
                     <mechanism-configuration>
+                        <mechanism mechanism-name="CLIENT_CERT" pre-realm-principal-transformer="x500-decoder"/>
                         <mechanism mechanism-name="BASIC">
                             <mechanism-realm realm-name="ApplicationRealm"/>
                         </mechanism>
                     </mechanism-configuration>
                 </http-authentication-factory>
-                <http-authentication-factory name="management-http-authentication" security-domain="ManagementDomain" http-server-mechanism-factory="global">
+                <http-authentication-factory name="management-http-authentication" security-domain="ManagementDomain" http-server-mechanism-factory="configured-cert">
                     <mechanism-configuration>
+                        <mechanism mechanism-name="CLIENT_CERT" pre-realm-principal-transformer="x500-decoder"/>
                         <mechanism mechanism-name="DIGEST">
                             <mechanism-realm realm-name="ManagementRealm"/>
                         </mechanism>
                     </mechanism-configuration>
                 </http-authentication-factory>
+                <configurable-http-server-mechanism-factory name="configured-cert" http-server-mechanism-factory="global">
+                    <properties>
+                        <property name="org.wildfly.security.http.skip-certificate-verification" value="true"/>
+                    </properties>
+                </configurable-http-server-mechanism-factory>
                 <provider-http-server-mechanism-factory name="global"/>
             </http>
             <sasl>
                 <sasl-authentication-factory name="application-sasl-authentication" sasl-server-factory="configured" security-domain="ApplicationDomain">
                     <mechanism-configuration>
+                        <mechanism mechanism-name="EXTERNAL" pre-realm-principal-transformer="x500-decoder"/>
                         <mechanism mechanism-name="JBOSS-LOCAL-USER" realm-mapper="local"/>
                         <mechanism mechanism-name="DIGEST-MD5">
                             <mechanism-realm realm-name="ApplicationRealm"/>
@@ -403,6 +396,7 @@
                 </sasl-authentication-factory>
                 <sasl-authentication-factory name="management-sasl-authentication" sasl-server-factory="configured" security-domain="ManagementDomain">
                     <mechanism-configuration>
+                        <mechanism mechanism-name="EXTERNAL" pre-realm-principal-transformer="x500-decoder"/>
                         <mechanism mechanism-name="JBOSS-LOCAL-USER" realm-mapper="local"/>
                         <mechanism mechanism-name="DIGEST-MD5">
                             <mechanism-realm realm-name="ManagementRealm"/>
@@ -430,14 +424,14 @@
                         <file path="application.keystore" relative-to="jboss.server.config.dir"/>
                     </key-store>
                     <key-store name="cmcServerKS">
-                        <credential-reference store="credential-store" alias="keystore-password" />
-                        <implementation type="PKCS12" />
-                        <file path="server.keystore.p12" relative-to="jboss.keystore.location" />
+                        <credential-reference store="credential-store" alias="keystore-password"/>
+                        <implementation type="PKCS12"/>
+                        <file path="server.keystore.p12" relative-to="jboss.keystore.location"/>
                     </key-store>
                     <key-store name="cmcTrustKS">
-                        <credential-reference store="credential-store" alias="truststore-password" />
-                        <implementation type="JKS" />
-                        <file path="be_uat.cmcdctr.hksarg.truststore" relative-to="jboss.keystore.location" />
+                        <credential-reference store="credential-store" alias="truststore-password"/>
+                        <implementation type="JKS"/>
+                        <file path="be_uat.cmcdctr.hksarg.truststore" relative-to="jboss.keystore.location"/>
                     </key-store>
                 </key-stores>
                 <key-managers>
@@ -445,34 +439,28 @@
                         <credential-reference clear-text="password"/>
                     </key-manager>
                     <key-manager name="cmcKeyManager" key-store="cmcServerKS">
-                        <credential-reference store="credential-store" alias="keystore-password" />
+                        <credential-reference store="credential-store" alias="keystore-password"/>
                     </key-manager>
                 </key-managers>
                 <trust-managers>
-                    <trust-manager name="cmcTrustManager" key-store="cmcTrustKS" />
+                    <trust-manager name="cmcTrustManager" key-store="cmcTrustKS"/>
                 </trust-managers>
                 <server-ssl-contexts>
                     <server-ssl-context name="applicationSSC" key-manager="applicationKM"/>
-                    <server-ssl-context name="cmcSSLContext" key-manager="cmcKeyManager" trust-manager="cmcTrustManager" protocols="TLSv1.2 TLSv1.3" />
+                    <server-ssl-context name="cmcSSLContext" protocols="TLSv1.2 TLSv1.3" want-client-auth="true" need-client-auth="false" key-manager="cmcKeyManager" trust-manager="cmcTrustManager"/>
                 </server-ssl-contexts>
             </tls>
+            <credential-stores>
+                <credential-store name="credential-store" relative-to="jboss.server.base.dir" path="credentials/credential-store.cs" create="true">
+                    <credential-reference clear-text="store-password"/>
+                </credential-store>
+            </credential-stores>
             <policy name="jacc">
                 <jacc-policy/>
             </policy>
-            <credential-stores>
-                <credential-store name="credential-store" relative-to="jboss.server.base.dir"
-                    path="credentials/credential-store.cs" create="true">
-                    <credential-reference clear-text="store-password" />
-                </credential-store>
-            </credential-stores>
         </subsystem>
         <subsystem xmlns="urn:wildfly:elytron-oidc-client:2.0"/>
         <subsystem xmlns="urn:wildfly:health:1.0" security-enabled="false"/>
-        <!-- <subsystem xmlns="urn:jboss:domain:iiop-openjdk:3.0">
-            <orb socket-binding="iiop"/>
-            <initializers security="elytron" transactions="spec"/>
-            <security server-requires-ssl="false" client-requires-ssl="false"/>
-        </subsystem> -->
         <subsystem xmlns="urn:jboss:domain:infinispan:14.0">
             <cache-container name="hibernate" marshaller="JBOSS" modules="org.infinispan.hibernate-cache">
                 <local-cache name="entity">
@@ -632,14 +620,14 @@
             </server>
             <servlet-container name="default">
                 <jsp-config x-powered-by="false"/>
-                <session-cookie http-only="true" secure="true"/>
+                <session-cookie secure="true" http-only="true"/>
                 <websockets/>
             </servlet-container>
             <handlers>
                 <file name="welcome-content" path="${jboss.home.dir}/welcome-content"/>
             </handlers>
             <application-security-domains>
-                <application-security-domain name="other" security-domain="ApplicationDomain"/>
+                <application-security-domain name="other" http-authentication-factory="application-http-authentication"/>
             </application-security-domains>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:webservices:2.0" statistics-enabled="${wildfly.webservices.statistics-enabled:${wildfly.statistics-enabled:false}}">
@@ -669,8 +657,6 @@
         <socket-binding name="ajp" port="8034"/>
         <socket-binding name="http" port="19680"/>
         <socket-binding name="https" port="9080"/>
-        <!-- <socket-binding name="iiop" interface="unsecure" port="3528"/> -->
-        <!-- <socket-binding name="iiop-ssl" interface="unsecure" port="3529"/> -->
         <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:46990}"/>
         <socket-binding name="management-https" interface="management" port="${jboss.management.https.port:46993}"/>
         <socket-binding name="remoting" port="4928"/>

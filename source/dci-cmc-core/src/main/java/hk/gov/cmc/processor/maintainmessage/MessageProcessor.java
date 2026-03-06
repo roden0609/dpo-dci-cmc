@@ -398,7 +398,7 @@ public class MessageProcessor {
                                     recipient, validatedIasUserWrapped,
                                     eMsgIasOptCheck,
                                     dataContentEn, dataContentTc, dataContentSc,
-                                    cmcToDoItemTemplate, conn, response);
+                                    cmcEMsgTemplate, conn, response);
                             if (processIasMessageResult.isSuccess()) {
                                 response.addMessageResponse(
                                         MaintainMessageUtils.getMessageResponse(recipient.getTranId(),
@@ -417,9 +417,9 @@ public class MessageProcessor {
                                             ResultCodes.RESULT_CD_GENERAL_ERROR,
                                             ResultMessages.RESULT_MSG_GENERAL_ERROR));
                             logger.info("processIasMessage - iasMessageProcessor.processIasMessage failed"
-                                    + ". cmcTemplate.getClientId: " + cmcToDoItemTemplate.getClientId()
-                                    + ", cmcTemplate.getTemplateId: " + cmcToDoItemTemplate.getTemplateId()
-                                    + ", cmcTemplate.getTemplateVersion: " + cmcToDoItemTemplate.getTemplateVersion()
+                                    + ". cmcTemplate.getClientId: " + cmcEMsgTemplate.getClientId()
+                                    + ", cmcTemplate.getTemplateId: " + cmcEMsgTemplate.getTemplateId()
+                                    + ", cmcTemplate.getTemplateVersion: " + cmcEMsgTemplate.getTemplateVersion()
                                     + ", recipient.getTranId: " + recipient.getTranId()
                                     + ", recipient.getIdpId: " + recipient.getIdpId()
                                     + ", msgType: " + MsgTypeConstant.MESSAGE

@@ -1,6 +1,5 @@
 package hk.gov.cmc.processor.maintainmessage.message;
 
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -9,7 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.dto.maintainmessage.SingleMaintainMsgResult;
-import hk.gov.cmc.model.maintainmessage.param.MessageParam;
 import hk.gov.cmc.model.maintainmessage.request.Recipient;
 import hk.gov.cmc.model.maintainmessage.response.MaintainMessageResponse;
 import hk.gov.cmc.model.maintainmessage.response.MessageResponse;
@@ -118,6 +116,7 @@ public class IasMessageProcessor {
             }
         }
 
-        return null;
+        logger.info("processIasMessage - End");
+        return singleMaintainMsgResult;
     }
 }
