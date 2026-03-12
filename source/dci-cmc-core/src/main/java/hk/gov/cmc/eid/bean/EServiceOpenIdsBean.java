@@ -38,11 +38,11 @@ public class EServiceOpenIdsBean implements Serializable {
         }
     }
 
-    public ArrayList<EServiceOpenIdItem> getEServiceOpenIDs() {
+    public ArrayList<EServiceOpenIdItem> geteServiceOpenIDs() {
         return this.eServiceOpenIDs;
     }
 
-    public void setEServiceOpenIDs(ArrayList<EServiceOpenIdItem> n) {
+    public void seteServiceOpenIDs(ArrayList<EServiceOpenIdItem> n) {
         this.eServiceOpenIDs = n;
     }
 

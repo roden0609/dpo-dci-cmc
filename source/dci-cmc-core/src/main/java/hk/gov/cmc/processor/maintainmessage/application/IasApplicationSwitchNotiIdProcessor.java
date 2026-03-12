@@ -359,7 +359,7 @@ public class IasApplicationSwitchNotiIdProcessor {
 
             if (eServiceOpenIdItemList.size() > 0) {
                 EServiceOpenIdsBean eServiceOpenIdsBean = new EServiceOpenIdsBean();
-                eServiceOpenIdsBean.setEServiceOpenIDs(eServiceOpenIdItemList);
+                eServiceOpenIdsBean.seteServiceOpenIDs(eServiceOpenIdItemList);
 
                 // Call getNotificationID API to get missing NotiID from iAM Smart system by Service Provider ID and Open ID
                 if (!isEIDUtilsInit) {
