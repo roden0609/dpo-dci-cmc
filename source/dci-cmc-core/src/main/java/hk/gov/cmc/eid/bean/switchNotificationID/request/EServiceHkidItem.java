@@ -2,6 +2,8 @@ package hk.gov.cmc.eid.bean.switchNotificationID.request;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class EServiceHkidItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,10 +27,12 @@ public class EServiceHkidItem implements Serializable {
         this.clientID = clientID;
     }
 
+    @JsonProperty("HKID")
     public String getHKID() {
         return HKID;
     }
 
+    @JsonProperty("HKID")
     public void setHKID(String HKID) {
         this.HKID = HKID;
     }

@@ -81,11 +81,11 @@
     <login-config>
         <auth-method>CLIENT-CERT</auth-method>
         <realm-name>ApplicationRealm</realm-name>
-    </login-config>
+    </login-config> -->
 
     <security-role>
         <role-name>xmlfw-rpc</role-name>
-    </security-role> -->
+    </security-role>
 
     <env-entry>
         <env-entry-name>COMMON_PROPERTIES_FILENAME</env-entry-name>

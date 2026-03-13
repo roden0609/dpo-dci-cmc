@@ -137,6 +137,15 @@
             <logger category="org.wildfly.extension.elytron">
                 <level name="TRACE"/>
             </logger>
+            <logger category="org.wildfly.security.auth.realm">
+                <level name="TRACE"/>
+            </logger>
+            <logger category="org.wildfly.security.authz">
+                <level name="TRACE"/>
+            </logger>
+            <logger category="org.wildfly.security.x500">
+                <level name="TRACE"/>
+            </logger>
             <logger category="io.undertow">
                 <level name="DEBUG"/>
             </logger>
