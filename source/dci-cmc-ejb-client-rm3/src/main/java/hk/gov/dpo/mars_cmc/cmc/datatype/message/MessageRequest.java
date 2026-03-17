@@ -57,4 +57,10 @@ public class MessageRequest implements Serializable {
         return m_metaDataList;
     }
 
+    @Override
+    public String toString() {
+        return "MessageRequest [m_portalId=" + m_portalId + ", m_eMessage=" + m_eMessage + ", m_toDoItem=" + m_toDoItem
+                + ", m_Application=" + m_Application + ", m_metaDataList=" + m_metaDataList + "]";
+    }
+
 }

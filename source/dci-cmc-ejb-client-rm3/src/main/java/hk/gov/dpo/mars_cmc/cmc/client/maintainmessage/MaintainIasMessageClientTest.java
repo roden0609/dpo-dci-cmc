@@ -16,17 +16,16 @@ import hk.gov.gcis.ss.common.utils.PropertiesUtils;
 import hk.gov.gcis.ss.messaging.jaxb.asynmsg.ScopesMessagingAcknowledgement;
 import jakarta.xml.bind.JAXBContext;
 
-public class MaintainIasApplicationClientTest {
+public class MaintainIasMessageClientTest {
 
-    public MaintainIasApplicationClientTest() {
+    public MaintainIasMessageClientTest() {
     }
 
     public static void main(String[] args) {
 
         try {
             if (args.length != 1) {
-                System.out.println(
-                        "Usage: java " + MaintainIasApplicationClientTest.class.getName() + " <property file> ");
+                System.out.println("Usage: java " + MaintainIasMessageClientTest.class.getName() + " <property file> ");
                 System.exit(-1);
             }
 
@@ -38,9 +37,9 @@ public class MaintainIasApplicationClientTest {
 
                 Properties properties = PropertiesUtils.loadPropertiesFile(propFilePath);
 
-                MaintainIasApplicationClientTest maintainIasApplicationClientTest = new MaintainIasApplicationClientTest();
+                MaintainIasMessageClientTest maintainIasMessageClientTest = new MaintainIasMessageClientTest();
 
-                maintainIasApplicationClientTest.test(properties);
+                maintainIasMessageClientTest.test(properties);
             }
 
         } catch (Throwable t) {
@@ -136,7 +135,6 @@ public class MaintainIasApplicationClientTest {
                 String fileNameEN = "";
                 if (filePathEN.length() > 0) {
                     fileNameEN = filePathEN.substring(filePathEN.lastIndexOf("\\") + 1, filePathEN.length());
-                    // byte[] fileContentEN = ReaderUtils.loadFileToByteArray(filePathEN);
                     byte[] fileContentEN = Files.readAllBytes(Paths.get(filePathEN));
                     metaDataArray[i].setDataContentEN(removeBom(new String(fileContentEN, "UTF8")));
                 }
@@ -144,7 +142,6 @@ public class MaintainIasApplicationClientTest {
                 String fileNameTC = "";
                 if (filePathTC.length() > 0) {
                     fileNameTC = filePathTC.substring(filePathTC.lastIndexOf("\\") + 1, filePathTC.length());
-                    // byte[] fileContentTC = ReaderUtils.loadFileToByteArray(filePathTC);
                     byte[] fileContentTC = Files.readAllBytes(Paths.get(filePathTC));
                     metaDataArray[i].setDataContentTC(removeBom(new String(fileContentTC, "UTF8")));
                 }
@@ -152,7 +149,6 @@ public class MaintainIasApplicationClientTest {
                 String fileNameSC = "";
                 if (filePathSC.length() > 0) {
                     fileNameSC = filePathSC.substring(filePathSC.lastIndexOf("\\") + 1, filePathSC.length());
-                    // byte[] fileContentSC = ReaderUtils.loadFileToByteArray(filePathSC);
                     byte[] fileContentSC = Files.readAllBytes(Paths.get(filePathSC));
                     metaDataArray[i].setDataContentSC(removeBom(new String(fileContentSC, "UTF8")));
                 }
@@ -195,6 +191,7 @@ public class MaintainIasApplicationClientTest {
 
                     recipient.setTranID(tranID);
                     recipient.setIdpID(idpID);
+                    recipient.setRecipientIDType(recipientIDType);
                     recipient.setRecipientID(recipientID);
                     if (itemDateStr != null && itemDateStr.length() > 0) {
                         if (DatetimeUtils.isValidDateTime(itemDateStr))
@@ -203,8 +200,6 @@ public class MaintainIasApplicationClientTest {
                             throw new Exception("MSG_REQ_" + (m + 1) + "_META_DATA_" + (i + 1) + "_REPT_" + (j + 1)
                                     + "_ITEM_DATE is not valid");
                     }
-
-                    recipient.setRecipientIDType(recipientIDType);
                     recipient.setAction(action);
                     recipient.setCorrelatedTranID(correlatedTranID);
                     recipient.setAppRefNum(appRefNum);

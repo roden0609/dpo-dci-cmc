@@ -80,7 +80,7 @@
 
     <login-config>
         <auth-method>CLIENT-CERT</auth-method>
-        <realm-name>ApplicationRealm</realm-name>
+        <realm-name>RequireCertificateDomain</realm-name>
     </login-config> -->
 
     <security-role>

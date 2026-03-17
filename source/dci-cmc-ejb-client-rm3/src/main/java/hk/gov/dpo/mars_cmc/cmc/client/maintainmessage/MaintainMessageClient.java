@@ -103,6 +103,7 @@ public class MaintainMessageClient extends ClientBase {
         MaintainMessageRequest maintainMessageRequest = new MaintainMessageRequest();
 
         for (int i = 0; i < messageReqArray.length; i++) {
+            log.debug("messageReqArray[" + i + "]:" + messageReqArray[i].toString());
             // get message request data object
             MessageRequest messageRequest = messageReqArray[i];
             EMessage eMessage = messageRequest.getEMessage();
@@ -140,6 +141,7 @@ public class MaintainMessageClient extends ClientBase {
             }
             // create MetaData webservices object
             for (int j = 0; j < metaDataList.size(); j++) {
+                log.debug("metaDataList[" + j + "]:" + metaDataList.get(j).toString());
                 MetaData metaData = (MetaData) metaDataList.get(j);
                 List<Recipient> recipientList = metaData.getRecipientList();
                 MetaDataCT wsMetaData = new MetaDataCT();
@@ -149,6 +151,7 @@ public class MaintainMessageClient extends ClientBase {
 
                 // create Recipient webservices object
                 for (int k = 0; k < recipientList.size(); k++) {
+                    log.debug("recipientList[" + k + "]:" + recipientList.get(k).toString());
                     Recipient recipient = (Recipient) recipientList.get(k);
                     RecipientCT wsRecipient = new RecipientCT();
                     wsRecipient.setTranID(recipient.getTranID());

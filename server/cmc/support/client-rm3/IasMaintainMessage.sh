@@ -38,8 +38,8 @@ CLASSPATH=${CLASSPATH}:${LIB}/static/log4j-2.23.1/log4j-1.2-api-2.23.1.jar
 CLASSPATH=${CLASSPATH}:${LIB}/static/log4j-2.23.1/log4j-api-2.23.1.jar
 CLASSPATH=${CLASSPATH}:${LIB}/static/log4j-2.23.1/log4j-core-2.23.1.jar
 
-CLIENT_PROG=hk.gov.dpo.mars_cmc.cmc.client.maintainmessage.MaintainIasToDoItemClientTest
+CLIENT_PROG=hk.gov.dpo.mars_cmc.cmc.client.maintainmessage.MaintainIasMessageClientTest
 
-PROPERTY_FILE=/bd-ogcmr/uat/cmc/support/client-rm3/config/kc_maint_to_do_item_hkp
+PROPERTY_FILE=/bd-ogcmr/uat/cmc/support/client-rm3/config/kc_maint_message
 
 ${JAVA_HOME}/bin/java -Dlog4j.configuration=file:/bd-ogcmr/uat/cmc/support/client-rm3/config/log4j.properties -cp ${CLASSPATH} ${CLIENT_PROG} ${PROPERTY_FILE}

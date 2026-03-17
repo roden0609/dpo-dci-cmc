@@ -124,4 +124,14 @@ public class Recipient {
     public void setMiscInfo(String miscInfo) {
         this.miscInfo = miscInfo;
     }
+
+    @Override
+    public String toString() {
+        return "Recipient [tranId=" + tranId + ", idpId=" + idpId + ", recipientId=" + recipientId + ", appRefNum="
+                + appRefNum + ", recipientIdType=" + recipientIdType + ", itemDate=" + itemDate + ", action=" + action
+                + ", correlatedTranId=" + correlatedTranId + ", appStatus=" + appStatus + ", appStatusUpdateDate="
+                + appStatusUpdateDate + ", contactNum=" + contactNum + ", contactEmail=" + contactEmail + ", miscInfo="
+                + miscInfo + "]";
+    }
+
 }

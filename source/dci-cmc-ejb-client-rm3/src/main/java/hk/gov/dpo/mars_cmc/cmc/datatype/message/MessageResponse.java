@@ -1,140 +1,63 @@
-/*
- * Design, Implementation and Support of Common Middleware Components and Reference Applications 
- * 
- * Message Response
- * 
- * Developed by: Gilbert Liao
- * Reviewed by: Kai So
- * Tester: Shaohui Wang
- */
 package hk.gov.dpo.mars_cmc.cmc.datatype.message;
 
-// import Java standard package(s) -- BEGIN
 import java.io.Serializable;
-import java.util.List;
-import java.util.ArrayList;
-// import Java standard package(s) -- END
 
-// import third-party package(s) -- BEGIN
+public class MessageResponse implements Serializable {
 
-// import third-party package(s) -- END
+    private static final long serialVersionUID = 1L;
+    private String m_tranID;
+    private String m_idpID;
+    private String m_recipientID;
+    private String m_tranResultCode;
+    private String m_tranResultMessage;
+    private String m_msgType;
 
+    public String getTranID() {
+        return m_tranID;
+    }
 
-// import internal library package(s) -- BEGIN
+    public void setTranID(String tranID) {
+        m_tranID = tranID;
+    }
 
-// import internal library package(s) -- END
+    public String getIdpID() {
+        return m_idpID;
+    }
 
+    public void setIdpID(String idpID) {
+        m_idpID = idpID;
+    }
 
-// import module package(s) -- BEGIN
+    public String getRecipientID() {
+        return m_recipientID;
+    }
 
-// import module package(s) -- END
+    public void setRecipientID(String recipientID) {
+        m_recipientID = recipientID;
+    }
 
-/**
- * Representation of Message Response
- */
-public class MessageResponse implements Serializable{
+    public String getTranResultCode() {
+        return m_tranResultCode;
+    }
 
-	// public constant(s) -- BEGIN
+    public void setTranResultCode(String tranResultCode) {
+        m_tranResultCode = tranResultCode;
+    }
 
+    public String getTranResultMessage() {
+        return m_tranResultMessage;
+    }
 
-	// public constant(s) -- END
+    public void setTranResultMessage(String tranResultMessage) {
+        m_tranResultMessage = tranResultMessage;
+    }
 
-	// public data member(s) -- BEGIN
-	// public data member(s) -- END
+    public String getMsgType() {
+        return m_msgType;
+    }
 
-	// public method(s) -- BEGIN
-
-	public String getTranID()
-	{
-		return m_tranID;
-	}
-
-	public void setTranID(String tranID)
-	{
-		m_tranID = tranID;
-	}
-
-	public String getIdpID()
-	{
-		return m_idpID;
-	}
-
-	public void setIdpID(String idpID)
-	{
-		m_idpID = idpID;
-	}
-
-	public String getRecipientID()
-	{
-		return m_recipientID;
-	}
-
-	public void setRecipientID(String recipientID)
-	{
-		m_recipientID = recipientID;
-	}
-
-	public String getTranResultCode()
-	{
-		return m_tranResultCode;
-	}
-
-	public void setTranResultCode(String tranResultCode)
-	{
-		m_tranResultCode = tranResultCode;
-	}
-
-	public String getTranResultMessage()
-	{
-		return m_tranResultMessage;
-	}
-
-	public void setTranResultMessage(String tranResultMessage)
-	{
-		m_tranResultMessage = tranResultMessage;
-	}
-
-	public String getMsgType()
-	{
-		return m_msgType;
-	}
-
-	public void setMsgType(String msgType)
-	{
-		m_msgType = msgType;
-	}
-
-
-
-
-
-// public method(s) -- END
-
-// protected constant(s) -- BEGIN
-// protected constant(s) -- END
-
-// protected method(s) -- BEGIN
-// protected methods -- END
-
-// private methods -- BEGIN
-
-
-
-// private methods -- END
-
-
-// private data members -- BEGIN
-private String m_tranID;
-private String m_idpID;
-private String m_recipientID;
-private String m_tranResultCode;
-private String m_tranResultMessage;
-private String m_msgType;
-// private data members -- END
-
-// private constants -- BEGIN
-// private constants -- END
-
-
+    public void setMsgType(String msgType) {
+        m_msgType = msgType;
+    }
 
 }

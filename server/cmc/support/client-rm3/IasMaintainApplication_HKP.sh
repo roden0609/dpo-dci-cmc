@@ -40,6 +40,6 @@ CLASSPATH=${CLASSPATH}:${LIB}/static/log4j-2.23.1/log4j-core-2.23.1.jar
 
 CLIENT_PROG=hk.gov.dpo.mars_cmc.cmc.client.maintainmessage.MaintainIasApplicationClientTest
 
-PROPERTY_FILE=./config/kc_maint_application_hkp
+PROPERTY_FILE=/bd-ogcmr/uat/cmc/support/client-rm3/config/kc_maint_application_hkp
 
-${JAVA_HOME}/bin/java -Dlog4j.configuration=file:./config/log4j.properties -cp ${CLASSPATH} ${CLIENT_PROG} ${PROPERTY_FILE}
+${JAVA_HOME}/bin/java -Dlog4j.configuration=file:/bd-ogcmr/uat/cmc/support/client-rm3/config/log4j.properties -cp ${CLASSPATH} ${CLIENT_PROG} ${PROPERTY_FILE}

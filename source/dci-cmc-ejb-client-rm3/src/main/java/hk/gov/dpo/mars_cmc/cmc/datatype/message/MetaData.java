@@ -49,4 +49,10 @@ public class MetaData implements Serializable {
         return m_recipientList;
     }
 
+    @Override
+    public String toString() {
+        return "MetaData [m_dataContentEN=" + m_dataContentEN + ", m_dataContentTC=" + m_dataContentTC
+                + ", m_dataContentSC=" + m_dataContentSC + ", m_recipientList=" + m_recipientList + "]";
+    }
+
 }
