@@ -68,7 +68,7 @@
         <mime-type>text/xml</mime-type>
     </mime-mapping>
 
-    <!-- <security-constraint>
+    <security-constraint>
         <web-resource-collection>
             <web-resource-name>services</web-resource-name>
             <url-pattern>/services/*</url-pattern>
@@ -81,7 +81,7 @@
     <login-config>
         <auth-method>CLIENT-CERT</auth-method>
         <realm-name>RequireCertificateDomain</realm-name>
-    </login-config> -->
+    </login-config>
 
     <security-role>
         <role-name>xmlfw-rpc</role-name>
