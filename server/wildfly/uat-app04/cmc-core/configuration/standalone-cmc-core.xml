@@ -123,7 +123,7 @@
                 <level name="INFO"/>
             </logger>
             <logger category="org.wildfly.security">
-                <level name="DEBUG"/>
+                <level name="TRACE"/>
             </logger>
             <logger category="org.wildfly.security.ssl">
                 <level name="TRACE"/>
@@ -147,16 +147,16 @@
                 <level name="TRACE"/>
             </logger>
             <logger category="io.undertow">
-                <level name="DEBUG"/>
+                <level name="INFO"/>
             </logger>
             <logger category="io.undertow.request">
-                <level name="DEBUG"/>
+                <level name="INFO"/>
             </logger>
             <logger category="io.undertow.request.security">
-                <level name="TRACE"/>
+                <level name="INFO"/>
             </logger>
             <logger category="org.xnio">
-                <level name="DEBUG"/>
+                <level name="INFO"/>
             </logger>
             <root-logger>
                 <level name="INFO"/>
@@ -352,7 +352,7 @@
                         <permission-set name="default-permissions"/>
                     </permission-mapping>
                 </simple-permission-mapper>
-                <x500-attribute-principal-decoder name="x500-decoder" attribute-name="CN" maximum-segments="1"/>
+                <x500-attribute-principal-decoder name="x500-decoder" attribute-name="CN"/>
                 <constant-realm-mapper name="local" realm-name="local"/>
                 <simple-role-decoder name="groups-to-roles" attribute="groups"/>
                 <constant-role-mapper name="super-user-mapper">
@@ -372,15 +372,14 @@
             <http>
                 <http-authentication-factory name="application-http-authentication" security-domain="ApplicationDomain" http-server-mechanism-factory="configured-cert">
                     <mechanism-configuration>
-                        <mechanism mechanism-name="CLIENT_CERT" pre-realm-principal-transformer="x500-decoder"/>
+			<mechanism mechanism-name="CLIENT_CERT" pre-realm-principal-transformer="x500-decoder"/>
                         <mechanism mechanism-name="BASIC">
                             <mechanism-realm realm-name="ApplicationRealm"/>
                         </mechanism>
                     </mechanism-configuration>
                 </http-authentication-factory>
-                <http-authentication-factory name="management-http-authentication" security-domain="ManagementDomain" http-server-mechanism-factory="configured-cert">
+                <http-authentication-factory name="management-http-authentication" security-domain="ManagementDomain" http-server-mechanism-factory="global">
                     <mechanism-configuration>
-                        <mechanism mechanism-name="CLIENT_CERT" pre-realm-principal-transformer="x500-decoder"/>
                         <mechanism mechanism-name="DIGEST">
                             <mechanism-realm realm-name="ManagementRealm"/>
                         </mechanism>
@@ -396,7 +395,6 @@
             <sasl>
                 <sasl-authentication-factory name="application-sasl-authentication" sasl-server-factory="configured" security-domain="ApplicationDomain">
                     <mechanism-configuration>
-                        <mechanism mechanism-name="EXTERNAL" pre-realm-principal-transformer="x500-decoder"/>
                         <mechanism mechanism-name="JBOSS-LOCAL-USER" realm-mapper="local"/>
                         <mechanism mechanism-name="DIGEST-MD5">
                             <mechanism-realm realm-name="ApplicationRealm"/>
@@ -405,7 +403,6 @@
                 </sasl-authentication-factory>
                 <sasl-authentication-factory name="management-sasl-authentication" sasl-server-factory="configured" security-domain="ManagementDomain">
                     <mechanism-configuration>
-                        <mechanism mechanism-name="EXTERNAL" pre-realm-principal-transformer="x500-decoder"/>
                         <mechanism mechanism-name="JBOSS-LOCAL-USER" realm-mapper="local"/>
                         <mechanism mechanism-name="DIGEST-MD5">
                             <mechanism-realm realm-name="ManagementRealm"/>
@@ -624,19 +621,21 @@
                 <https-listener name="https" socket-binding="https" ssl-context="cmcSSLContext" enable-http2="false"/>
                 <host name="default-host" alias="localhost">
                     <location name="/" handler="welcome-content"/>
-                    <http-invoker http-authentication-factory="application-http-authentication"/>
+	            <http-invoker http-authentication-factory="application-http-authentication"/>
+                    <access-log pattern="common" directory="${jboss.home.dir}/cmc-core/log" prefix="access" suffix=".log" worker="default"/>
                 </host>
             </server>
             <servlet-container name="default">
                 <jsp-config x-powered-by="false"/>
-                <session-cookie secure="true" http-only="true"/>
+                <session-cookie http-only="true" secure="true"/>
                 <websockets/>
             </servlet-container>
             <handlers>
                 <file name="welcome-content" path="${jboss.home.dir}/welcome-content"/>
             </handlers>
             <application-security-domains>
-                <application-security-domain name="other" http-authentication-factory="application-http-authentication"/>
+                <application-security-domain name="other" security-domain="ApplicationDomain"/>
+                <application-security-domain name="RequireCertificateDomain" http-authentication-factory="application-http-authentication"/>
             </application-security-domains>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:webservices:2.0" statistics-enabled="${wildfly.webservices.statistics-enabled:${wildfly.statistics-enabled:false}}">
