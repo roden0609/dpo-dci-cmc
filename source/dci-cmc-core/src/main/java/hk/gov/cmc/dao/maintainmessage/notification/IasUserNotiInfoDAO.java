@@ -2,21 +2,17 @@ package hk.gov.cmc.dao.maintainmessage.notification;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import hk.gov.cmc.common.CmcAppConstants;
 import hk.gov.cmc.common.CmcAppPropertyNames;
-import hk.gov.cmc.kmu.client.KMUUtils;
 import hk.gov.cmc.model.maintainmessage.user.IasUser;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.Parameter;
-import hk.gov.cmc.utils.common.EncryptionUtils;
-import hk.gov.gcis.rm.common.javaee.service.dao.DAOBase;
+import hk.gov.cmc.utils.common.EncUtils;
 
 public class IasUserNotiInfoDAO {
 
@@ -125,7 +121,7 @@ public class IasUserNotiInfoDAO {
             ArrayList<Parameter> paraList = new ArrayList<Parameter>();
 
             paraList.add(new Parameter(Parameter.String, spId));
-            paraList.add(new Parameter(Parameter.String, EncryptionUtils.hashString(hkid)));
+            paraList.add(new Parameter(Parameter.String, EncUtils.hashString(hkid)));
 
             rs = conn.getResultSet(sql, paraList);
             IasUser tempIasUser = null;
@@ -143,8 +139,11 @@ public class IasUserNotiInfoDAO {
             } else {
                 // Prevent same hash value but different HKID
                 for (IasUser iasUserItem : iasUserList) {
-                    String hkidDecrypted = KMUUtils.decryptByKey(properties, iasUserItem.getHkidEncrypted(),
-                            CmcAppPropertyNames.CMC_CORE_CERT_FILE_NAME_P12);
+                    String hkidDecrypted = EncUtils.decrypt(hkid, properties.getProperty(
+                            CmcAppPropertyNames.HKID_ENCRYPT_PASSPHRASE_ID_PROPERTY_NAME),
+                            properties.getProperty(
+                                    CmcAppPropertyNames.HKID_ENCRYPT_PASSPHRASE_USAGE_PROPERTY_NAME));
+                    logger.debug("Comparing HKID: " + hkid + " with decrypted HKID: " + hkidDecrypted);
                     if (hkid.equals(hkidDecrypted)) {
                         iasUser = iasUserItem;
                         break;

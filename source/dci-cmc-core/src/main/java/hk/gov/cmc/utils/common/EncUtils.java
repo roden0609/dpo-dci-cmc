@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -179,37 +181,51 @@ public class EncUtils {
 
     }
 
-    public boolean keyExistInKMU(HPFW_Connection conn, Document xmlMessage)
+    public static boolean isKeyExistInKMU(HPFW_Connection conn, Document xmlMessage)
             throws Exception {
 
-        // Look for EncryptedKey/KeyInfo/X509Data/X509Certificate
-        XPath xpath = factory.newXPath();
+        if (xmlMessage == null) {
+            return false;
+        }
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(new XmlNSContextImpl());
 
-        if (encryptedKeyX509PathExpression == null) {
-            encryptedKeyX509PathExpression = xpath
-                    .compile("//xenc:EncryptedKey/ds:KeyInfo/ds:X509Data/ds:X509Certificate");
-        }
-        NodeList encryptingCerts = (NodeList) encryptedKeyX509PathExpression.evaluate(xmlMessage,
-                XPathConstants.NODESET);
+        XPathExpression localExpr = xpath.compile(
+                "//xenc:EncryptedKey/ds:KeyInfo/ds:X509Data/ds:X509Certificate");
 
-        CertificateFactory certFact = CertificateFactory.getInstance("X509");
-        for (int i = 0; i < encryptingCerts.getLength(); i++) {
-            String cert = encryptingCerts.item(i).getTextContent();
-            // resolve cert to issuer name serial
-            X509Certificate x509Cert = (X509Certificate) certFact
-                    .generateCertificate(new ByteArrayInputStream(BASE64Coder.decode(cert.getBytes())));
-            String issuerName = x509Cert.getIssuerX500Principal().getName();
-            BigInteger serialNo = x509Cert.getSerialNumber();
-            return loadKey(conn, issuerName, serialNo);
+        NodeList certNodes = (NodeList) localExpr.evaluate(
+                xmlMessage, XPathConstants.NODESET);
+
+        if (certNodes == null || certNodes.getLength() == 0) {
+            return false;
         }
 
-        // Key not found
+        CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+
+        for (int i = 0; i < certNodes.getLength(); i++) {
+            String base64Cert = certNodes.item(i).getTextContent();
+            if (base64Cert == null || base64Cert.isBlank()) {
+                continue;
+            }
+
+            byte[] certBytes = BASE64Coder.decode(
+                    base64Cert.getBytes(StandardCharsets.UTF_8));
+
+            try (ByteArrayInputStream bis = new ByteArrayInputStream(certBytes)) {
+                X509Certificate cert = (X509Certificate) certFactory.generateCertificate(bis);
+
+                String issuerName = cert.getIssuerX500Principal().getName();
+                BigInteger serialNo = cert.getSerialNumber();
+
+                return isKeyExistInKMU(conn, issuerName, serialNo);
+            }
+        }
+
         return false;
-
     }
 
-    private boolean loadKey(HPFW_Connection conn, String issuerName, BigInteger serialNo)
+    public static boolean isKeyExistInKMU(HPFW_Connection conn, String issuerName, BigInteger serialNo)
             throws Exception {
 
         boolean keyExist = false;
@@ -219,7 +235,7 @@ public class EncUtils {
                 + " serial_no = ? "
                 + " and status = 'A'";
 
-        ArrayList<Parameter> paraList = new ArrayList<>();
+        ArrayList<Parameter> paraList = new ArrayList<Parameter>();
         paraList.add(new Parameter(Parameter.String, serialNo.toString()));
 
         ResultSet rs = conn.getResultSet(SELECT_FIND_BY_ISSUER_SERIAL, paraList);
@@ -228,48 +244,63 @@ public class EncUtils {
             keyExist = true;
         }
 
-        if (!keyExist)
+        if (!keyExist) {
             logger.warn("No private key has been found for issuer name [" + issuerName + "], serial no ["
                     + serialNo.toString() + "] in KMU.");
+        } else {
+            logger.info("Private key has been found for issuer name [" + issuerName + "], serial no ["
+                    + serialNo.toString() + "] in KMU.");
+        }
 
         return keyExist;
 
     }
 
-    private class XmlNSContextImpl implements NamespaceContext {
-
-        public String getNamespaceURI(String arg0) {
-            if ("ds".equals(arg0)) {
+    private static class XmlNSContextImpl implements NamespaceContext {
+        @Override
+        public String getNamespaceURI(String prefix) {
+            if ("ds".equals(prefix)) {
                 return org.apache.xml.security.utils.Constants.SignatureSpecNS;
-            } else if ("xenc".equals(arg0)) {
+            } else if ("xenc".equals(prefix)) {
                 return EncryptionConstants.EncryptionSpecNS;
-            } else {
-                return null;
             }
+            return null;
         }
 
-        public String getPrefix(String arg0) {
-            if (org.apache.xml.security.utils.Constants.SignatureSpecNS.equals(arg0)) {
+        @Override
+        public String getPrefix(String namespaceURI) {
+            if (org.apache.xml.security.utils.Constants.SignatureSpecNS.equals(namespaceURI)) {
                 return "ds";
-            } else if (EncryptionConstants.EncryptionSpecNS.equals(arg0)) {
+            } else if (EncryptionConstants.EncryptionSpecNS.equals(namespaceURI)) {
                 return "xenc";
-            } else {
-                return null;
             }
+            return null;
         }
 
-        public Iterator<String> getPrefixes(String arg0) {
-            LinkedList<String> ll = new LinkedList<String>();
-            if (org.apache.xml.security.utils.Constants.SignatureSpecNS.equals(arg0)) {
-                ll.add("ds");
-                return ll.iterator();
-            } else if (EncryptionConstants.EncryptionSpecNS.equals(arg0)) {
-                ll.add("xenc");
-                return ll.iterator();
-            } else {
-                return ll.iterator();
+        @Override
+        public Iterator<String> getPrefixes(String namespaceURI) {
+            LinkedList<String> list = new LinkedList<>();
+            String prefix = getPrefix(namespaceURI);
+            if (prefix != null) {
+                list.add(prefix);
             }
+            return list.iterator();
         }
+    }
+
+    public static String hashString(String input) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] hashedBytes = md.digest(input.getBytes());
+        String hash = bytesToHex(hashedBytes);
+        return hash;
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder result = new StringBuilder();
+        for (byte b : bytes) {
+            result.append(String.format("%02x", b));
+        }
+        return result.toString();
     }
 
 }

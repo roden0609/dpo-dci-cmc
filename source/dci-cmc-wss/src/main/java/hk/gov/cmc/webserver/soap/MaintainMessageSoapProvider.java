@@ -35,21 +35,17 @@ import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.jaxb.maintainmessage.MaintainMessageRequest;
 import hk.gov.cmc.jaxb.maintainmessage.MaintainMessageResponse;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
-import hk.gov.cmc.utils.common.EncryptionUtils;
+import hk.gov.cmc.utils.common.EncUtils;
 import hk.gov.gcis.rm.keyservice.appserver.AppPropertyNames;
 import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IPKIUtil;
 import hk.gov.gcis.rm.keyservice.common.Constants;
-import hk.gov.gcis.ss.common.utils.SoapUtils;
 import jakarta.ejb.EJB;
-// import jakarta.jws.WebService;
-// import jakarta.jws.soap.SOAPBinding;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import jakarta.xml.soap.MessageFactory;
 import jakarta.xml.soap.SOAPBody;
-import jakarta.xml.soap.SOAPBodyElement;
 import jakarta.xml.soap.SOAPEnvelope;
 import jakarta.xml.soap.SOAPMessage;
 import jakarta.xml.ws.Provider;
@@ -57,8 +53,6 @@ import jakarta.xml.ws.Service;
 import jakarta.xml.ws.ServiceMode;
 import jakarta.xml.ws.WebServiceProvider;
 
-// @WebService(serviceName = "MaintainMessageService", portName = "MaintainMessagePort", targetNamespace = "http://cmc.gov.hk/ws/maintainmessage")
-// @SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL)
 @WebServiceProvider(serviceName = "MaintainMessageService", portName = "MaintainMessagePort", targetNamespace = "http://ws.mygovhk.gov.hk/schema/MaintainMessageRequest.xsd")
 @ServiceMode(Service.Mode.MESSAGE)
 public class MaintainMessageSoapProvider implements Provider<Source> {
@@ -176,7 +170,7 @@ public class MaintainMessageSoapProvider implements Provider<Source> {
 
                 HPFW_Connection conn = HPFW_Connection.getHPFW_Connection(false);
 
-                if (!EncryptionUtils.isKeyExistInKMU(conn, bodyDoc)) {
+                if (!EncUtils.isKeyExistInKMU(conn, bodyDoc)) {
                     logger.warn("Key not found in processMaintainMessage.");
                     return generateResponse(responseMsg, ResultCodes.RESULT_CD_GENERAL_ERROR,
                             ResultMessages.RESULT_MSG_GENERAL_ERROR);

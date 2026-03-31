@@ -29,7 +29,7 @@ import hk.gov.cmc.mapper.maintainmessage.MaintainMessageRequestMapper;
 import hk.gov.cmc.mapper.maintainmessage.MaintainMessageResponseMapper;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.processor.maintainmessage.MaintainMessageProcessor;
-import hk.gov.cmc.utils.common.EncryptionUtils;
+import hk.gov.cmc.utils.common.EncUtils;
 import hk.gov.cmc.utils.job.JobControlUtils;
 import hk.gov.gcis.rm.common.javaee.ejb.EJBBase;
 import hk.gov.gcis.rm.common.utils.PropertiesUtils;
@@ -306,7 +306,7 @@ public class MaintainMessageSessionEJB extends EJBBase
                                                             + encryptedDataList.getLength() + ", sendAppId: "
                                                             + sendAppId);
 
-                                                    if (!EncryptionUtils.isKeyExistInKMU(conn, bodyDoc)) {
+                                                    if (!EncUtils.isKeyExistInKMU(conn, bodyDoc)) {
                                                         logWarn("[MaintainMessageSessionEJB]processMessageByBatchPull - Key not found in processMessageByBatchPull.");
                                                         maintMsgResponse = generateResponse(
                                                                 ResultCodes.RESULT_CD_GENERAL_ERROR,

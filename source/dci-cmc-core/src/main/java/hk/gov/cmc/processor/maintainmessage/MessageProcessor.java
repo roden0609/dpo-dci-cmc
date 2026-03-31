@@ -35,7 +35,6 @@ import hk.gov.cmc.processor.maintainmessage.application.IasApplicationProcessor;
 import hk.gov.cmc.processor.maintainmessage.message.IasMessageProcessor;
 import hk.gov.cmc.processor.maintainmessage.todoitem.IasToDoItemProcessor;
 import hk.gov.cmc.utils.common.EncUtils;
-import hk.gov.cmc.utils.common.EncryptionUtils;
 import hk.gov.cmc.utils.maintainmessage.MaintainMessageUtils;
 import hk.gov.cmc.utils.maintainmessage.ias.IasRecipientUtils;
 import hk.gov.cmc.utils.maintainmessage.recipient.RecipientUtils;
@@ -218,7 +217,7 @@ public class MessageProcessor {
 
                 if (RecipientIDTypeConstant.HKID.equals(recipient.getRecipientIdType())) {
 
-                    String hkidHashed = EncryptionUtils.hashString(recipient.getRecipientId());
+                    String hkidHashed = EncUtils.hashString(recipient.getRecipientId());
                     List<IasUser> getByHkidIasUserList = iasUserNotiInfoDAO.getIasUserNotiInfoByHKIDHashed(conn,
                             iasOptSpId, hkidHashed);
 

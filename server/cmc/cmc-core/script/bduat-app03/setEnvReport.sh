@@ -1,0 +1,4 @@
+# For Servlet call
+DOMAIN_NAME=172.16.67.13
+HTTP_PORT=21280
+

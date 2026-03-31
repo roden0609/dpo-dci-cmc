@@ -12,7 +12,6 @@ import java.util.Properties;
 import javax.naming.InitialContext;
 
 import hk.gov.cmc.kmu.common.KMUConstants;
-import hk.gov.cmc.utils.common.EncryptionUtils;
 import hk.gov.gcis.rm.common.utils.PropertiesUtils;
 import hk.gov.gcis.rm.keyservice.appserver.AppPropertyNames;
 import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations;
@@ -79,26 +78,6 @@ public class KMUUtils {
 
     }
 
-    public static String encryptByCert(Properties properties, String rawData, String friendlyAlias) throws Exception {
-        if (rawData == null)
-            return null;
-
-        String keyOpsJNDIName = properties.getProperty(
-                AppPropertyNames.PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
-                KMUConstants.GLOBAL_CONTEXT_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
-                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
-                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
-                        + KMUConstants.CONTEXT_NAME_SEPARATOR
-                        + "KeyOperations!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations");
-
-        InitialContext context = new InitialContext(properties);
-        IKeyOperations keyOps = (IKeyOperations) context.lookup(keyOpsJNDIName);
-        Certificate certificate = keyOps.retrieveCert(friendlyAlias, new Date());
-
-        return EncryptionUtils.asymetricEncryptToBase64Encode(certificate, rawData);
-
-    }
-
     public static Certificate getCertFromKMU(Properties properties, String friendlyAlias) throws Exception {
 
         String keyOpsJNDIName = properties.getProperty(
@@ -114,34 +93,6 @@ public class KMUUtils {
         Certificate certificate = keyOps.retrieveCert(friendlyAlias, new Date());
 
         return certificate;
-    }
-
-    public static String decryptByKey(Properties properties, String encryptString, String friendlyAlias)
-            throws Exception {
-        if (encryptString == null)
-            return null;
-
-        String keyOpsJNDIName = properties.getProperty(
-                AppPropertyNames.PROPERTY_NAME_KEY_OPERATIONS_EJB_REMOTE_JNDI_NAME,
-                KMUConstants.GLOBAL_CONTEXT_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
-                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.CONTEXT_NAME_SEPARATOR
-                        + KMUConstants.GCIS_RM_KEYSERVICE_MODULE_NAME + KMUConstants.DEFAULT_EJB_MODULE_NAME_SUFFIX
-                        + KMUConstants.CONTEXT_NAME_SEPARATOR
-                        + "KeyOperations!hk.gov.gcis.rm.keyservice.appserver.ejb.session.IKeyOperations");
-
-        InitialContext context = new InitialContext(properties);
-        IKeyOperations keyOps = (IKeyOperations) context.lookup(keyOpsJNDIName);
-
-        PrivateKey privateKey = (PrivateKey) keyOps.retrieveKey(friendlyAlias, new Date());
-
-        return EncryptionUtils.asymetricDecryptFromBase64Encode(privateKey, encryptString);
-    }
-
-    public static String decryptByKey(Properties properties, String encryptString) throws Exception {
-        if (encryptString == null)
-            return null;
-        PrivateKey privateKey = getMyIdDecryptKey(properties);
-        return EncryptionUtils.asymetricDecryptFromBase64Encode(privateKey, encryptString);
     }
 
     public static PrivateKey getMyIdDecryptKey(Properties properties, String friendlyAlias) throws Exception {
