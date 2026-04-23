@@ -42,6 +42,7 @@
     <gcis_rm_common.version>1.1.0</gcis_rm_common.version>
     <gcis_ss_common.version>1.1.0</gcis_ss_common.version>
     <gcis_ss_msg_soap_client.version>1.1.0</gcis_ss_msg_soap_client.version>
+    <gcis_ss_noti_soap_client.version>1.1.0</gcis_ss_noti_soap_client.version>
     <jackson-bundle.version>2.18.1</jackson-bundle.version>
     <jakarta.jakartaee-api.version>10.0.0</jakarta.jakartaee-api.version>
     <jakarta.jakartaee-mvc.version>2.1.0</jakarta.jakartaee-mvc.version>
@@ -96,6 +97,11 @@
       <dependency>
         <groupId>hk.gov.gcis.ss</groupId>
         <artifactId>gcis_ss_msg_soap_client</artifactId>
+        <version>1.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>hk.gov.gcis.ss</groupId>
+        <artifactId>gcis_ss_noti_soap_client</artifactId>
         <version>1.1.0</version>
       </dependency>
       <dependency>

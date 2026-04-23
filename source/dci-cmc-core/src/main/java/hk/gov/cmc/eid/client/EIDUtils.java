@@ -291,6 +291,7 @@ public class EIDUtils {
 
         if (encryptedBase64RawData != null && encryptedBase64RawData.length() > 0) {
             byte[] b = Base64.decodeBase64(encryptedBase64RawData);
+            //TODO: align iAM Smart to use "RSA"
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 
             cipher.init(Cipher.DECRYPT_MODE, privateKey);

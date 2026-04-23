@@ -464,6 +464,11 @@
             <artifactId>gcis_rm_common</artifactId>
             <!-- <version>1.1.0</version> -->
         </dependency>
+        <dependency>
+            <groupId>hk.gov.gcis.ss</groupId>
+            <artifactId>gcis_ss_noti_soap_client</artifactId>
+            <!-- <version>1.1.0</version> -->
+        </dependency>
         <!-- GCIS RM3 Library END -->
 
         <!-- CMC-EID package Third-Party Library BEGIN -->
