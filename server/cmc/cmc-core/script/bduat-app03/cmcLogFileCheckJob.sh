@@ -34,7 +34,7 @@ REMOTE_CONSOL_ERROR_DETAIL_LOG=${CONSOL_ERROR_LOG_PATH}/cmcConsolErrorDetail_${R
 REMOTE_CONSOL_ERROR_COUNT_LOG=${CONSOL_ERROR_LOG_PATH}/cmcConsolErrorCount_${REMOTE_HOSTNAME}_${BATCH_DATE}.txt
 
 LOGFILE_PREFFIX_LIST=(
-${WILDFLY_HOME}/cmc-core/log/server.log
+/bd-ogcmr/bduat/jboss/wildfly/cmc-core/log/server.log
 )
 
 echo `date`: Daily Log Checking for ${BATCH_DATE} Start --
@@ -70,11 +70,11 @@ do
 done
 
 ## Step 2: if this server is primary host, copy the consolidated information from remote server of the same site
-if [ x"${CURR_HOSTNAME}" = x"${PRIMARY_HOSTNAME}" ]
-then
-   scp cmruatadm@ecs-ttcp-cmcapp04:${REMOTE_CONSOL_ERROR_COUNT_LOG} ${CONSOL_ERROR_LOG_PATH}
-   scp cmruatadm@ecs-ttcp-cmcapp04:${REMOTE_CONSOL_ERROR_DETAIL_LOG} ${CONSOL_ERROR_LOG_PATH}
-fi
+# if [ x"${CURR_HOSTNAME}" = x"${PRIMARY_HOSTNAME}" ]
+# then
+#    scp cmruatadm@ecs-ttcp-cmcapp04:${REMOTE_CONSOL_ERROR_COUNT_LOG} ${CONSOL_ERROR_LOG_PATH}
+#    scp cmruatadm@ecs-ttcp-cmcapp04:${REMOTE_CONSOL_ERROR_DETAIL_LOG} ${CONSOL_ERROR_LOG_PATH}
+# fi
 
 ## Step 3: if this server is primary host, send the consolidated information via email
 if [ x"${CURR_HOSTNAME}" = x"${PRIMARY_HOSTNAME}" ]

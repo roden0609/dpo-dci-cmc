@@ -34,7 +34,7 @@ REMOTE_CONSOL_ERROR_DETAIL_LOG=${CONSOL_ERROR_LOG_PATH}/cmcConsolErrorDetail_${R
 REMOTE_CONSOL_ERROR_COUNT_LOG=${CONSOL_ERROR_LOG_PATH}/cmcConsolErrorCount_${REMOTE_HOSTNAME}_${BATCH_DATE}.txt
 
 LOGFILE_PREFFIX_LIST=(
-${WILDFLY_HOME}/cmc-core/log/server.log
+/bd-ogcmr/uat/jboss/wildfly/cmc-core/log/server.log
 )
 
 echo `date`: Daily Log Checking for ${BATCH_DATE} Start --

@@ -1,7 +1,9 @@
 package hk.gov.cmc.dao.healthcheck;
 
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -50,6 +52,10 @@ public class HealthCheckDAO {
     private static final String HEALTH_CHECK_NUM_OF_IAS_ACC_STATUS_UPDATE = "select count(1) as cnt " +
             "from ias_user_noti_info " +
             "where last_modify_dt between DATE(now() - INTERVAL 1 DAY) and DATE(now()) ";
+
+    private static final String SELECT_OVERTIME_LOCKING_SYNC_JOB = "SELECT SYN_JOB_NAME, SERVER_ID, DATE_FORMAT(LOCK_TIME, '%Y-%m-%d, %H:%i:%s') "
+            + " FROM CMC_MARS_SYN_JOB_LOCK "
+            + " WHERE LOCK_TIME < ? ";
 
     public List<String> retrieveNumOfIasMsgPerTemplate(HPFW_Connection cn) throws Exception {
         List<String> returnList = new ArrayList<String>();
@@ -204,5 +210,43 @@ public class HealthCheckDAO {
         }
 
         return cnt;
+    }
+
+    public void checkOverTimeLockingJobs(HPFW_Connection conn, int lockThresholdInHour) throws Exception {
+
+        logger.debug("checkOverTimeLockingJobs - START");
+        ResultSet rs = null;
+        try {
+
+            Calendar timeoutCal = Calendar.getInstance();
+
+            timeoutCal.add(Calendar.HOUR_OF_DAY, -lockThresholdInHour);
+
+            ArrayList<Parameter> paraList = new ArrayList<Parameter>();
+            paraList.add(new Parameter(Parameter.Timestamp, new Timestamp(timeoutCal.getTime().getTime())));
+
+            rs = conn.getResultSet(SELECT_OVERTIME_LOCKING_SYNC_JOB, paraList);
+            while (rs.next()) {
+
+                String synJobName = rs.getString(1);
+                String serverId = rs.getString(2);
+                String lockTime = rs.getString(3);
+
+                logger.error("[HEALTH_CHECK] Locking time for [" + synJobName + "] by server [" + serverId
+                        + "] is over " + lockThresholdInHour + " hours. LockTime=[" + lockTime + "]");
+
+            }
+        } catch (Exception ex) {
+            logger.error("General exception caught in checkOverTimeLockingJobs", ex);
+            throw ex;
+        } finally {
+            try {
+                if (rs != null)
+                    HPFW_Connection.close(rs);
+            } catch (Exception ex) {
+                logger.error("General exception caught in checkOverTimeLockingJobs - rs.close();", ex);
+            }
+            logger.debug("checkOverTimeLockingJobs - END");
+        }
     }
 }
