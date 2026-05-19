@@ -291,8 +291,7 @@ public class EIDUtils {
 
         if (encryptedBase64RawData != null && encryptedBase64RawData.length() > 0) {
             byte[] b = Base64.decodeBase64(encryptedBase64RawData);
-            //TODO: align iAM Smart to use "RSA"
-            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipher = Cipher.getInstance("RSA");
 
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             byte[] cipherData = cipher.doFinal(b);
@@ -354,26 +353,26 @@ public class EIDUtils {
             String txnId = jsonObject.path("txID").asText();
             String responseCode = jsonObject.path("code").asText();
             String message = jsonObject.path("message").asText();
-            log.debug("doGetSymmetricEncryptionKey code" + ":" + responseCode);
+            log.debug("doGetSymmetricEncryptionKey txnId: " + txnId + ", code: " + responseCode + ", message: " + message);
 
             String content = jsonObject.path("content").isMissingNode() ? null : jsonObject.get("content").toString();
             log.debug("doGetSymmetricEncryptionKey content" + ":" + content);
 
             if (successCode.equalsIgnoreCase(responseCode) && content != null && content.length() > 0) {
                 JsonNode contentNode = jsonObject.path("content");
-                String secretKey = contentNode.path("secretKey").asText();
+                char[] secretKey = contentNode.path("secretKey").asText().toCharArray();
                 long expiresIn = contentNode.path("expiresIn").asLong();
                 long issueAt = contentNode.path("issueAt").asLong();
 
                 Timestamp newExpiryTime = new Timestamp(issueAt + expiresIn);
 
-                log.debug("doGetSymmetricEncryptionKey secretKey" + ":" + secretKey);
+                log.debug("doGetSymmetricEncryptionKey secretKey" + ":" + String.valueOf(secretKey));
                 log.debug("doGetSymmetricEncryptionKey expiresIn" + ":" + newExpiryTime);
 
-                if (secretKey != null && secretKey.length() > 0) {
+                if (secretKey != null && secretKey.length > 0) {
                     symmetricEncryptionKeyExpiryTime = newExpiryTime;
                     log.debug("doGetSymmetricEncryptionKey symmetricEncryptionKeyExpiryTime" + ":" + newExpiryTime);
-                    symmetricEncryptionKey = decryptSymmetricContentKeyFromBase64Encode(secretKey);
+                    symmetricEncryptionKey = decryptSymmetricContentKeyFromBase64Encode(String.valueOf(secretKey));
                     log.debug("doGetSymmetricEncryptionKey symmetricEncryptionKey end " + ":" + symmetricEncryptionKey);
                     result = true;
                 }

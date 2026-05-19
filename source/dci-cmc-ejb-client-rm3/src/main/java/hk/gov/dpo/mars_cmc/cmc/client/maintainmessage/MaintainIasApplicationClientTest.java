@@ -44,7 +44,7 @@ public class MaintainIasApplicationClientTest {
             }
 
         } catch (Throwable t) {
-            t.printStackTrace(System.err);
+            System.out.println("Exception in " + MaintainIasApplicationClientTest.class.getName() + ": " + t.getMessage());
         }
 
     }

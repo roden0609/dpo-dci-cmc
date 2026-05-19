@@ -44,7 +44,7 @@ public class MaintainIasToDoItemClientTest {
             }
 
         } catch (Throwable t) {
-            t.printStackTrace(System.err);
+            System.out.println("Exception in " + MaintainIasToDoItemClientTest.class.getName() + ": " + t.getMessage());
         }
 
     }

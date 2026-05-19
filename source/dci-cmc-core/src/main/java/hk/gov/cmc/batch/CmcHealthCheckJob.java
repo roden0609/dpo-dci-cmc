@@ -233,8 +233,8 @@ public class CmcHealthCheckJob {
 
             File outFile = null;
             try {
-                String password = "ogcio" + new SimpleDateFormat("yyyyMMdd").format(new Date());
-                outFile = AesZipFileUtil.zipAndEncryptFile(filePath, password);
+                char[] password = ("ogcio" + new SimpleDateFormat("yyyyMMdd").format(new Date())).toCharArray();
+        		outFile = AesZipFileUtil.zipAndEncryptFile(filePath, String.valueOf(password));
 
                 if (outFile != null) {
                     byte[] fileContent = EncoderUtils

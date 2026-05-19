@@ -110,7 +110,7 @@ public class CommonDBUtils {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } finally {
             HPFW_Connection.close(rs);
         }
@@ -175,7 +175,7 @@ public class CommonDBUtils {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } finally {
             try {
                 if (rs != null)

@@ -29,7 +29,7 @@ public class OnIasEnableSample {
             System.out.println("CorrId=" + ack.getCorrId() + ", MsgId=" + ack.getMsgId());
 
         } catch (Throwable t) {
-            t.printStackTrace(System.err);
+            System.out.println("Exception in " + OnIasEnableSample.class.getName() + ": " + t.getMessage());
         }
     }
 

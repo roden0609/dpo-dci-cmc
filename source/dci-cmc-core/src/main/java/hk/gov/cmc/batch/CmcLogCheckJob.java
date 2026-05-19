@@ -116,11 +116,11 @@ public class CmcLogCheckJob {
 
                 File zipAttachmentFile = null;
                 try {
-                    String password = "ogcio" + new SimpleDateFormat("yyyyMMdd").format(cmcLogCheckBatchDate);
+                    char[] password = ("ogcio" + new SimpleDateFormat("yyyyMMdd").format(cmcLogCheckBatchDate)).toCharArray();
 
                     try {
 
-                        zipAttachmentFile = AesZipFileUtil.zipAndEncryptFile(attachmentFile, password);
+                        zipAttachmentFile = AesZipFileUtil.zipAndEncryptFile(attachmentFile, String.valueOf(password));
 
                         if (zipAttachmentFile != null) {
                             byte[] zipAttachmentFileContent = EncoderUtils

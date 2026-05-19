@@ -98,7 +98,7 @@ public class IasApplicationPushNotiProcessor {
             logger.debug("pushIasApplicationToIAMSmart - new PushNotificationItem notiIdList.size: " + notiIdList.size()
                     + ", iasApplicationId: " + iasUserApplication.getIasApplicationId());
             if (notiIdList.size() > 0 &&
-                    ((notiIdCount == iasPushNotiBatchLimit) ||
+                    ((notiIdCount >= iasPushNotiBatchLimit) ||
                             (i == outstandingIasUserApplicationList.size() - 1) ||
                             (!iasUserApplication.getIasApplicationId()
                                     .equals(outstandingIasUserApplicationList.get(i + 1).getIasApplicationId())))) {
@@ -141,7 +141,7 @@ public class IasApplicationPushNotiProcessor {
             logger.debug("pushIasApplicationToIAMSmart - notiBean.setNotifications pushNotiItemList.size: "
                     + pushNotiItemList.size());
             if (pushNotiItemList.size() > 0 &&
-                    ((notiIdCount == iasPushNotiBatchLimit) || (i == (outstandingIasUserApplicationList.size() - 1)))) {
+                    ((notiIdCount >= iasPushNotiBatchLimit) || (i == (outstandingIasUserApplicationList.size() - 1)))) {
                 pushNotiBean.setNotifications(new ArrayList<PushNotificationItem>(pushNotiItemList));
 
                 if (!isEIDUtilsInit) {
@@ -247,10 +247,12 @@ public class IasApplicationPushNotiProcessor {
                         logger.debug(
                                 "pushIasApplicationToIAMSmart - EIDUtils.doRequestPushNotificationMessages failed. pushNotiBean.toString: "
                                         + pushNotiBean.toString());
+                        pushNotiItemList = new ArrayList<PushNotificationItem>();
                     }
                 } else {
                     logger.warn(
                             "pushIasApplicationToIAMSmart - PushNoti Fail. pushNotiResp is null. No DB Change, will retry in next run.");
+                    pushNotiItemList = new ArrayList<PushNotificationItem>();
                 }
             }
         }
@@ -342,7 +344,7 @@ public class IasApplicationPushNotiProcessor {
             logger.debug("pushIasApplicationToIAMSmartForDeletion - new PushNotificationItem notiIdList.size: "
                     + notiIdList.size() + ", iasApplicationId: " + iasUserApplication.getIasApplicationId());
             if (notiIdList.size() > 0 &&
-                    ((notiIdCount == iasPushNotiBatchLimit) ||
+                    ((notiIdCount >= iasPushNotiBatchLimit) ||
                             (i == outstandingIasUserApplicationList.size() - 1) ||
                             (!iasUserApplication.getIasApplicationId()
                                     .equals(outstandingIasUserApplicationList.get(i + 1).getIasApplicationId())))) {
@@ -368,7 +370,7 @@ public class IasApplicationPushNotiProcessor {
             logger.debug("pushIasApplicationToIAMSmartForDeletion - notiBean.setNotifications pushNotiItemList.size: "
                     + pushNotiItemList.size());
             if (pushNotiItemList.size() > 0 &&
-                    ((notiIdCount == iasPushNotiBatchLimit) || (i == (outstandingIasUserApplicationList.size() - 1)))) {
+                    ((notiIdCount >= iasPushNotiBatchLimit) || (i == (outstandingIasUserApplicationList.size() - 1)))) {
                 pushNotiBean.setNotifications(new ArrayList<PushNotificationItem>(pushNotiItemList));
 
                 if (!isEIDUtilsInit) {
@@ -477,10 +479,13 @@ public class IasApplicationPushNotiProcessor {
                         logger.debug(
                                 "pushIasApplicationToIAMSmartForDeletion - EIDUtils.doRequestPushNotificationMessages pushNotiBean.toString: "
                                         + pushNotiBean.toString());
+
+                        pushNotiItemList = new ArrayList<PushNotificationItem>();
                     }
                 } else {
                     logger.warn(
                             "pushIasApplicationToIAMSmartForDeletion - EIDUtils.doRequestPushNotificationMessages failed. pushNotiResp is null. No DB Change, will retry in next run.");
+                    pushNotiItemList = new ArrayList<PushNotificationItem>();
                 }
             }
         }

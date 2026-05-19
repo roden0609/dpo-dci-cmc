@@ -51,7 +51,7 @@ public class MaintainMessageClientTest {
             maintainMessageClientTest.test(properties);
 
         } catch (Throwable t) {
-            t.printStackTrace(System.err);
+            System.out.println("Exception in " + MaintainMessageClientTest.class.getName() + ": " + t.getMessage());
         }
 
     }
@@ -59,55 +59,61 @@ public class MaintainMessageClientTest {
     private void test(Properties properties) throws Exception {
 
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+        try {
 
-        System.out.println();
-        System.out.println("You could perform the following operations:");
-        System.out.println("1. Process eMessage / ToDoItem / Application by RPC mode ");
-        System.out.println("2. Process eMessage / ToDoItem / Application by Asyn mode ");
-        System.out.println("3. Retrieve response by single pull ");
-        System.out.println("4. Send Pull Ack for response ");
-        System.out.println("5. Process eMessage / ToDoItem / Application by Asyn mode(load test)");
-        System.out.println("6. Retrieve response by single pull(load test)");
-        System.out.println("7. Exit");
-        System.out.println();
-        System.out.print("Please choose the operation you want to perform: ");
+            System.out.println();
+            System.out.println("You could perform the following operations:");
+            System.out.println("1. Process eMessage / ToDoItem / Application by RPC mode ");
+            System.out.println("2. Process eMessage / ToDoItem / Application by Asyn mode ");
+            System.out.println("3. Retrieve response by single pull ");
+            System.out.println("4. Send Pull Ack for response ");
+            System.out.println("5. Process eMessage / ToDoItem / Application by Asyn mode(load test)");
+            System.out.println("6. Retrieve response by single pull(load test)");
+            System.out.println("7. Exit");
+            System.out.println();
+            System.out.print("Please choose the operation you want to perform: ");
 
-        int choice = Integer.parseInt(input.readLine());
-        switch (choice) {
+            int choice = Integer.parseInt(input.readLine());
+            switch (choice) {
 
-            case 1:
+                case 1:
 
-                processMsgByRpcMode(properties);
-                break;
+                    processMsgByRpcMode(properties);
+                    break;
 
-            case 2:
+                case 2:
 
-                processMsgByAsynMode(properties);
-                break;
+                    processMsgByAsynMode(properties);
+                    break;
 
-            case 3:
+                case 3:
 
-                retrieveResponseBySinglePull(properties, getEgisCorrelationId(input));
-                break;
+                    retrieveResponseBySinglePull(properties, getEgisCorrelationId(input));
+                    break;
 
-            case 4:
+                case 4:
 
-                sendPullAckRequest(properties, getMessageId(input));
-                break;
+                    sendPullAckRequest(properties, getMessageId(input));
+                    break;
 
-            case 5:
+                case 5:
 
-                processMsgByAsynModeLoadTest(properties, getBatchCount(input), getRequestCount(input));
-                break;
+                    processMsgByAsynModeLoadTest(properties, getBatchCount(input), getRequestCount(input));
+                    break;
 
-            case 6:
+                case 6:
 
-                retrieveResponseBySinglePullLoadTest(properties);
-                break;
+                    retrieveResponseBySinglePullLoadTest(properties);
+                    break;
 
-            case 7:
+                case 7:
 
-                return;
+                    return;
+            }
+        } finally {
+            if (input != null) {
+                input.close();
+            }
         }
     }
 
@@ -245,46 +251,49 @@ public class MaintainMessageClientTest {
         FileOutputStream fos = new FileOutputStream(RESPONSE_FILE);
         PrintWriter printWriter = new PrintWriter(fos);
 
-        String corrId = null;
-        while ((corrId = buf.readLine()) != null) {
+        try {
+            String corrId = null;
+            while ((corrId = buf.readLine()) != null) {
 
-            SOAPMessage singlePullResponse = maintainMessageClient.retrieveAsynResponseBySinglePull(corrId);
+                SOAPMessage singlePullResponse = maintainMessageClient.retrieveAsynResponseBySinglePull(corrId);
 
-            singlePullResponse.writeTo(fos);
-            fos.flush();
-            printWriter.println();
+                singlePullResponse.writeTo(fos);
+                fos.flush();
+                printWriter.println();
 
-            String rspScopesMsgId = maintainMessageClient.getMessageIdFromSinglePullResponse(singlePullResponse);
+                String rspScopesMsgId = maintainMessageClient.getMessageIdFromSinglePullResponse(singlePullResponse);
 
-            printWriter.println("Single Pull Response: message_id=" + rspScopesMsgId);
-            if (rspScopesMsgId != null && rspScopesMsgId.length() > 0) {
+                printWriter.println("Single Pull Response: message_id=" + rspScopesMsgId);
+                if (rspScopesMsgId != null && rspScopesMsgId.length() > 0) {
 
-                MaintainMessageResponse maintainMessageResponse = maintainMessageClient
-                        .getMaintainMessageResponse(singlePullResponse);
-                if (maintainMessageResponse != null) {
-                    // System.out.println("ResultCd="+maintainMessageResponse.getResultCode());
-                    // System.out.println("ResultMessage="+maintainMessageResponse.getResultMessage());
-                    // System.out.println("\nResponseMessage=\n");
+                    MaintainMessageResponse maintainMessageResponse = maintainMessageClient
+                            .getMaintainMessageResponse(singlePullResponse);
+                    if (maintainMessageResponse != null) {
+                        // System.out.println("ResultCd="+maintainMessageResponse.getResultCode());
+                        // System.out.println("ResultMessage="+maintainMessageResponse.getResultMessage());
+                        // System.out.println("\nResponseMessage=\n");
 
-                    JAXBContext context = JAXBContext.newInstance(MaintainMessageResponse.class);
-                    Marshaller marshaller = context.createMarshaller();
-                    marshaller.marshal(maintainMessageResponse, printWriter);
-                    printWriter.println();
-                }
-                SOAPMessage pullAckResponse = maintainMessageClient.sendPullAckRequest(rspScopesMsgId);
-                if (pullAckResponse != null) {
-                    printWriter.println("pullAckResponse=");
-                    printWriter.flush();
-                    pullAckResponse.writeTo(fos);
-                    fos.flush();
-                    printWriter.println();
-                    printWriter.flush();
+                        JAXBContext context = JAXBContext.newInstance(MaintainMessageResponse.class);
+                        Marshaller marshaller = context.createMarshaller();
+                        marshaller.marshal(maintainMessageResponse, printWriter);
+                        printWriter.println();
+                    }
+                    SOAPMessage pullAckResponse = maintainMessageClient.sendPullAckRequest(rspScopesMsgId);
+                    if (pullAckResponse != null) {
+                        printWriter.println("pullAckResponse=");
+                        printWriter.flush();
+                        pullAckResponse.writeTo(fos);
+                        fos.flush();
+                        printWriter.println();
+                        printWriter.flush();
+                    }
                 }
             }
+        } finally {
+            buf.close();
+            printWriter.close();
+            fos.close();
         }
-        buf.close();
-        printWriter.close();
-        fos.close();
 
         (new File(CORR_ID_FILE)).delete();
 

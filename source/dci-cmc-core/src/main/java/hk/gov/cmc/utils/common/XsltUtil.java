@@ -1,15 +1,15 @@
 package hk.gov.cmc.utils.common;
 
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.ErrorListener;
-import javax.xml.transform.Source;
-import java.io.StringReader;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Map;
+import java.io.StringReader;
+
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 public class XsltUtil {
     public static String xml2html(String xslContent, String metaData) throws Exception {
@@ -43,10 +43,8 @@ public class XsltUtil {
             return resultStr;
 
         } catch (RuntimeException e) {
-            // e.printStackTrace();
             throw e;
         } catch (Exception e) {
-            // e.printStackTrace();
             throw e;
         } finally {
             try {
@@ -88,10 +86,8 @@ public class XsltUtil {
             return resultStr;
 
         } catch (RuntimeException e) {
-            // e.printStackTrace();
             throw e;
         } catch (Exception e) {
-            // e.printStackTrace();
             throw e;
         } finally {
             try {

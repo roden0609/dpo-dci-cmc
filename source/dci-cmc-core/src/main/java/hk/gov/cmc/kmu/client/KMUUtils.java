@@ -144,9 +144,15 @@ public class KMUUtils {
     public static Collection<String> readMyIds(String file) throws Exception {
         ArrayList<String> myIdList = new ArrayList<String>();
         BufferedReader br = new BufferedReader(new FileReader(file));
-        String myId = null;
-        while ((myId = br.readLine()) != null) {
-            myIdList.add(myId);
+        try {
+            String myId = null;
+            while ((myId = br.readLine()) != null) {
+                myIdList.add(myId);
+            }
+        } finally {
+            if (br != null) {
+                br.close();
+            }
         }
         return myIdList;
     }
