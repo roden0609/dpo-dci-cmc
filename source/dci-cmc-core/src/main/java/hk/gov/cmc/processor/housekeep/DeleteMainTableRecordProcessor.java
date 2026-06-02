@@ -25,8 +25,8 @@ public class DeleteMainTableRecordProcessor {
     public DeleteMainTableRecordProcessor() {
     }
 
-    public static void deleteMainTableRecord(String inputDate) {
-        logger.info("deleteMainTableRecord - START, inputDate: " + inputDate);
+    public static void deleteMainTableRecord() {
+        logger.info("deleteMainTableRecord - START");
 
         HPFW_Connection conn = null;
 
@@ -59,6 +59,12 @@ public class DeleteMainTableRecordProcessor {
             iasApplicationHousekeepRetentionMonths = Integer.parseInt(
                     properties
                             .getProperty(CmcAppPropertyNames.IAS_APPLICATION_HOUSEKEEP_RETENTION_MONTHS_PROPERTY_NAME));
+
+            logger.info("deleteMainTableRecord - batchSize: " + batchSize + ", noOfBatch: " + noOfBatch
+                    + ", iasMsgHousekeepRetentionMonths: " + iasMsgHousekeepRetentionMonths
+                    + ", iasToDoItemHousekeepRetentionMonths: "
+                    + iasToDoItemHousekeepRetentionMonths + ", iasApplicationHousekeepRetentionMonths: "
+                    + iasApplicationHousekeepRetentionMonths);
 
             HouseKeepingRecordDAO dao = new HouseKeepingRecordDAO();
 

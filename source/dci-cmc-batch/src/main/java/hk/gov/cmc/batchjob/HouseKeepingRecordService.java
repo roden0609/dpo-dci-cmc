@@ -49,11 +49,11 @@ public class HouseKeepingRecordService {
 
             HouseKeepingRecordService service = new HouseKeepingRecordService(args[0]);
             if (args[1].equals("1")) {
-                service.markHouseKeepIndicator(inputDate);
+                service.markHouseKeepIndicator();
             } else if (args[1].equals("2")) {
                 service.removeHistoricalRecord(inputDate);
             } else if (args[1].equals("3")) {
-                service.deleteMainTableRecord(inputDate);
+                service.deleteMainTableRecord();
             }
 
         } catch (Exception ex) {
@@ -72,13 +72,13 @@ public class HouseKeepingRecordService {
         properties = PropertiesUtils.loadPropertiesFile(propfile);
     }
 
-    public void markHouseKeepIndicator(String inputDate) throws Exception {
+    public void markHouseKeepIndicator() throws Exception {
         InitialContext ctx = new InitialContext(properties);
         String houseKeepingRecordSessionEjbJndiName = properties
                 .getProperty("HOUSE_KEEPING_RECORD_SESSION_EJB_JNDI_NAME");
         IHouseKeepingRecordSessionBM houseKeepingRecordSessionBM = (IHouseKeepingRecordSessionBM) ctx
                 .lookup(houseKeepingRecordSessionEjbJndiName);
-        houseKeepingRecordSessionBM.markHouseKeepIndicator(inputDate);
+        houseKeepingRecordSessionBM.markHouseKeepIndicator();
     }
 
     public void removeHistoricalRecord(String inputDate) throws Exception {
@@ -90,13 +90,13 @@ public class HouseKeepingRecordService {
         houseKeepingRecordSessionBM.removeHistoricalRecord(inputDate);
     }
 
-    public void deleteMainTableRecord(String inputDate) throws Exception {
+    public void deleteMainTableRecord() throws Exception {
         InitialContext ctx = new InitialContext(properties);
         String houseKeepingRecordSessionEjbJndiName = properties
                 .getProperty("HOUSE_KEEPING_RECORD_SESSION_EJB_JNDI_NAME");
         IHouseKeepingRecordSessionBM houseKeepingRecordSessionBM = (IHouseKeepingRecordSessionBM) ctx
                 .lookup(houseKeepingRecordSessionEjbJndiName);
-        houseKeepingRecordSessionBM.deleteMainTableRecord(inputDate);
+        houseKeepingRecordSessionBM.deleteMainTableRecord();
 
     }
 }

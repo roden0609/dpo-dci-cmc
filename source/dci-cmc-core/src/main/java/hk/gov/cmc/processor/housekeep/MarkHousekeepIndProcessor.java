@@ -1,9 +1,7 @@
 package hk.gov.cmc.processor.housekeep;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -23,8 +21,8 @@ public class MarkHousekeepIndProcessor {
     public MarkHousekeepIndProcessor() {
     }
 
-    public static void markHouseKeepIndicator(String inputDate) throws EJBException {
-        logger.info("markHouseKeepIndicator - START, inputDate: " + inputDate);
+    public static void markHouseKeepIndicator() throws EJBException {
+        logger.info("markHouseKeepIndicator - START");
 
         HPFW_Connection conn = null;
 
@@ -53,6 +51,11 @@ public class MarkHousekeepIndProcessor {
                     properties
                             .getProperty(CmcAppPropertyNames.IAS_APPLICATION_HOUSEKEEP_RETENTION_MONTHS_PROPERTY_NAME));
             batchSize = Integer.parseInt(properties.getProperty("HOUSE_KEEP_DEL_HIST_TBL_BATCH_SIZE"));
+
+            logger.info("markHouseKeepIndicator - iasMsgHousekeepRetentionMonths: " + iasMsgHousekeepRetentionMonths
+                    + ", iasToDoItemHousekeepRetentionMonths: " + iasToDoItemHousekeepRetentionMonths
+                    + ", iasApplicationHousekeepRetentionMonths: " + iasApplicationHousekeepRetentionMonths
+                    + ", batchSize: " + batchSize);
 
             HouseKeepingRecordDAO dao = new HouseKeepingRecordDAO();
 

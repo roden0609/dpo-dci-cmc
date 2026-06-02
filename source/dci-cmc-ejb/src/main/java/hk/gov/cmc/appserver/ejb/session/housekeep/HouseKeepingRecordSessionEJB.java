@@ -14,10 +14,10 @@ import jakarta.ejb.TransactionManagementType;
 public class HouseKeepingRecordSessionEJB extends EJBBase
         implements IHouseKeepingRecordSessionBMLocal, IHouseKeepingRecordSessionBMRemote {
 
-    public void markHouseKeepIndicator(String inputDate) throws EJBException {
-        logInfo("[BATCH_JOB][HouseKeepingRecord]markHouseKeepIndicator - START, inputDate: " + inputDate);
+    public void markHouseKeepIndicator() throws EJBException {
+        logInfo("[BATCH_JOB][HouseKeepingRecord]markHouseKeepIndicator - START");
 
-        MarkHousekeepIndProcessor.markHouseKeepIndicator(inputDate);
+        MarkHousekeepIndProcessor.markHouseKeepIndicator();
 
         logInfo("[BATCH_JOB][HouseKeepingRecord]markHouseKeepIndicator - END");
     }
@@ -30,10 +30,10 @@ public class HouseKeepingRecordSessionEJB extends EJBBase
         logInfo("[BATCH_JOB][HouseKeepingRecord]removeHistoricalRecord - END");
     }
 
-    public void deleteMainTableRecord(String inputDate) throws EJBException {
-        logInfo("[BATCH_JOB][HouseKeepingRecord]DeleteMainTableRecord - START " + inputDate);
+    public void deleteMainTableRecord() throws EJBException {
+        logInfo("[BATCH_JOB][HouseKeepingRecord]DeleteMainTableRecord - START");
 
-        DeleteMainTableRecordProcessor.deleteMainTableRecord(inputDate);
+        DeleteMainTableRecordProcessor.deleteMainTableRecord();
 
         logInfo("[BATCH_JOB][HouseKeepingRecord]DeleteMainTableRecord - END ");
     }

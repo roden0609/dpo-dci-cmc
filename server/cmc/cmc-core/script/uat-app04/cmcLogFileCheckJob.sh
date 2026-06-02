@@ -59,9 +59,9 @@ do
    # grep WARN ${LOGFILE}.${BATCH_DATE} >> ${LOCAL_CONSOL_ERROR_DETAIL_LOG}
    awk '/^[0-9]{4}-.*\[WARN\]/ {flag=1}/^[0-9]{4}-/ && !/\[WARN\]/ {flag=0}flag' ${LOGFILE}.${BATCH_DATE} >> ${LOCAL_CONSOL_ERROR_DETAIL_LOG}
 
-   FATAL_COUNT=`grep FATAL ${LOGFILE}.${BATCH_DATE} | wc -l`
-   ERROR_COUNT=`grep ERROR ${LOGFILE}.${BATCH_DATE} | wc -l`
-   WARN_COUNT=`grep WARN ${LOGFILE}.${BATCH_DATE} | wc -l`
+   FATAL_COUNT=`grep -F '[FATAL]' ${LOGFILE}.${BATCH_DATE} | wc -l`
+   ERROR_COUNT=`grep -F '[ERROR]' ${LOGFILE}.${BATCH_DATE} | wc -l`
+   WARN_COUNT=`grep -F '[WARN]' ${LOGFILE}.${BATCH_DATE} | wc -l`
    echo "For log file ${LOGFILE}.${BATCH_DATE}," >> ${LOCAL_CONSOL_ERROR_COUNT_LOG}
    echo "   number of FATAL, ERROR and WARN is ${FATAL_COUNT}, ${ERROR_COUNT} and ${WARN_COUNT}"  >> ${LOCAL_CONSOL_ERROR_COUNT_LOG}
 
