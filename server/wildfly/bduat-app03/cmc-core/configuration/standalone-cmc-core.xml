@@ -123,36 +123,15 @@
                 <level name="INFO"/>
             </logger>
             <logger category="org.wildfly.security">
-                <level name="TRACE"/>
-            </logger>
-            <logger category="org.wildfly.security.ssl">
-                <level name="TRACE"/>
-            </logger>
-            <logger category="org.wildfly.security.http">
-                <level name="TRACE"/>
-            </logger>
-            <logger category="org.wildfly.security.auth.server">
-                <level name="TRACE"/>
+                <level name="INFO"/>
             </logger>
             <logger category="org.wildfly.extension.elytron">
-                <level name="TRACE"/>
-            </logger>
-            <logger category="org.wildfly.security.auth.realm">
-                <level name="TRACE"/>
-            </logger>
-            <logger category="org.wildfly.security.authz">
-                <level name="TRACE"/>
-            </logger>
-            <logger category="org.wildfly.security.x500">
-                <level name="TRACE"/>
+                <level name="INFO"/>
             </logger>
             <logger category="io.undertow">
                 <level name="INFO"/>
             </logger>
             <logger category="io.undertow.request">
-                <level name="INFO"/>
-            </logger>
-            <logger category="io.undertow.request.security">
                 <level name="INFO"/>
             </logger>
             <logger category="org.xnio">
@@ -372,7 +351,7 @@
             <http>
                 <http-authentication-factory name="application-http-authentication" security-domain="ApplicationDomain" http-server-mechanism-factory="configured-cert">
                     <mechanism-configuration>
-			<mechanism mechanism-name="CLIENT_CERT" pre-realm-principal-transformer="x500-decoder"/>
+                        <mechanism mechanism-name="CLIENT_CERT" pre-realm-principal-transformer="x500-decoder"/>
                         <mechanism mechanism-name="BASIC">
                             <mechanism-realm realm-name="ApplicationRealm"/>
                         </mechanism>
@@ -453,7 +432,11 @@
                 </trust-managers>
                 <server-ssl-contexts>
                     <server-ssl-context name="applicationSSC" key-manager="applicationKM"/>
-                    <server-ssl-context name="cmcSSLContext" protocols="TLSv1.2 TLSv1.3" want-client-auth="true" need-client-auth="false" key-manager="cmcKeyManager" trust-manager="cmcTrustManager"/>
+                    <server-ssl-context name="cmcSSLContext" 
+                        protocols="TLSv1.2" 
+                        cipher-suite-filter="TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+                        want-client-auth="true" need-client-auth="false" 
+                        key-manager="cmcKeyManager" trust-manager="cmcTrustManager"/>
                 </server-ssl-contexts>
             </tls>
             <credential-stores>
