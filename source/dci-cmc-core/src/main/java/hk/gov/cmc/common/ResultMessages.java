@@ -138,6 +138,7 @@ public final class ResultMessages {
     public static final String RESULT_MSG_RETRIEVE_CMC_TEMPLATE_0000 = "Success";
     public static final String RESULT_MSG_RETRIEVE_CMC_TEMPLATE_0001 = "CMC Template Not Found";
     public static final String RESULT_MSG_RETRIEVE_CMC_TEMPLATE_9999 = "General exception";
+    public static final String RESULT_MSG_APPLICATION_ACTION_IS_NOT_VALID = "Application action is invalid.";
 
     public static final String RESULT_MSG_MAINTAIN_TEMPLATE_0000 = "Success";
     public static final String RESULT_MSG_MAINTAIN_TEMPLATE_0001 = "CMC Template Not Found";

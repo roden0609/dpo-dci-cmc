@@ -9,6 +9,9 @@ import org.apache.commons.logging.LogFactory;
 
 import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.common.IasApplicationConstant;
+import hk.gov.cmc.common.MsgTypeConstant;
+import hk.gov.cmc.common.ResultCodes;
+import hk.gov.cmc.common.ResultMessages;
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.dto.maintainmessage.SingleMaintainMsgResult;
 import hk.gov.cmc.model.maintainmessage.action.Action;
@@ -21,6 +24,7 @@ import hk.gov.cmc.model.maintainmessage.user.IasUserWrapped;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.maintainmessage.application.IasApplication_;
 import hk.gov.cmc.persistence.maintainmessage.application.IasUserApplication_;
+import hk.gov.cmc.utils.maintainmessage.MaintainMessageUtils;
 import hk.gov.cmc.utils.maintainmessage.ias.IasApplicationUtils;
 import hk.gov.cmc.utils.maintainmessage.ias.IasUtils;
 import hk.gov.cmc.validator.IasApplicationValidator;
@@ -351,6 +355,12 @@ public class IasApplicationProcessor {
                         iasApplicationHandledCache.put(recipient.getTranId(), IasApplicationConstant.HISTORY_UPDATE);
                     }
                 }
+            } else {
+                msgRsp = MaintainMessageUtils.getMessageResponse(recipient.getTranId(), recipient.getIdpId(),
+                        recipient.getRecipientId(),
+                        MsgTypeConstant.APPLICATION, ResultCodes.RESULT_CD_APPLICATION_ACTION_IS_NOT_VALID,
+                        ResultMessages.RESULT_MSG_APPLICATION_ACTION_IS_NOT_VALID);
+                response.addMessageResponse(msgRsp);
             }
         }
 

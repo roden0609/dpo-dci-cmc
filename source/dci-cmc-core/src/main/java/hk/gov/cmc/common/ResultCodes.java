@@ -129,4 +129,5 @@ public final class ResultCodes {
     public static final String RESULT_CD_MERGED_IAS_APPLICATION_CONTENT_EN_LENGTH_OVER_LIMIT = "3049";
     public static final String RESULT_CD_MERGED_IAS_APPLICATION_CONTENT_TC_LENGTH_OVER_LIMIT = "3050";
     public static final String RESULT_CD_MERGED_IAS_APPLICATION_CONTENT_SC_LENGTH_OVER_LIMIT = "3051";
+    public static final String RESULT_CD_APPLICATION_ACTION_IS_NOT_VALID = "3052";
 }

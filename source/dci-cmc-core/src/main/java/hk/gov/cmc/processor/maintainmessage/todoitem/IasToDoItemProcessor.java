@@ -10,6 +10,9 @@ import org.apache.commons.logging.LogFactory;
 import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.common.IasApplicationConstant;
 import hk.gov.cmc.common.IasToDoItemConstant;
+import hk.gov.cmc.common.MsgTypeConstant;
+import hk.gov.cmc.common.ResultCodes;
+import hk.gov.cmc.common.ResultMessages;
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.cmc.dto.maintainmessage.SingleMaintainMsgResult;
 import hk.gov.cmc.model.maintainmessage.action.Action;
@@ -21,6 +24,7 @@ import hk.gov.cmc.model.maintainmessage.user.IasUser;
 import hk.gov.cmc.model.maintainmessage.user.IasUserWrapped;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.maintainmessage.todoitem.IasUserToDoItem_;
+import hk.gov.cmc.utils.maintainmessage.MaintainMessageUtils;
 import hk.gov.cmc.utils.maintainmessage.ias.IasToDoItemUtils;
 import hk.gov.cmc.utils.maintainmessage.ias.IasUtils;
 import hk.gov.cmc.validator.IasToDoItemValidator;
@@ -49,7 +53,7 @@ public class IasToDoItemProcessor {
 
         logger.debug("processIasToDoItem - portalId: " + portalId + ", iasToDoItemId: " + iasToDoItemId
                 + ", recipient: " + recipient.toString() + ", iasUserWrapped.toString(): " + iasUserWrapped.toString()
-                + ", cmcTemplate: " + cmcTemplate.toString() + ", toDoItemCutOffDay: " + toDoItemCutOffDay 
+                + ", cmcTemplate: " + cmcTemplate.toString() + ", toDoItemCutOffDay: " + toDoItemCutOffDay
                 + ", impDtUpperLimit: " + impDtUpperLimit);
         logger.debug("processIasToDoItem - dataContentEn: " + dataContentEn + ", dataContentTc: " + dataContentTc
                 + ", dataContentSc: " + dataContentSc);
@@ -328,6 +332,12 @@ public class IasToDoItemProcessor {
 
             }
 
+        } else {
+            msgRsp = MaintainMessageUtils.getMessageResponse(recipient.getTranId(), recipient.getIdpId(),
+                    recipient.getRecipientId(),
+                    MsgTypeConstant.TO_DO_ITEM, ResultCodes.RESULT_CD_TO_DO_ITEM_ACTION_NOT_VALID,
+                    ResultMessages.RESULT_MSG_TO_DO_ITEM_ACTION_NOT_VALID);
+            response.addMessageResponse(msgRsp);
         }
 
         logger.info("processIasToDoItem - END");
