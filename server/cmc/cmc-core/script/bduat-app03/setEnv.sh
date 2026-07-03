@@ -10,6 +10,10 @@ export CONFIG=${ROOT_PATH}/config
 
 export PROPERTIES_FILE=${CONFIG}/batchjob.properties
 
+# For Servlet call
+export DOMAIN_NAME=172.16.67.13
+export HTTP_PORT=21280
+
 CLASSPATH=${WILDFLY_HOME}/bin/client/jboss-client.jar
 CLASSPATH=$CLASSPATH:$LIB/dci-cmc-batch-3.0.0.jar
 CLASSPATH=$CLASSPATH:$LIB/dci-cmc-core-3.0.0.jar

@@ -1,7 +1,6 @@
 #!/bin/sh
 
 . `dirname $0`/setEnv.sh
-. `dirname $0`/setEnvReport.sh
 
 thisDay=`date +%d`
 

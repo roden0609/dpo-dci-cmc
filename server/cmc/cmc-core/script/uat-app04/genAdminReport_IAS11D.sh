@@ -1,7 +1,6 @@
 #!/bin/sh
 
 . `dirname $0`/setEnv.sh
-. `dirname $0`/setEnvReport.sh
 
 REPORT_IDS="RPT-IAS-11-D"
 BATCH_NAME_SUFFIX="IAS11D"
