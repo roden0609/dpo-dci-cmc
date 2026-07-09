@@ -10,6 +10,19 @@ export CONFIG=${ROOT_PATH}/config
 
 export PROPERTIES_FILE=${CONFIG}/batchjob.properties
 
+# For Servlet call
+export DOMAIN_NAME=172.16.67.14
+export HTTP_PORT=19680
+
+# For Housekeep server log
+export HOUSEKEEP_PATH_BATCHJOB=/bd-ogcmr/uat/cmc/*/script/log
+export FILE_PATTERN_BATCHJOB="batchjob.log.*"
+export HOUSEKEEP_PATH_JBOSS=/bd-ogcmr/uat/jboss/wildfly/*/log/
+export FILE_PATTERN_JBOSS="server.log.*"
+
+# This script set the exact cutoff day for the housekeeping job
+export HOUSEKEEPING_DATE=`date -d "72 month ago" +%Y-%m-01`
+
 CLASSPATH=${WILDFLY_HOME}/bin/client/jboss-client.jar
 CLASSPATH=$CLASSPATH:$LIB/dci-cmc-batch-3.0.0.jar
 CLASSPATH=$CLASSPATH:$LIB/dci-cmc-core-3.0.0.jar

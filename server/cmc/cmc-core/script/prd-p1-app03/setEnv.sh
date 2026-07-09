@@ -11,13 +11,13 @@ export CONFIG=${ROOT_PATH}/config
 export PROPERTIES_FILE=${CONFIG}/batchjob.properties
 
 # For Servlet call
-export DOMAIN_NAME=172.16.67.13
-export HTTP_PORT=21280
+export DOMAIN_NAME=172.16.3.13
+export HTTP_PORT=20280
 
 # For Housekeep server log
-export HOUSEKEEP_PATH_BATCHJOB=/bd-ogcmr/bduat/cmc/*/script/log
+export HOUSEKEEP_PATH_BATCHJOB=/bd-ogcmr/prd/cmc/*/script/log
 export FILE_PATTERN_BATCHJOB="batchjob.log.*"
-export HOUSEKEEP_PATH_JBOSS=/bd-ogcmr/bduat/jboss/wildfly/*/log/
+export HOUSEKEEP_PATH_JBOSS=/bd-ogcmr/prd/jboss/wildfly/*/log/
 export FILE_PATTERN_JBOSS="server.log.*"
 
 # This script set the exact cutoff day for the housekeeping job

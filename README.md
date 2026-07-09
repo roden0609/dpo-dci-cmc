@@ -28,8 +28,13 @@ docker compose up --build
 
 <!-- Generate credential-store.cs -->
 docker exec -it dci-cmc-wildfly /opt/jboss/wildfly/bin/jboss-cli.sh --connect
-/subsystem=elytron/credential-store=credential-store:add-alias(alias=db-password,secret-value="fAy=2Pet")
+/subsystem=elytron/credential-store=credential-store:add-alias(alias=db-password,secret-value="Ogcio$2468")
 /subsystem=elytron/credential-store=credential-store:add-alias(alias=keystore-password,secret-value="password")
 /subsystem=elytron/credential-store=credential-store:add-alias(alias=truststore-password,secret-value="changeit")
+<!-- /subsystem=elytron/credential-store=credential-store:remove-alias(alias=db-password) -->
 
-<!-- /subsystem=elytron/credential-store=credential-store:remove-alias(alias=keystore-password) -->
+<!-- Modify credential-store.cs using elytron-tool.sh -->
+./elytron-tool.sh credential-store --remove=db-password --location=/bd-ogcmr/prd/jboss/wildfly-32.0.1.Final/cmc-core/credentials/credential-store.cs
+./elytron-tool.sh credential-store --add=db-password --secret='Ogcio$2468' --location=/bd-ogcmr/prd/jboss/wildfly-32.0.1.Final/cmc-core/credentials/credential-store.cs
+./elytron-tool.sh credential-store --remove=keystore-password --location=/bd-ogcmr/prd/jboss/wildfly-32.0.1.Final/cmc-core/credentials/credential-store.cs
+./elytron-tool.sh credential-store --add=keystore-password --secret='changeit' --location=/bd-ogcmr/prd/jboss/wildfly-32.0.1.Final/cmc-core/credentials/credential-store.cs
