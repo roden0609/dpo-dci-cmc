@@ -99,6 +99,10 @@ public class IasMessageProcessor {
                                 + ", msgRsp.getTranResultMessage: " + msgRsp.getTranResultMessage());
                         response.addMessageResponse(msgRsp);
                     } else {
+                        // Serve the RVD VIP purpose, the clientId from GCIS-CMC should be null as RVD does not have clientId, so we need to set the MYGOV_CLIENT_ID to it
+                        if (cmcTemplate.getClientId() == null || "".equals(cmcTemplate.getClientId())) {
+                            cmcTemplate.setClientId(properties.getProperty(CmcAppPropertyNames.MYGOV_CLIENT_ID_PROPERTY_NAME));
+                        }
                         msgRsp = IasMessageUtils.createIasUserMessageByOpenId(conn, cmcTemplate, recipient, iasUser,
                                 iasMsgId);
                         if (msgRsp != null) {
