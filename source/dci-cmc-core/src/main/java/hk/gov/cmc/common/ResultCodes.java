@@ -10,6 +10,8 @@ public final class ResultCodes {
     public static final String RESULT_CD_MESSAGE_PROCESSED_WITH_ERROR = "9997";
     public static final String RESULT_CD_SUCCESS = "0000";
     public static final String RESULT_CD_SENDER_APPID_NOT_FOUND = "0001";
+    public static final String RESULT_CD_RETRIEVE_CMC_TEMPLATE_NOT_FOUND = "0001";
+	public static final String RESULT_MSG_RETRIEVE_CMC_TEMPLATE_9999 = "General exception";
     public static final String RESULT_CD_PORTAL_ID_NOT_FOUND = "0002";
     public static final String RESULT_CD_RECIPIENT_ID_IS_DUPLICATED = "0003";
     public static final String RESULT_CD_EMSG_TEMPLATE_NOT_FOUND = "0004";

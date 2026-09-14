@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import hk.gov.cmc.common.CmcAppConstants;
 import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.config.CmcEnvProperties;
@@ -28,9 +31,10 @@ public class AsynMessageSessionEJB extends EJBBase
         implements IAsynMessageSessionBMRemote, IAsynMessageSessionBMLocal {
 
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
+    private static Log logger = LogFactory.getLog(AsynMessageSessionEJB.class);
 
     public void sendMsgResponseByAsyn() throws EJBException {
-        logInfo("[AsynMessageSessionEJB]sendMsgResponseByAsyn - START");
+        logger.info("[AsynMessageSessionEJB]sendMsgResponseByAsyn - START");
 
         HPFW_Connection conn = null;
 
@@ -48,7 +52,7 @@ public class AsynMessageSessionEJB extends EJBBase
 
             List<AsynMessage> responseMsgList = asynMessageDAO.getOutstandingMessage(conn);
 
-            logInfo("[AsynMessageSessionEJB]sendMsgResponseByAsyn - number of outstanding message: "
+            logger.info("[AsynMessageSessionEJB]sendMsgResponseByAsyn - number of outstanding message: "
                     + responseMsgList.size());
 
             for (int i = 0; i < responseMsgList.size(); i++) {
@@ -68,23 +72,23 @@ public class AsynMessageSessionEJB extends EJBBase
                         SOAPMessage pullAckRequest = msgClient.createPullAckRequest(recipientAppId, recipientAppType,
                                 msgIdList);
 
-                        logInfo("[AsynMessageSessionEJB]sendMsgResponseByAsyn - pullAckRequest scopesMsgId["
+                        logger.info("[AsynMessageSessionEJB]sendMsgResponseByAsyn - pullAckRequest scopesMsgId["
                                 + scopesMessageId + "]: \n"
                                 + WebServiceUtils.soapMessageToString(pullAckRequest));
 
                         SOAPMessage pullAckResponse = msgClient.sendPullAckRequest(pullAckRequest);
 
-                        logInfo("[AsynMessageSessionEJB]sendMsgResponseByAsyn - pullAckResponse scopesMsgId["
+                        logger.info("[AsynMessageSessionEJB]sendMsgResponseByAsyn - pullAckResponse scopesMsgId["
                                 + scopesMessageId + "]: \n"
                                 + WebServiceUtils.soapMessageToString(pullAckResponse));
 
                         if (pullAckResponse.getSOAPPart().getEnvelope().getBody().hasFault()) {
-                            logWarn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - send pull ack failed: "
+                            logger.warn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - send pull ack failed: "
                                     + scopesMessageId);
                         } else {
 
                             if (rspAsynMsgRequestStr == null || rspAsynMsgRequestStr.length() == 0) {
-                                logWarn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - rspAsynMsgRequestStr is null or empty, scopesMessageId="
+                                logger.warn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - rspAsynMsgRequestStr is null or empty, scopesMessageId="
                                         + scopesMessageId + ", so just can send ack and mark status as S.");
                                 asynMessageDAO.updateAsynMessageStatus(conn, scopesMessageId,
                                         CmcAppConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
@@ -95,7 +99,7 @@ public class AsynMessageSessionEJB extends EJBBase
                         }
 
                     } catch (Exception e1) {
-                        logError("[AsynMessageSessionEJB]sendMsgResponseByAsyn - Send Ack failed msgId: "
+                        logger.error("[AsynMessageSessionEJB]sendMsgResponseByAsyn - Send Ack failed msgId: "
                                 + scopesMessageId, e1);
                     }
                 }
@@ -103,7 +107,7 @@ public class AsynMessageSessionEJB extends EJBBase
                 try {
 
                     if (rspAsynMsgRequestStr == null || rspAsynMsgRequestStr.length() == 0) {
-                        logWarn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - rspAsynMsgRequestStr is null or empty, scopesMessageId="
+                        logger.warn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - rspAsynMsgRequestStr is null or empty, scopesMessageId="
                                 + scopesMessageId + ", so cannot send response.");
                     } else {
 
@@ -113,12 +117,12 @@ public class AsynMessageSessionEJB extends EJBBase
                                 .getProperty(CmcAppPropertyNames.ASYN_MSG_SOAP_ACTION_PROPERTY_NAME);
                         rspAsynMsgRequest.getMimeHeaders().setHeader(SoapUtils.SOAP_ACTION, soapaction);
 
-                        logInfo("[AsynMessageSessionEJB]sendMsgResponseByAsyn - rspAsynMsgRequest scopesMsgId["
+                        logger.info("[AsynMessageSessionEJB]sendMsgResponseByAsyn - rspAsynMsgRequest scopesMsgId["
                                 + scopesMessageId + "]: \n" + WebServiceUtils.soapMessageToString(rspAsynMsgRequest));
 
                         SOAPMessage rspAsynMsgResponse = msgClient.sendAsyncRequest(rspAsynMsgRequest);
 
-                        logInfo("[AsynMessageSessionEJB]sendMsgResponseByAsyn - rspAsynMsgResponse scopesMsgId["
+                        logger.info("[AsynMessageSessionEJB]sendMsgResponseByAsyn - rspAsynMsgResponse scopesMsgId["
                                 + scopesMessageId + "]: \n" + WebServiceUtils.soapMessageToString(rspAsynMsgResponse));
 
                         boolean returnResponseSuccess = true;
@@ -129,17 +133,17 @@ public class AsynMessageSessionEJB extends EJBBase
                             if (soapFaultEntry != null) {
                                 String detailCode = soapFaultEntry.getDetailCode();
 
-                                logWarn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - SoapFault FaultCode: "
+                                logger.warn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - SoapFault FaultCode: "
                                         + soapFaultEntry.getFaultCode());
-                                logWarn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - SoapFault FaultString: "
+                                logger.warn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - SoapFault FaultString: "
                                         + soapFaultEntry.getFaultString());
-                                logWarn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - SoapFault DetailCode: "
+                                logger.warn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - SoapFault DetailCode: "
                                         + soapFaultEntry.getDetailCode());
-                                logWarn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - SoapFault DetailDescription: "
+                                logger.warn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - SoapFault DetailDescription: "
                                         + soapFaultEntry.getDetailDescription());
 
                                 if (IErrorCodes.WS_WARN_ASYNC_DUPLICATE_RESPONSE.equals(detailCode)) {
-                                    logWarn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - response msg already sent before: "
+                                    logger.warn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - response msg already sent before: "
                                             + scopesMessageId);
                                     returnResponseSuccess = true;
                                 }
@@ -150,13 +154,13 @@ public class AsynMessageSessionEJB extends EJBBase
                             asynMessageDAO.updateAsynMessage(conn, scopesMessageId, null,
                                     CmcAppConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
                         } else {
-                            logWarn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - send response msg failed: "
+                            logger.warn("[AsynMessageSessionEJB]sendMsgResponseByAsyn - send response msg failed: "
                                     + scopesMessageId);
                         }
                     }
 
                 } catch (Exception e1) {
-                    logError("[AsynMessageSessionEJB]sendMsgResponseByAsyn - Send response failed msgId="
+                    logger.error("[AsynMessageSessionEJB]sendMsgResponseByAsyn - Send response failed msgId="
                             + scopesMessageId, e1);
                 }
             }
@@ -164,21 +168,21 @@ public class AsynMessageSessionEJB extends EJBBase
             conn.commit();
 
         } catch (RuntimeException e) {
-            logError("[AsynMessageSessionEJB]sendMsgResponseByAsyn - Runtime exception raised", e);
+            logger.error("[AsynMessageSessionEJB]sendMsgResponseByAsyn - Runtime exception raised", e);
             throw e;
         } catch (Exception e) {
-            logError("[AsynMessageSessionEJB]sendMsgResponseByAsyn - General exception raised", e);
+            logger.error("[AsynMessageSessionEJB]sendMsgResponseByAsyn - General exception raised", e);
             throw new EJBException(e);
         } finally {
             try {
                 if (conn != null)
                     HPFW_Connection.close(conn);
             } catch (Exception ex) {
-                logError("[AsynMessageSessionEJB]sendMsgResponseByAsyn - General exception caught in conn.close();",
+                logger.error("[AsynMessageSessionEJB]sendMsgResponseByAsyn - General exception caught in conn.close();",
                         ex);
             }
         }
 
-        logInfo("[AsynMessageSessionEJB]sendMsgResponseByAsyn - END");
+        logger.info("[AsynMessageSessionEJB]sendMsgResponseByAsyn - END");
     }
 }

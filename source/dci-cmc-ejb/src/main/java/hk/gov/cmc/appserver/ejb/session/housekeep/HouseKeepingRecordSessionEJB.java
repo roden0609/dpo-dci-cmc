@@ -1,5 +1,8 @@
 package hk.gov.cmc.appserver.ejb.session.housekeep;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import hk.gov.cmc.processor.housekeep.DeleteMainTableRecordProcessor;
 import hk.gov.cmc.processor.housekeep.MarkHousekeepIndProcessor;
 import hk.gov.cmc.processor.housekeep.RemoveHistoricalRecordProcessor;
@@ -14,28 +17,30 @@ import jakarta.ejb.TransactionManagementType;
 public class HouseKeepingRecordSessionEJB extends EJBBase
         implements IHouseKeepingRecordSessionBMLocal, IHouseKeepingRecordSessionBMRemote {
 
+    private static Log logger = LogFactory.getLog(HouseKeepingRecordSessionEJB.class);
+
     public void markHouseKeepIndicator() throws EJBException {
-        logInfo("[BATCH_JOB][HouseKeepingRecord]markHouseKeepIndicator - START");
+        logger.info("[BATCH_JOB][HouseKeepingRecord]markHouseKeepIndicator - START");
 
         MarkHousekeepIndProcessor.markHouseKeepIndicator();
 
-        logInfo("[BATCH_JOB][HouseKeepingRecord]markHouseKeepIndicator - END");
+        logger.info("[BATCH_JOB][HouseKeepingRecord]markHouseKeepIndicator - END");
     }
 
     public void removeHistoricalRecord(String inputDate) throws EJBException {
-        logInfo("[BATCH_JOB][HouseKeepingRecord]removeHistoricalRecord - START, inputDate: " + inputDate);
+        logger.info("[BATCH_JOB][HouseKeepingRecord]removeHistoricalRecord - START, inputDate: " + inputDate);
 
         RemoveHistoricalRecordProcessor.removeHistoricalRecord(inputDate);
 
-        logInfo("[BATCH_JOB][HouseKeepingRecord]removeHistoricalRecord - END");
+        logger.info("[BATCH_JOB][HouseKeepingRecord]removeHistoricalRecord - END");
     }
 
     public void deleteMainTableRecord() throws EJBException {
-        logInfo("[BATCH_JOB][HouseKeepingRecord]DeleteMainTableRecord - START");
+        logger.info("[BATCH_JOB][HouseKeepingRecord]DeleteMainTableRecord - START");
 
         DeleteMainTableRecordProcessor.deleteMainTableRecord();
 
-        logInfo("[BATCH_JOB][HouseKeepingRecord]DeleteMainTableRecord - END ");
+        logger.info("[BATCH_JOB][HouseKeepingRecord]DeleteMainTableRecord - END ");
     }
 
 }

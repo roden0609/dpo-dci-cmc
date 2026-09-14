@@ -27,6 +27,7 @@ public class MaintainMessageProcessor {
     public MaintainMessageResponse processMessage(HPFW_Connection conn, String appId,
             MaintainMessageRequest maintMsgReq) throws Exception {
         logger.info("processMessage start - appId: " + appId);
+        logger.debug("processMessage - appId: " + appId + ", maintMsgReq: " + maintMsgReq);
 
         MaintainMessageResponse response = new MaintainMessageResponse();
 
@@ -55,6 +56,7 @@ public class MaintainMessageProcessor {
                 logger.info("processMessage - msgReqList.size: " + msgReqList.size());
             }
 
+            // TODO: Fix here
             for (MessageRequest msgReq : msgReqList) {
                 EMessage eMsg = msgReq.getEMessage();
                 ToDoItem toDoItem = msgReq.getToDoItem();

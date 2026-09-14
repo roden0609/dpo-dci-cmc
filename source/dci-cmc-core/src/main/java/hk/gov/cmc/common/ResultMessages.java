@@ -135,12 +135,7 @@ public final class ResultMessages {
     public static final String RESULT_MSG_MERGED_IAS_TO_DO_ITEM_CONTENT_EN_LENGTH_OVER_LIMIT = "Length of Merged iAM Smart To-Do-Item English content is over limit.";
     public static final String RESULT_MSG_MERGED_IAS_TO_DO_ITEM_CONTENT_TC_LENGTH_OVER_LIMIT = "Length of Merged iAM Smart To-Do-Item Traditional Chinese content is over limit.";
     public static final String RESULT_MSG_MERGED_IAS_TO_DO_ITEM_CONTENT_SC_LENGTH_OVER_LIMIT = "Length of Merged iAM Smart To-Do-Item Simplified Chinese content is over limit.";
-    public static final String RESULT_MSG_RETRIEVE_CMC_TEMPLATE_0000 = "Success";
-    public static final String RESULT_MSG_RETRIEVE_CMC_TEMPLATE_0001 = "CMC Template Not Found";
-    public static final String RESULT_MSG_RETRIEVE_CMC_TEMPLATE_9999 = "General exception";
+    public static final String RESULT_MSG_RETRIEVE_CMC_TEMPLATE_NOT_FOUND = "CMC Template Not Found";
     public static final String RESULT_MSG_APPLICATION_ACTION_IS_NOT_VALID = "Application action is invalid.";
 
-    public static final String RESULT_MSG_MAINTAIN_TEMPLATE_0000 = "Success";
-    public static final String RESULT_MSG_MAINTAIN_TEMPLATE_0001 = "CMC Template Not Found";
-    public static final String RESULT_MSG_MAINTAIN_TEMPLATE_9999 = "General exception";
 }

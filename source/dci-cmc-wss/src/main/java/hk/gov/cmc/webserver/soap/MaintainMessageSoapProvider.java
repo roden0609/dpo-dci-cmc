@@ -8,13 +8,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.naming.InitialContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +32,7 @@ import hk.gov.cmc.jaxb.maintainmessage.MaintainMessageRequest;
 import hk.gov.cmc.jaxb.maintainmessage.MaintainMessageResponse;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.utils.common.EncUtils;
+import hk.gov.cmc.utils.soap.CmcSoapUtils;
 import hk.gov.gcis.rm.keyservice.appserver.AppPropertyNames;
 import hk.gov.gcis.rm.keyservice.appserver.ejb.session.IPKIUtil;
 import hk.gov.gcis.rm.keyservice.common.Constants;
@@ -106,33 +103,23 @@ public class MaintainMessageSoapProvider implements Provider<Source> {
         }
     }
 
-    private static String soapMessageToString(SOAPMessage message) throws Exception {
-
-        String result = "";
-
-        if (message == null)
-            return null;
-        ByteArrayOutputStream bas = new ByteArrayOutputStream(4096);
-        message.writeTo(bas);
-        result = bas.toString("UTF-8");
-
-        return result;
-    }
-
     private SOAPMessage processMaintainMessage(SOAPMessage requestMsg, SOAPMessage responseMsg) throws Exception {
         logger.info("processMaintainMessage - BEGIN");
 
         try {
 
-            logger.info("processMaintainMessage requestMsg=\n" + soapMessageToString(requestMsg));
+            logger.info("processMaintainMessage requestMsg=\n" + CmcSoapUtils.soapMessageToString(requestMsg));
 
             String appId = null;
             SOAPEnvelope envelope = (SOAPEnvelope) requestMsg.getSOAPPart().getEnvelope();
             NodeList nodeList = envelope.getHeader().getElementsByTagNameNS("*", CmcAppConstants.APPID_TAG_NAME);
+
             logger.info("processMaintainMessage nodeList == null: " + (nodeList == null));
             logger.info("processMaintainMessage nodeList.getLength: " + (nodeList != null ? nodeList.getLength() : "null"));
+
             if (nodeList != null && nodeList.getLength() > 0)
                 appId = nodeList.item(0).getFirstChild().getNodeValue();
+
             if (appId == null || appId.length() == 0) {
                 return generateResponse(responseMsg, ResultCodes.RESULT_CD_SENDER_APPID_NOT_FOUND,
                         ResultMessages.RESULT_MSG_SENDER_APPID_NOT_FOUND);
@@ -144,7 +131,7 @@ public class MaintainMessageSoapProvider implements Provider<Source> {
             // Document bodyDoc = toDocument(body);
             SOAPBody body = requestMsg.getSOAPPart().getEnvelope().getBody();
             Document bodyDoc = body.extractContentAsDocument();
-            logger.debug("Request body: " + documentToString(bodyDoc));
+            logger.debug("Request body: " + CmcSoapUtils.documentToString(bodyDoc));
 
             Properties properties = cmcEnvProperties.getProperties();
 
@@ -274,25 +261,6 @@ public class MaintainMessageSoapProvider implements Provider<Source> {
         marshaller.marshal(maintainMessageResponse, body);
         responseMsg.saveChanges();
         return responseMsg;
-    }
-
-    private Document toDocument(org.w3c.dom.Node node) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.newDocument();
-        document.appendChild(document.importNode(node, true));
-        return document;
-    }
-
-    private String documentToString(Document document) throws Exception {
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        transformer.setOutputProperty(OutputKeys.INDENT, "no");
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        transformer.transform(new DOMSource(document), new StreamResult(outputStream));
-        return outputStream.toString("UTF-8");
     }
 
 }

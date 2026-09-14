@@ -1,14 +1,10 @@
-package hk.gov.cmc.persistence.maintainmessage;
+package hk.gov.cmc.persistence.serviceprovider;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.lang.Long;
-import java.lang.String;
-import java.lang.NullPointerException;
 import java.util.ArrayList;
 
 import hk.gov.cmc.persistence.connection.hpfw.CommonDBUtils;

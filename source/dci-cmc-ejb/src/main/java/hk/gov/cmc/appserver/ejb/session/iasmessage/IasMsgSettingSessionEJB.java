@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import hk.gov.cmc.common.CmcAppConstants;
 import hk.gov.cmc.common.CmcAppPropertyNames;
 import hk.gov.cmc.common.IntegrationConstants;
@@ -19,8 +22,8 @@ import hk.gov.cmc.jaxb.iasmsgsetting.IasAssoQueue;
 import hk.gov.cmc.jaxb.iasmsgsetting.IasAssoQueues;
 import hk.gov.cmc.persistence.connection.hpfw.HPFW_Connection;
 import hk.gov.cmc.persistence.connection.hpfw.MysqlCommonDBUtils;
-import hk.gov.cmc.persistence.maintainmessage.CmcServiceProvider_;
 import hk.gov.cmc.persistence.maintainmessage.association.IasAssoQueue_;
+import hk.gov.cmc.persistence.serviceprovider.CmcServiceProvider_;
 import hk.gov.cmc.utils.common.WebServiceUtils;
 import hk.gov.cmc.utils.job.JobControlUtils;
 import hk.gov.gcis.rm.common.javaee.ejb.EJBBase;
@@ -44,9 +47,10 @@ public class IasMsgSettingSessionEJB extends EJBBase
         implements IIasMsgSettingSessionBMRemote, IIasMsgSettingSessionBMLocal {
 
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
+    private static Log logger = LogFactory.getLog(IasMsgSettingSessionEJB.class);
 
     public void processMessageByBatchPull(String getAsynAppIdStr, String singlePullCallLimitStr) throws EJBException {
-        logInfo("[IasMsgSettingSessionEJB]processMessageByBatchPull - START");
+        logger.info("[IasMsgSettingSessionEJB]processMessageByBatchPull - START");
 
         HPFW_Connection conn = null;
         JobControlUtils jobControlUtils = new JobControlUtils();
@@ -89,12 +93,12 @@ public class IasMsgSettingSessionEJB extends EJBBase
             if (getAsynAppIdStr != null && getAsynAppIdStr.length() > 0) {
                 sendAsynAppIdArry = getAsynAppIdStr.split(",");
             }
-            logInfo("[IasMsgSettingSessionEJB]processMessageByBatchPull - sendAsynAppIdArry: "
+            logger.info("[IasMsgSettingSessionEJB]processMessageByBatchPull - sendAsynAppIdArry: "
                     + Arrays.toString(sendAsynAppIdArry) + ", singlePullCallLimit: " + singlePullCallLimit);
 
             for (String senderAppId : sendAsynAppIdArry) {
 
-                logInfo("[IasMsgSettingSessionEJB]processMessageByBatchPull - Processing senderAppId: " + senderAppId);
+                logger.info("[IasMsgSettingSessionEJB]processMessageByBatchPull - Processing senderAppId: " + senderAppId);
 
                 jobControlName = CmcAppConstants.IAS_MSG_GET_ASYN_BY_APP_PREFIX + senderAppId;
                 if (jobControlUtils.lockJobControl(jobControlName)) {
@@ -112,27 +116,27 @@ public class IasMsgSettingSessionEJB extends EJBBase
                         try {
                             SOAPMessage responseSoapMsg = getMessageBySinglePull(msgClient, senderAppId, recipientAppId,
                                     senderAppType, recipientAppType);
-                            logInfo(
+                            logger.info(
                                     "[IasMsgSettingSessionEJB]processMessageByBatchPull - getMessageBySinglePull responseSoapMsg: \n"
                                             + WebServiceUtils.soapMessageToString(responseSoapMsg));
                             AsyncRequest asyncRequest = msgClient.getAsyncRequest(responseSoapMsg);
 
                             if (asyncRequest == null) {
-                                logWarn("[IasMsgSettingSessionEJB]processMessageByBatchPull - msgClient.getAsyncRequest is NULL");
+                                logger.warn("[IasMsgSettingSessionEJB]processMessageByBatchPull - msgClient.getAsyncRequest is NULL");
                             } else {
                                 messageId = asyncRequest.getMessageId();
                                 correlationId = asyncRequest.getCorrelationId();
                                 retrievedSenderAppId = asyncRequest.getSenderAppId();
                             }
 
-                            logInfo("[IasMsgSettingSessionEJB]processMessageByBatchPull - msgClient.getAsyncRequest"
+                            logger.info("[IasMsgSettingSessionEJB]processMessageByBatchPull - msgClient.getAsyncRequest"
                                     + ". singlePullCnt: " + singlePullCnt + ", messageId: " + messageId
                                     + ", correlationId: " + correlationId + ", retrievedSenderAppId: "
                                     + retrievedSenderAppId);
 
                             if (messageId == null || messageId.length() == 0) {
                                 if (asyncRequest != null) {
-                                    logInfo("[IasMsgSettingSessionEJB]processMessageByBatchPull - No message in queue");
+                                    logger.info("[IasMsgSettingSessionEJB]processMessageByBatchPull - No message in queue");
                                 }
                                 callSinglePull = false;
                             } else {
@@ -143,11 +147,11 @@ public class IasMsgSettingSessionEJB extends EJBBase
 
                                 if (sendPullAck) {
                                     if (retrievedSenderAppId == null || "".equals(retrievedSenderAppId)) {
-                                        logWarn("[IasMsgSettingSessionEJB]processMessageByBatchPull - retrievedSenderAppId is null");
+                                        logger.warn("[IasMsgSettingSessionEJB]processMessageByBatchPull - retrievedSenderAppId is null");
                                     } else {
 
                                         if (iasAppIdTransformMap.containsKey(retrievedSenderAppId)) {
-                                            logInfo("[IasMsgSettingSessionEJB]processMessageByBatchPull - senderAppId is transformed from "
+                                            logger.info("[IasMsgSettingSessionEJB]processMessageByBatchPull - senderAppId is transformed from "
                                                     + retrievedSenderAppId + " to "
                                                     + iasAppIdTransformMap.get(retrievedSenderAppId));
                                             retrievedSenderAppId = iasAppIdTransformMap.get(retrievedSenderAppId);
@@ -159,7 +163,7 @@ public class IasMsgSettingSessionEJB extends EJBBase
                                         boolean createAsynSuccess = false;
                                         AsynMessageDAO asynMessageDAO = new AsynMessageDAO();
                                         if (asynMessageDAO.isAsynMessageRetrievedBefore(conn, messageId)) {
-                                            logWarn("[IasMsgSettingSessionEJB]processMessageByBatchPull - msgClient.getAsyncRequest asyn msg already retrieved messageId="
+                                            logger.warn("[IasMsgSettingSessionEJB]processMessageByBatchPull - msgClient.getAsyncRequest asyn msg already retrieved messageId="
                                                     + messageId);
                                         } else {
                                             createAsynSuccess = asynMessageDAO.createAsynMessageRecord(conn, messageId,
@@ -191,7 +195,7 @@ public class IasMsgSettingSessionEJB extends EJBBase
                                                         conn.setUpdateMode(HPFW_Connection.DIRECT);
                                                         iasAssoQueue_.insert(conn);
                                                     } else {
-                                                        logWarn("[IasMsgSettingSessionEJB]processMessageByBatchPull - iasAssoQueue.getOpenId() is null or empty. This record will not added to DB and it will be ignored. "
+                                                        logger.warn("[IasMsgSettingSessionEJB]processMessageByBatchPull - iasAssoQueue.getOpenId() is null or empty. This record will not added to DB and it will be ignored. "
                                                                 +
                                                                 "iasAssoQueue.getOpenId(): " + iasAssoQueue.getOpenId()
                                                                 + ", retrievedSenderAppId: " + retrievedSenderAppId);
@@ -202,7 +206,7 @@ public class IasMsgSettingSessionEJB extends EJBBase
                                                         CmcAppConstants.ASYN_MSG_STATUS_RESPONSE_SENT);
                                                 conn.commit();
                                             } catch (Exception e) {
-                                                logError(
+                                                logger.error(
                                                         "[IasMsgSettingSessionEJB]processMessageByBatchPull - createAsynMessageRecord status='A' success. senderAppId="
                                                                 + senderAppId + ", messageId=" + messageId
                                                                 + ", correlationId=" + correlationId + ". Exception:"
@@ -214,40 +218,40 @@ public class IasMsgSettingSessionEJB extends EJBBase
                                 }
                             }
                         } catch (Exception e) {
-                            logError("[IasMsgSettingSessionEJB]processMessageByBatchPull - senderAppId=" + senderAppId
+                            logger.error("[IasMsgSettingSessionEJB]processMessageByBatchPull - senderAppId=" + senderAppId
                                     + ", messageId=" + messageId
                                     + ", correlationId=" + correlationId + ". Exception:" + e);
                         }
                     }
                 } else {
-                    logInfo("[IasMsgSettingSessionEJB]processMessageByBatchPull - CMC_MARS_SYN_JOB_LOCK table cannot be locked. jobControlName="
+                    logger.info("[IasMsgSettingSessionEJB]processMessageByBatchPull - CMC_MARS_SYN_JOB_LOCK table cannot be locked. jobControlName="
                             + jobControlName);
                 }
 
                 jobControlUtils.releaseJobControl(jobControlName);
             }
         } catch (Exception e) {
-            logError("[IasMsgSettingSessionEJB]processMessageByBatchPull - Exception in ", e);
+            logger.error("[IasMsgSettingSessionEJB]processMessageByBatchPull - Exception in ", e);
             throw new EJBException(e);
         } finally {
             try {
                 if (conn != null)
                     HPFW_Connection.close(conn);
             } catch (Exception ex) {
-                logError(
+                logger.error(
                         "[IasMsgSettingSessionEJB]processMessageByBatchPull - General exception caught in conn.close();",
                         ex);
             }
         }
 
-        logInfo("[IasMsgSettingSessionEJB]processMessageByBatchPull - END");
+        logger.info("[IasMsgSettingSessionEJB]processMessageByBatchPull - END");
     }
 
     private SOAPMessage getMessageBySinglePull(MessagingClient msgClient,
             String senderAppId, String recipientAppId,
             String senderAppType, String recipientAppType) throws Exception {
 
-        logInfo("[IasMsgSettingSessionEJB]getMessageBySinglePull - senderAppId[" + senderAppId + "]"
+        logger.info("[IasMsgSettingSessionEJB]getMessageBySinglePull - senderAppId[" + senderAppId + "]"
                 + ",recipientAppId[" + recipientAppId + "]" + ",senderAppType[" + senderAppType + "] ,recipientAppType["
                 + recipientAppType + "] - START");
 
@@ -263,13 +267,13 @@ public class IasMsgSettingSessionEJB extends EJBBase
             msgClient.addSinglePullRequest(requestMsg, inMap, senderAppType, recipientAppType);
             responseMsg = msgClient.sendSinglePullRequest(requestMsg);
 
-            logInfo("[IasMsgSettingSessionEJB]getMessageBySinglePull - responseMsg: \n"
+            logger.info("[IasMsgSettingSessionEJB]getMessageBySinglePull - responseMsg: \n"
                     + WebServiceUtils.soapMessageToString(responseMsg));
 
             if (responseMsg.getSOAPPart().getEnvelope().getBody().hasFault()) {
                 FaultEntry soapFaultEntry = SoapUtils.getFaultEntry(responseMsg);
                 if (soapFaultEntry != null) {
-                    logWarn("[IasMsgSettingSessionEJB][SOAP_FAULT]getMessageBySinglePull - sendSinglePullRequest: DetailCode="
+                    logger.warn("[IasMsgSettingSessionEJB][SOAP_FAULT]getMessageBySinglePull - sendSinglePullRequest: DetailCode="
                             + soapFaultEntry.getDetailCode() + ", DetailDescription="
                             + soapFaultEntry.getDetailDescription() + ", FaultCode=" + soapFaultEntry.getFaultCode()
                             + ", FaultString=" + soapFaultEntry.getFaultString());
@@ -279,7 +283,7 @@ public class IasMsgSettingSessionEJB extends EJBBase
             throw e;
         }
 
-        logInfo("[IasMsgSettingSessionEJB]getMessageBySinglePull - senderAppId[" + senderAppId + "]"
+        logger.info("[IasMsgSettingSessionEJB]getMessageBySinglePull - senderAppId[" + senderAppId + "]"
                 + ",recipientAppId[" + recipientAppId + "]" + ",senderAppType[" + senderAppType + "] ,recipientAppType["
                 + recipientAppType + "] - END");
 
@@ -296,10 +300,10 @@ public class IasMsgSettingSessionEJB extends EJBBase
             SOAPMessage pullAckResponse = msgClient.sendPullAckRequest(pullAckRequest);
 
             if (pullAckResponse.getSOAPPart().getEnvelope().getBody().hasFault()) {
-                logWarn("[IasMsgSettingSessionEJB]sendPullAck - failed msgIdList=" + msgIdList.toString());
+                logger.warn("[IasMsgSettingSessionEJB]sendPullAck - failed msgIdList=" + msgIdList.toString());
                 result = false;
             } else {
-                logInfo("[IasMsgSettingSessionEJB]sendPullAck - success msgIdList=" + msgIdList.toString());
+                logger.info("[IasMsgSettingSessionEJB]sendPullAck - success msgIdList=" + msgIdList.toString());
                 result = true;
             }
 

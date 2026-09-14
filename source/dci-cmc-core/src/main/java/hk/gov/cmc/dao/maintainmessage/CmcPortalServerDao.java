@@ -16,7 +16,7 @@ public class CmcPortalServerDAO {
     }
 
     public String getPortalStatusByPortalId(HPFW_Connection conn, String portalId) throws Exception {
-        logger.debug("getPortalStatusByPortalId - START");
+        logger.debug("getPortalStatusByPortalId - portalId: " + portalId);
 
         String result = "";
         ResultSet rs = null;

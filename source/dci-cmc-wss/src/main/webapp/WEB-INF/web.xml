@@ -31,6 +31,10 @@
         <servlet-name>MaintainMessageService</servlet-name>
         <servlet-class>hk.gov.cmc.webserver.soap.MaintainMessageSoapProvider</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>RetrieveCmcTemplateService</servlet-name>
+        <servlet-class>hk.gov.cmc.webserver.soap.RetrieveCmcTemplateSoapProvider</servlet-class>
+    </servlet>
 
 
     <servlet-mapping>
@@ -52,6 +56,10 @@
     <servlet-mapping>
         <servlet-name>MaintainMessageService</servlet-name>
         <url-pattern>/services/MaintainMessageService</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RetrieveCmcTemplateService</servlet-name>
+        <url-pattern>/services/RetrieveCmcTemplateService</url-pattern>
     </servlet-mapping>
 
     <session-config>

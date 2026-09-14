@@ -492,6 +492,8 @@ public class MaintainMessageClientTest {
         DecimalFormat format3Digit = new DecimalFormat("000");
         DecimalFormat format2Digit = new DecimalFormat("00");
 
+        System.out.println("msgReqCount=" + msgReqCount);
+
         for (int m = 0; m < msgReqCount; m++) {
 
             messageRequestArray[m] = new MessageRequest();
@@ -506,8 +508,8 @@ public class MaintainMessageClientTest {
             String toDoItemTemlId = properties.getProperty("MSG_REQ_1_ITEM_TEMPLATE_ID");
             String toDoItemTemlVer = properties.getProperty("MSG_REQ_1_ITEM_TEMPLATE_VERSION");
 
-            String applicationTemlId = properties.getProperty("MSG_REQ_" + (m + 1) + "_APPLICATION_TEMPLATE_ID");
-            String applicationTemlVer = properties.getProperty("MSG_REQ_" + (m + 1) + "_APPLICATION_TEMPLATE_VERSION");
+            String applicationTemlId = properties.getProperty("MSG_REQ_1_APPLICATION_TEMPLATE_ID");
+            String applicationTemlVer = properties.getProperty("MSG_REQ_1_APPLICATION_TEMPLATE_VERSION");
 
             EMessage eMessage = null;
             if (eMsgTemlId != null && eMsgTemlId.length() > 0) {
@@ -534,20 +536,19 @@ public class MaintainMessageClientTest {
 
             MetaData[] metaDataArray = new MetaData[numOfMetaData];
 
-            // System.out.println(
+            System.out.println("numOfMetaData=" + numOfMetaData);
 
             for (int i = 0; i < numOfMetaData; i++) {
 
                 metaDataArray[i] = new MetaData();
 
-                String filePathEN = properties.getProperty("MSG_REQ_1_META_DATA_" + (i + 1) + "_CONTENT_EN_FILE_PATH");
-                String filePathTC = properties.getProperty("MSG_REQ_1_META_DATA_" + (i + 1) + "_CONTENT_TC_FILE_PATH");
-                String filePathSC = properties.getProperty("MSG_REQ_1_META_DATA_" + (i + 1) + "_CONTENT_SC_FILE_PATH");
+                String filePathEN = properties.getProperty("MSG_REQ_1_META_DATA_1_CONTENT_EN_FILE_PATH");
+                String filePathTC = properties.getProperty("MSG_REQ_1_META_DATA_1_CONTENT_TC_FILE_PATH");
+                String filePathSC = properties.getProperty("MSG_REQ_1_META_DATA_1_CONTENT_SC_FILE_PATH");
 
                 String fileNameEN = "";
                 if (filePathEN.length() > 0) {
                     fileNameEN = filePathEN.substring(filePathEN.lastIndexOf("\\") + 1, filePathEN.length());
-                    // byte[] fileContentEN = ReaderUtils.loadFileToByteArray(filePathEN);
                     byte[] fileContentEN = Files.readAllBytes(Paths.get(filePathEN));
                     metaDataArray[i].setDataContentEN(removeBom(new String(fileContentEN, "UTF8")));
                 }
@@ -555,7 +556,6 @@ public class MaintainMessageClientTest {
                 String fileNameTC = "";
                 if (filePathTC.length() > 0) {
                     fileNameTC = filePathTC.substring(filePathTC.lastIndexOf("\\") + 1, filePathTC.length());
-                    // byte[] fileContentTC = ReaderUtils.loadFileToByteArray(filePathTC);
                     byte[] fileContentTC = Files.readAllBytes(Paths.get(filePathTC));
                     metaDataArray[i].setDataContentTC(removeBom(new String(fileContentTC, "UTF8")));
                 }
@@ -563,15 +563,14 @@ public class MaintainMessageClientTest {
                 String fileNameSC = "";
                 if (filePathSC.length() > 0) {
                     fileNameSC = filePathSC.substring(filePathSC.lastIndexOf("\\") + 1, filePathSC.length());
-                    // byte[] fileContentSC = ReaderUtils.loadFileToByteArray(filePathSC);
                     byte[] fileContentSC = Files.readAllBytes(Paths.get(filePathSC));
                     metaDataArray[i].setDataContentSC(removeBom(new String(fileContentSC, "UTF8")));
                 }
 
                 int numOfRecipient = Integer
-                        .parseInt(properties.getProperty("MSG_REQ_1_META_DATA_" + (i + 1) + "_REPT_COUNT"));
+                        .parseInt(properties.getProperty("MSG_REQ_1_META_DATA_1_REPT_COUNT"));
 
-                // System.out.println("numOfRecipient=" + numOfRecipient);
+                System.out.println("numOfRecipient=" + numOfRecipient);
 
                 for (int j = 0; j < numOfRecipient; j++) {
 
@@ -580,27 +579,28 @@ public class MaintainMessageClientTest {
                     // Tran ID format: "YYYYMMDDHHMISS(m+1)j"
                     String tranID = tranIdPrefix + format3Digit.format(m + 1) + format2Digit.format(j);
                     String idpID = properties
-                            .getProperty("MSG_REQ_1_META_DATA_" + (i + 1) + "_REPT_" + (j + 1) + "_IDP_ID");
-                    String recipientID = properties
-                            .getProperty("MSG_REQ_1_META_DATA_" + (i + 1) + "_REPT_" + (j + 1) + "_RECIPIENT_ID");
+                            .getProperty("MSG_REQ_1_META_DATA_1_REPT_1_IDP_ID");
+                    String recipientID = properties.getProperty("MSG_REQ_1_META_DATA_1_REPT_1_RECIPIENT_ID");
+                    if (j != 0) {
+                        recipientID = "LOAD_TEST_" + j + "_" + tranID;
+                    }
                     String itemDateStr = properties
-                            .getProperty("MSG_REQ_1_META_DATA_" + (i + 1) + "_REPT_" + (j + 1) + "_ITEM_DATE");
+                            .getProperty("MSG_REQ_1_META_DATA_1_REPT_1_ITEM_DATE");
                     String action = properties
-                            .getProperty("MSG_REQ_1_META_DATA_" + (i + 1) + "_REPT_" + (j + 1) + "_ACTION");
+                            .getProperty("MSG_REQ_1_META_DATA_1_REPT_1_ACTION");
                     String correlatedTranID = properties
-                            .getProperty("MSG_REQ_1_META_DATA_" + (i + 1) + "_REPT_" + (j + 1) + "_CORR_TRAN_ID");
+                            .getProperty("MSG_REQ_1_META_DATA_1_REPT_1_CORR_TRAN_ID");
                     String appRefNum = properties.getProperty(
-                            "MSG_REQ_" + (m + 1) + "_META_DATA_" + (i + 1) + "_REPT_" + (j + 1) + "_APP_REF_NUM");
+                            "MSG_REQ_1_META_DATA_1_REPT_1_APP_REF_NUM");
                     String appStatus = properties.getProperty(
-                            "MSG_REQ_" + (m + 1) + "_META_DATA_" + (i + 1) + "_REPT_" + (j + 1) + "APP_STATUS");
+                            "MSG_REQ_1_META_DATA_1_REPT_1_APP_STATUS");
                     String contactNum = properties.getProperty(
-                            "MSG_REQ_" + (m + 1) + "_META_DATA_" + (i + 1) + "_REPT_" + (j + 1) + "_CONTACT_NUM");
+                            "MSG_REQ_1_META_DATA_1_REPT_1_CONTACT_NUM");
                     String contactEmail = properties.getProperty(
-                            "MSG_REQ_" + (m + 1) + "_META_DATA_" + (i + 1) + "_REPT_" + (j + 1) + "_CONTACT_EMAIL");
+                            "MSG_REQ_1_META_DATA_1_REPT_1_CONTACT_EMAIL");
                     String recipientIDType = properties.getProperty(
-                            "MSG_REQ_" + (m + 1) + "_META_DATA_" + (i + 1) + "_REPT_" + (j + 1) + "_RECIPIENT_ID_TYPE");
-                    String appStatusUpdateDate = properties.getProperty("MSG_REQ_" + (m + 1) + "_META_DATA_" + (i + 1)
-                            + "_REPT_" + (j + 1) + "APP_STATUS_UPDATE_DATE");
+                            "MSG_REQ_1_META_DATA_1_REPT_1_RECIPIENT_ID_TYPE");
+                    String appStatusUpdateDate = properties.getProperty("MSG_REQ_1_META_DATA_1_REPT_1_APP_STATUS_UPDATE_DATE");
 
                     recipient.setTranID(tranID);
                     recipient.setIdpID(idpID);
@@ -611,7 +611,7 @@ public class MaintainMessageClientTest {
                             recipient.setItemDate(DatetimeUtils.convertToDate(itemDateStr));
                         else
                             throw new Exception(
-                                    "MSG_REQ_1_META_DATA_" + (i + 1) + "_REPT_" + (j + 1) + "_ITEM_DATE is not valid");
+                                    "MSG_REQ_1_META_DATA_1_REPT_1_ITEM_DATE is not valid");
                     }
 
                     recipient.setAction(action);
@@ -622,14 +622,69 @@ public class MaintainMessageClientTest {
                         if (DatetimeUtils.isValidDateTime(appStatusUpdateDate))
                             recipient.setAppStatusUpdateDate(DatetimeUtils.convertToDate(appStatusUpdateDate));
                         else
-                            throw new Exception("MSG_REQ_" + (m + 1) + "_META_DATA_" + (i + 1) + "_REPT_" + (j + 1)
-                                    + "_STATUS_UPDATE_DATE is not valid");
+                            throw new Exception("MSG_REQ_1_META_DATA_1_REPT_1_APP_STATUS_UPDATE_DATE is not valid");
                     }
                     recipient.setContactNum(contactNum);
                     recipient.setContactEmail(contactEmail);
 
                     metaDataArray[i].addRecipient(recipient);
                 }
+
+                // Only use following code when you have enough recipientId to test the load test, otherwise, it will throw exception because of duplicate recipientId
+                // for (int j = 0; j < numOfRecipient; j++) {
+
+                //     Recipient recipient = new Recipient();
+
+                //     // Tran ID format: "YYYYMMDDHHMISS(m+1)j"
+                //     String tranID = tranIdPrefix + format3Digit.format(m + 1) + format2Digit.format(j);
+                //     String idpID = properties
+                //             .getProperty("MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_IDP_ID");
+                //     String recipientID = properties.getProperty("MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_RECIPIENT_ID");
+                //     String itemDateStr = properties
+                //             .getProperty("MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_ITEM_DATE");
+                //     String action = properties
+                //             .getProperty("MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_ACTION");
+                //     String correlatedTranID = properties
+                //             .getProperty("MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_CORR_TRAN_ID");
+                //     String appRefNum = properties.getProperty(
+                //             "MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_APP_REF_NUM");
+                //     String appStatus = properties.getProperty(
+                //             "MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_APP_STATUS");
+                //     String contactNum = properties.getProperty(
+                //             "MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_CONTACT_NUM");
+                //     String contactEmail = properties.getProperty(
+                //             "MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_CONTACT_EMAIL");
+                //     String recipientIDType = properties.getProperty(
+                //             "MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_RECIPIENT_ID_TYPE");
+                //     String appStatusUpdateDate = properties.getProperty("MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_APP_STATUS_UPDATE_DATE");
+
+                //     recipient.setTranID(tranID);
+                //     recipient.setIdpID(idpID);
+                //     recipient.setRecipientID(recipientID);
+                //     recipient.setRecipientIDType(recipientIDType);
+                //     if (itemDateStr != null && itemDateStr.length() > 0) {
+                //         if (DatetimeUtils.isValidDateTime(itemDateStr))
+                //             recipient.setItemDate(DatetimeUtils.convertToDate(itemDateStr));
+                //         else
+                //             throw new Exception(
+                //                     "MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_ITEM_DATE is not valid");
+                //     }
+
+                //     recipient.setAction(action);
+                //     recipient.setCorrelatedTranID(correlatedTranID);
+                //     recipient.setAppRefNum(appRefNum);
+                //     recipient.setAppStatus(appStatus);
+                //     if (appStatusUpdateDate != null && appStatusUpdateDate.length() > 0) {
+                //         if (DatetimeUtils.isValidDateTime(appStatusUpdateDate))
+                //             recipient.setAppStatusUpdateDate(DatetimeUtils.convertToDate(appStatusUpdateDate));
+                //         else
+                //             throw new Exception("MSG_REQ_1_META_DATA_1_REPT_" + (j + 1) + "_APP_STATUS_UPDATE_DATE is not valid");
+                //     }
+                //     recipient.setContactNum(contactNum);
+                //     recipient.setContactEmail(contactEmail);
+
+                //     metaDataArray[i].addRecipient(recipient);
+                // }
             }
 
             messageRequestArray[m].setEMessage(eMessage);

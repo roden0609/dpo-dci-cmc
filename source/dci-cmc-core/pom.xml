@@ -507,4 +507,47 @@
         </dependency>
         <!-- JasperReports libraries END -->
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Used to generate JAXB classes from XSD -->
+            <!-- <plugin>
+                <groupId>org.jvnet.jaxb</groupId>
+                <artifactId>jaxb-maven-plugin</artifactId>
+
+                <executions>
+                    <execution>
+                        <id>generate-retrieve-cmc-template</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaDirectory>
+                                ${project.basedir}/src/main/resources/xsd
+                            </schemaDirectory>
+
+                            <schemaIncludes>
+                                <include>RetrieveCmcTemplate.xsd</include>
+                            </schemaIncludes>
+
+                            <generatePackage>
+                                hk.gov.cmc.jaxb.retrievecmctemplate
+                            </generatePackage>
+
+                            <args>
+                                <arg>-npa</arg>
+                            </args>
+
+                            <generateDirectory>
+                                ${project.build.directory}/generated-sources/xjc
+                            </generateDirectory>
+
+                            <removeOldOutput>false</removeOldOutput>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> -->
+        </plugins>
+    </build>
 </project>

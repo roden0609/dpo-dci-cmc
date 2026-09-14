@@ -145,6 +145,9 @@
         <junit.version>4.13.2</junit.version>
         <easymock.version>3.4</easymock.version>
         <powermock.version>1.6.6</powermock.version>
+
+        <!-- JAXB code generation -->
+        <jaxb-maven-plugin.version>4.0.8</jaxb-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -575,6 +578,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>${maven-assembly-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jvnet.jaxb</groupId>
+                    <artifactId>jaxb-maven-plugin</artifactId>
+                    <version>${jaxb-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

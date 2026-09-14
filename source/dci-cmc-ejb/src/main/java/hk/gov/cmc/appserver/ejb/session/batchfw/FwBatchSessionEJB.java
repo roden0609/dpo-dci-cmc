@@ -4,6 +4,9 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import hk.gov.cmc.config.CmcEnvProperties;
 import hk.gov.gcis.rm.common.javaee.ejb.EJBBase;
 import jakarta.ejb.Stateless;
@@ -15,6 +18,7 @@ import jakarta.ejb.TransactionManagementType;
 public class FwBatchSessionEJB extends EJBBase implements IFwBatchSessionBM, IFwBatchSessionBMLocal {
 
     private final static CmcEnvProperties cmcEnvProperties = new CmcEnvProperties();
+    private static Log logger = LogFactory.getLog(FwBatchSessionEJB.class);
 
     public void callBatchUsingReflection(String clsImpl, String methodName, Map<String, Object> params)
             throws Exception {
@@ -22,7 +26,7 @@ public class FwBatchSessionEJB extends EJBBase implements IFwBatchSessionBM, IFw
         Properties properties = cmcEnvProperties.getProperties();
 
         // for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-        //     logInfo(entry.getKey() + " = " + entry.getValue());
+        //     logger.info(entry.getKey() + " = " + entry.getValue());
         // }
 
         String fwBatchImplClassEnabled = properties.getProperty("FW_BATCH_IMPL_CLASS_" + clsImpl + "_ENABLED");
@@ -32,7 +36,7 @@ public class FwBatchSessionEJB extends EJBBase implements IFwBatchSessionBM, IFw
             Method method = clsObj.getClass().getMethod(methodName, new Class[] { Map.class });
             method.invoke(clsObj, new Object[] { params });
         } else {
-            logError("The impl class [" + clsImpl + "] is not permitted.");
+            logger.error("The impl class [" + clsImpl + "] is not permitted.");
             throw new Exception("The impl class [" + clsImpl + "] is not permitted.");
         }
     }

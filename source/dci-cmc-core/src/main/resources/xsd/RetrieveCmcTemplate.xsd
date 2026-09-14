@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://ws.mygovhk.gov.hk/schema/RetrieveCmcTemplate.xsd" 
+	xmlns:xsd1="http://ws.mygovhk.gov.hk/schema/RetrieveCmcTemplate.xsd" 
+	targetNamespace="http://ws.mygovhk.gov.hk/schema/RetrieveCmcTemplate.xsd" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="qualified">
+    
+    <xsd:complexType name="TemplateDetail.CT">
+        <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="SubjectEn" type="xsd:string"/>
+            <xsd:element maxOccurs="1" minOccurs="1" name="SubjectTc" type="xsd:string"/>
+            <xsd:element maxOccurs="1" minOccurs="1" name="SubjectSc" type="xsd:string"/>
+            <xsd:element maxOccurs="1" minOccurs="1" name="ContentEn" type="xsd:string"/>
+            <xsd:element maxOccurs="1" minOccurs="1" name="ContentTc" type="xsd:string"/>
+            <xsd:element maxOccurs="1" minOccurs="1" name="ContentSc" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="Result">
+    	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="0000"></xsd:enumeration>
+    		<xsd:enumeration value="0001"></xsd:enumeration>
+    		<xsd:enumeration value="9999"></xsd:enumeration>
+    	</xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="RetrieveCmcTemplateRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+            	<xsd:element maxOccurs="1" minOccurs="1" name="TemplateId" type="xsd:string" />
+    			<xsd:element maxOccurs="1" minOccurs="1" name="TemplateVersion" type="xsd:string" />
+               </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="RetrieveCmcTemplateResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element maxOccurs="1" minOccurs="1" name="ResultCd" type="xsd1:Result"/>
+                <xsd:element maxOccurs="1" minOccurs="0" name="ResultMsg" type="xsd:string"/>
+            	<xsd:element maxOccurs="1" minOccurs="1" name="TemplateId" type="xsd:string" />
+    			<xsd:element maxOccurs="1" minOccurs="1" name="TemplateVersion" type="xsd:string" />
+                <xsd:element maxOccurs="1" minOccurs="0" name="TemplateDetail" type="xsd1:TemplateDetail.CT"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
