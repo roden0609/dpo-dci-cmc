@@ -168,7 +168,7 @@
         <subsystem xmlns="urn:jboss:domain:datasources:7.1">
             <datasources>
                 <datasource jta="true" jndi-name="java:jboss/jdbc/RMDataSource" pool-name="RMDataSource" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:mysql://172.16.69.14:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false&amp;allowPublicKeyRetrieval=true</connection-url>
+                    <connection-url>jdbc:mysql://172.16.69.15:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false&amp;allowPublicKeyRetrieval=true</connection-url>
                     <driver>com.mysql</driver>
                     <security user-name="ogcmrceu11">
                         <credential-reference store="credential-store" alias="db-password"/>
@@ -182,7 +182,7 @@
                     </statement>
                 </datasource>
                 <datasource jta="true" jndi-name="java:jboss/jdbc/CMCDataSource" pool-name="CMCDataSource" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:mysql://172.16.69.14:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false</connection-url>
+                    <connection-url>jdbc:mysql://172.16.69.15:3306/togcmrce1?useUnicode=true&amp;connectionCollation=utf8mb4_bin&amp;default-character-set=utf8mb4&amp;useSSL=false</connection-url>
                     <driver>com.mysql</driver>
                     <security user-name="ogcmrceu11">
                         <credential-reference store="credential-store" alias="db-password"/>

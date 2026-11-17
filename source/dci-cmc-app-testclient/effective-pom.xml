@@ -25,7 +25,7 @@
   <description>To serve iAM Smart Messages, To Do Items and Applications</description>
   <url>http://maven.apache.org</url>
   <properties>
-    <bouncycastle.version>1.80</bouncycastle.version>
+    <bouncycastle.version>1.86</bouncycastle.version>
     <build.profile.jboss>jboss</build.profile.jboss>
     <build.profile.liberty>liberty</build.profile.liberty>
     <com.google.zxing.version>3.5.3</com.google.zxing.version>

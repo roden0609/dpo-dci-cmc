@@ -122,7 +122,7 @@
         <!-- <eclipse-ee4j-orb.version>4.2.5</eclipse-ee4j-orb.version> -->
 
         <!-- Miscellaneous libraies -->
-        <bouncycastle.version>1.80</bouncycastle.version>
+        <bouncycastle.version>1.86</bouncycastle.version>
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
         <quartz.version>2.5.0</quartz.version>
